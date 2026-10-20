@@ -1239,406 +1239,437 @@ body.student-studio {
     transition: none !important;
   }
 }
-/* One opportunity catalog, with readable rows and details on demand. */
-.opportunity-browser {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  overflow: hidden;
+/* Sliding opportunity showcase: one catalog, one focused role. */
+.opportunity-showcase {
+  min-width: 0;
 }
-.opportunity-toolbar {
-  padding: 24px 28px;
+.showcase-toolbar {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
-  border-bottom: 1px solid var(--line);
+  gap: 24px;
+  margin: 0 0 22px;
 }
-.opportunity-search {
-  width: min(100%, 460px);
-  font-size: 13px;
+.showcase-search {
+  width: min(100%, 400px);
+  font-size: 12px;
   color: var(--slate);
 }
-.opportunity-search > span {
+.showcase-search > span {
   display: block;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
-.opportunity-search > div {
+.showcase-search > div {
   display: flex;
   align-items: center;
   gap: 12px;
   border: 1px solid var(--line);
+  background: var(--bg);
   border-radius: 10px;
   padding: 0 14px;
-  background: var(--bg-2);
 }
-.opportunity-search input {
-  width: 100%;
-  min-width: 0;
+.showcase-search input {
+  font: inherit;
+  color: var(--navy);
+  background: transparent;
   border: 0;
   outline: 0;
-  background: transparent;
-  color: var(--navy);
-  padding: 13px 0;
-  font: inherit;
-}
-.opportunity-search > div:focus-within {
-  outline: 2px solid var(--blue);
-  outline-offset: 2px;
-}
-#opportunity-count {
-  color: var(--slate);
-  white-space: nowrap;
-  font-size: 13px;
-  margin: 0 0 13px;
-}
-.opportunity-row {
-  display: grid;
-  grid-template-columns: 52px minmax(180px, 1fr) minmax(300px, 0.9fr) auto;
-  gap: 22px;
-  padding: 30px 28px;
-  align-items: center;
-}
-.opportunity-row + .opportunity-row {
-  border-top: 1px solid var(--line);
-}
-.opportunity-company-mark {
-  width: 52px;
-  height: 52px;
-  background: var(--bg-2);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--blue);
-}
-.opportunity-role {
+  padding: 12px 0;
   min-width: 0;
+  width: 100%;
 }
-.opportunity-role p {
-  color: var(--slate);
+.showcase-search > div:focus-within {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+.showcase-count {
   font-size: 12px;
-  margin: 0 0 6px;
-}
-.student-workspace .opportunity-role h2 {
-  font-size: 18px;
-  margin: 0 0 8px;
-  line-height: 1.5;
-}
-.opportunity-role h2 button {
-  border: 0;
-  padding: 0;
-  text-align: left;
-  background: transparent;
-  color: var(--navy);
-  font: inherit;
-}
-.opportunity-role h2 button:hover {
-  color: var(--blue);
-}
-.opportunity-role > span {
   color: var(--slate);
-  font-size: 12px;
+  margin: 0 0 12px;
 }
-.opportunity-facts {
+.showcase-track {
+  display: flex;
+  position: relative;
+  gap: 24px;
+  padding: 12px 5% 18px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+  border-radius: 24px;
+  touch-action: pan-x pan-y;
+}
+.showcase-track::-webkit-scrollbar {
+  display: none;
+}
+.showcase-track.is-moving,
+.showcase-track.is-dragging {
+  scroll-snap-type: none;
+}
+.showcase-track.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+.showcase-track:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+.showcase-slide {
+  flex: 0 0 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin: 0;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.6fr);
+  scroll-snap-align: center;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px #14366408;
+  opacity: 0.55;
+  transform: scale(0.965);
+  transition:
+    transform 350ms ease,
+    opacity 350ms ease;
 }
-.opportunity-facts dt {
-  color: var(--slate);
-  font-size: 11px;
-  font-weight: 400;
-  margin-bottom: 7px;
+.showcase-slide.is-selected {
+  opacity: 1;
+  transform: scale(1);
 }
-.opportunity-facts dd {
-  color: var(--navy);
-  font-size: 13px;
-  margin: 0;
+.showcase-identity {
+  background: #143a70;
+  color: #fff;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
-.opportunity-row-action {
+.showcase-company {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
-.opportunity-row-action .ui-button {
-  white-space: nowrap;
-}
-.student-workspace > .studio-training-record {
-  margin-top: 24px;
-}
-@media (max-width: 1150px) {
-  .opportunity-row {
-    grid-template-columns: 48px minmax(160px, 1fr) auto;
-    gap: 18px;
-  }
-  .opportunity-facts {
-    grid-column: 2;
-    grid-row: 2;
-  }
-  .opportunity-row-action {
-    grid-column: 3;
-    grid-row: 1 / 3;
-  }
-}
-@media (max-width: 600px) {
-  .opportunity-toolbar {
-    padding: 20px;
-    align-items: stretch;
-    flex-direction: column;
-    gap: 12px;
-  }
-  #opportunity-count {
-    margin: 0;
-  }
-  .opportunity-row {
-    grid-template-columns: 40px minmax(0, 1fr);
-    padding: 22px 20px;
-    gap: 14px;
-    align-items: start;
-  }
-  .opportunity-company-mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    font-size: 12px;
-  }
-  .student-workspace .opportunity-role h2 {
-    font-size: 16px;
-  }
-  .opportunity-facts {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    gap: 12px;
-    margin: 5px 0;
-  }
-  .opportunity-facts dd {
-    font-size: 12px;
-  }
-  .opportunity-row-action {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    justify-content: space-between;
-  }
-  .opportunity-row-action > .ui-button {
-    margin-left: auto;
-  }
-}
-/* Opportunity browsing motion follows selection and respects reduced motion. */
-@keyframes opportunity-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes opportunity-detail-open {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes opportunity-backdrop {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-.opportunity-row {
-  animation: opportunity-reveal 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  animation-delay: var(--reveal-delay, 0ms);
-  transition: background-color 180ms ease;
-}
-.opportunity-company-mark {
-  transition:
-    transform 220ms ease,
-    background-color 220ms ease;
-}
-.opportunity-row .ui-button {
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
-}
-.opportunity-row:focus-within {
-  background: var(--bg-2);
-}
-@media (hover: hover) {
-  .opportunity-row:hover {
-    background: var(--bg-2);
-  }
-  .opportunity-row:hover .opportunity-company-mark {
-    transform: translateY(-3px);
-    background: var(--bw-primary-light);
-  }
-  .opportunity-row .ui-button:hover {
-    transform: translateY(-2px);
-  }
-}
-html[data-view="opportunities"] .student-studio dialog[open] {
-  animation: opportunity-detail-open 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-html[data-view="opportunities"] .student-studio dialog[open]::backdrop {
-  animation: opportunity-backdrop 220ms ease both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .opportunity-row,
-  .opportunity-company-mark,
-  .opportunity-row .ui-button,
-  html[data-view="opportunities"] .student-studio dialog[open],
-  html[data-view="opportunities"] .student-studio dialog[open]::backdrop {
-    animation: none;
-    transition: none;
-    transform: none;
-  }
-}
-/* Expand one role in place, keeping the surrounding opportunities in view. */
-.opportunity-row {
-  row-gap: 0;
-  position: relative;
-  transition:
-    background-color 300ms ease,
-    box-shadow 300ms ease;
-}
-.opportunity-row.is-open {
-  background: var(--bg-2);
-  box-shadow: inset 4px 0 var(--blue);
-}
-.opportunity-toggle i {
-  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.opportunity-row.is-open .opportunity-toggle i {
-  transform: rotate(45deg);
-}
-.opportunity-row.is-open .opportunity-company-mark {
-  background: var(--blue);
-  color: white;
-  transform: translateY(-3px);
-}
-.opportunity-detail {
-  grid-column: 1 / -1;
+.showcase-company > span {
   display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 580ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 260ms ease;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  background: #ffffff16;
+  border: 1px solid #ffffff36;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
 }
-.opportunity-detail-clip {
-  min-height: 0;
-  overflow: hidden;
-}
-.opportunity-row.is-open .opportunity-detail {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-.opportunity-detail-body {
-  padding: 30px 0 0 74px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-.opportunity-detail-body section {
-  opacity: 0;
-  transform: translateY(22px);
-  transition:
-    opacity 250ms ease,
-    transform 350ms ease;
-}
-.opportunity-row.is-open .opportunity-detail-body section {
-  opacity: 1;
-  transform: translateY(0);
-  transition-duration: 450ms;
-  transition-delay: 100ms;
-}
-.opportunity-row.is-open .opportunity-detail-body section:nth-child(2) {
-  transition-delay: 190ms;
-}
-.student-workspace .opportunity-detail-body h3 {
-  font-size: 17px;
-  font-weight: 500;
-  margin: 0 0 12px;
-}
-.opportunity-detail-body p {
-  color: var(--slate);
+.showcase-company p {
   font-size: 13px;
-  line-height: 1.85;
-  margin: 0 0 12px;
-  max-width: 65ch;
+  line-height: 1.5;
+  margin: 0 0 2px;
+  color: #fff;
 }
-.opportunity-detail-body footer {
-  grid-column: 1 / -1;
-  border-top: 1px solid var(--line);
-  padding-top: 22px;
+.showcase-company small {
+  color: #c0d3ed;
+  font-size: 11px;
+}
+.student-workspace .showcase-identity h2 {
+  font-size: clamp(25px, 2.6vw, 38px);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+  color: #fff;
+  margin: 40px 0 20px;
+  overflow-wrap: normal;
+}
+.showcase-location {
+  font-size: 12px;
+  color: #d2e1f5;
   display: flex;
-  flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 200ms,
-    transform 200ms;
+  margin: 0 0 26px;
 }
-.opportunity-detail-body footer p {
+.showcase-identity-foot {
+  border-top: 1px solid #ffffff30;
+  padding-top: 22px;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d2e1f5;
+  font-size: 11px;
+}
+.showcase-role {
+  min-width: 0;
+  padding: 30px 32px;
+  display: flex;
+  flex-direction: column;
+}
+.showcase-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+  margin: 0 0 22px;
+}
+.showcase-facts dt {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--slate);
+  margin-bottom: 7px;
+}
+.showcase-facts dd {
+  font-size: 13px;
+  color: var(--navy);
   margin: 0;
 }
-.opportunity-row.is-open .opportunity-detail-body footer {
-  opacity: 1;
-  transform: translateY(0);
-  transition-duration: 400ms;
-  transition-delay: 260ms;
+.showcase-copy {
+  display: grid;
+  gap: 20px;
 }
-@media (max-width: 1150px) {
-  .opportunity-row {
-    row-gap: 16px;
+.student-workspace .showcase-copy h3 {
+  font-size: 16px;
+  margin: 0 0 9px;
+  font-weight: 500;
+}
+.showcase-copy p {
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--slate);
+  margin: 0;
+  max-width: 65ch;
+  white-space: pre-wrap;
+}
+.showcase-apply {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 24px;
+}
+.showcase-apply p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--slate);
+  margin: 0;
+}
+.showcase-apply .ui-button {
+  font-size: 12px;
+  flex: none;
+}
+.showcase-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 2px 5% 22px;
+}
+.showcase-controls > p {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--slate);
+  font-size: 12px;
+  margin: 0;
+}
+.showcase-stepper {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.showcase-arrow {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--navy);
+  transition:
+    background-color 160ms,
+    transform 120ms;
+}
+.showcase-arrow:hover:not(:disabled) {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+.showcase-arrow:active:not(:disabled) {
+  transform: scale(0.92);
+}
+.showcase-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.showcase-position {
+  font-size: 12px;
+  color: var(--slate);
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.showcase-chooser {
+  display: flex;
+  gap: 12px;
+  padding: 0 5% 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.showcase-chooser button {
+  flex: 1 0 180px;
+  min-width: 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  border: 0;
+  border-top: 2px solid var(--line);
+  background: transparent;
+  padding: 15px 4px 5px;
+  color: var(--slate);
+  transition:
+    border-color 200ms,
+    color 200ms;
+}
+.showcase-chooser button > span {
+  font-size: 11px;
+  align-self: flex-start;
+  padding-top: 2px;
+}
+.showcase-chooser button div {
+  min-width: 0;
+}
+.showcase-chooser small {
+  font-size: 10px;
+  display: block;
+  margin-bottom: 5px;
+}
+.showcase-chooser strong {
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+  line-height: 1.5;
+}
+.showcase-chooser button[aria-current="true"] {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.showcase-chooser button:hover {
+  color: var(--blue);
+}
+@media (max-width: 1050px) {
+  .showcase-slide {
+    grid-template-columns: minmax(230px, 0.9fr) minmax(0, 1.4fr);
   }
-  .opportunity-detail {
-    grid-row: 3;
+  .showcase-identity,
+  .showcase-role {
+    padding: 26px;
   }
-  .opportunity-detail-body {
-    padding: 18px 0 0 66px;
+  .showcase-apply {
+    flex-wrap: wrap;
   }
 }
-@media (max-width: 600px) {
-  .opportunity-detail {
-    grid-row: 4;
+@media (max-width: 700px) {
+  .showcase-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
   }
-  .opportunity-detail-body {
-    padding: 16px 0 0;
+  .showcase-search {
+    width: 100%;
+  }
+  .showcase-count {
+    margin: 0;
+  }
+  .showcase-track {
+    padding: 10px 3% 16px;
+    gap: 12px;
+    border-radius: 18px;
+  }
+  .showcase-slide {
     grid-template-columns: 1fr;
+    border-radius: 18px;
+  }
+  .showcase-identity {
+    padding: 22px;
+  }
+  .showcase-company > span {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+  .student-workspace .showcase-identity h2 {
+    font-size: 27px;
+    margin: 24px 0 14px;
+  }
+  .showcase-location {
+    margin-bottom: 0;
+  }
+  .showcase-identity-foot {
+    display: none;
+  }
+  .showcase-role {
+    padding: 22px;
+  }
+  .showcase-facts {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+  }
+  .showcase-facts dt {
+    font-size: 10px;
+  }
+  .showcase-facts dd {
+    font-size: 12px;
+  }
+  .showcase-copy {
     gap: 18px;
   }
-  .opportunity-detail-body footer {
-    align-items: stretch;
+  .showcase-copy p {
+    font-size: 12px;
+    line-height: 1.8;
   }
-  .opportunity-detail-body footer .ui-button {
+  .showcase-apply {
+    padding-top: 22px;
+  }
+  .showcase-apply .ui-button {
     width: 100%;
+  }
+  .showcase-controls {
+    padding: 0 3% 18px;
+  }
+  .showcase-controls > p {
+    font-size: 10px;
+    gap: 6px;
+  }
+  .showcase-stepper {
+    gap: 9px;
+  }
+  .showcase-arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .showcase-chooser {
+    padding: 0 3% 6px;
+    gap: 14px;
+  }
+  .showcase-chooser button {
+    flex-basis: 160px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .opportunity-detail,
-  .opportunity-toggle i,
-  .opportunity-detail-body section,
-  .opportunity-detail-body footer,
-  .opportunity-row.is-open .opportunity-detail-body section,
-  .opportunity-row.is-open .opportunity-detail-body footer {
+  .showcase-slide,
+  .showcase-arrow,
+  .showcase-chooser button {
     transition: none;
+  }
+  .showcase-slide {
     transform: none;
+  }
+  .showcase-track {
+    scroll-behavior: auto;
   }
 }

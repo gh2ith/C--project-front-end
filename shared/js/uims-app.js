@@ -327,7 +327,7 @@
     } else if (view === "opportunities") {
       shell(
         '<div id="student-discovery" class="student-discovery"></div>',
-        "Browse open roles for your college and major. Open a role to read the requirements and apply.",
+        "Discover roles for your major. Swipe through the opportunities or choose one below.",
         p
           ? link("Continue my training", "student", "progress")
           : link("Complete my profile", "student", "profile"),
@@ -424,58 +424,18 @@
         o.deadline >= new Date().toISOString().slice(0, 10) &&
         o.majorIds.includes(U.user.majorId),
     );
-    host.innerHTML = `<section class="opportunity-browser" aria-label="Internship opportunities"><div class="opportunity-toolbar"><label class="opportunity-search"><span>Search internships</span><div>${icon("search")}<input type="search" id="opportunity-search" placeholder="Role, company or location" autocomplete="off"></div></label><p id="opportunity-count" role="status" aria-live="polite"></p></div><div id="opportunity-results" class="opportunity-results"></div></section>`;
-    const renderResults = () => {
-      const query = host.querySelector("input").value.trim().toLowerCase();
-      const matches = ops.filter((o) =>
-        [o.title, companyName(o.companyId), o.location, o.requirements]
-          .join(" ")
-          .toLowerCase()
-          .includes(query),
-      );
-      host.querySelector("#opportunity-count").textContent =
-        `${matches.length} ${matches.length === 1 ? "opportunity" : "opportunities"}`;
-      host.querySelector("#opportunity-results").innerHTML = matches.length
-        ? matches
-            .map((o, index) => {
-              const application = U.all("applications").find(
-                (a) => a.studentId === U.userId && a.opportunityId === o.id,
-              );
-              return `<article class="opportunity-row" style="--reveal-delay:${Math.min(index, 5) * 45}ms"><div class="opportunity-company-mark" aria-hidden="true">${E(
-                companyName(o.companyId)
-                  .split(" ")
-                  .map((n) => n[0])
-                  .slice(0, 2)
-                  .join(""),
-              )}</div><div class="opportunity-role"><p>${E(companyName(o.companyId))}</p><h2><button type="button" data-action="opportunity" data-id="${E(o.id)}" aria-expanded="false" aria-controls="role-detail-${E(o.id)}">${E(o.title)}</button></h2><span>${icon("geo-alt")} ${E(o.location)}</span></div><dl class="opportunity-facts"><div><dt>Training</dt><dd>${E(U.user.requiredHours)} hours</dd></div><div><dt>Apply by</dt><dd>${date(o.deadline)}</dd></div><div><dt>Available seats</dt><dd>${E(o.seats)}</dd></div></dl><div class="opportunity-row-action">${application ? status(application.status) : ""}<button class="ui-button opportunity-toggle" type="button" data-action="opportunity" data-id="${E(o.id)}" aria-expanded="false" aria-controls="role-detail-${E(o.id)}"><span>Explore role</span>${icon("plus-lg")}</button></div><div class="opportunity-detail" id="role-detail-${E(o.id)}" inert aria-hidden="true"><div class="opportunity-detail-clip"><div class="opportunity-detail-body"><section><h3>The opportunity</h3><p class="pre-wrap">${E(o.description)}</p></section><section><h3>What you’ll bring</h3><p class="pre-wrap">${E(o.requirements)}</p><p class="muted">${o.majorIds.map(majorName).map(E).join(" · ")}</p></section><footer>${application ? `<p>${status(application.status)} <a href="${url("student", "applications")}">View my application</a></p>` : U.placement(U.userId) ? "<p>You already have a confirmed internship.</p>" : `<p>Found your fit? Send your application to the company.</p>${link("Apply for this internship", "student", "apply", "?opportunity=" + o.id, true)}`}</footer></div></div></div></article>`;
-            })
-            .join("")
-        : empty(
-            query ? "No internships found" : "No open opportunities yet",
-            query
-              ? "Try another role, company or location."
-              : "Open roles for your college and major will appear here.",
-          );
-    };
-    host.querySelector("input").addEventListener("input", renderResults);
-    renderResults();
-  }
-
-  function toggleOpportunity(row, expand = !row.classList.contains("is-open")) {
-    document.querySelectorAll(".opportunity-row").forEach((item) => {
-      const open = item === row && expand;
-      item.classList.toggle("is-open", open);
-      item
-        .querySelectorAll('[data-action="opportunity"]')
-        .forEach((control) =>
-          control.setAttribute("aria-expanded", String(open)),
-        );
-      const detail = item.querySelector(".opportunity-detail");
-      detail.inert = !open;
-      detail.setAttribute("aria-hidden", String(!open));
-      item.querySelector(".opportunity-toggle span").textContent = open
-        ? "Close details"
-        : "Explore role";
+    window.BridgewayOpportunityShowcase(host, {
+      opportunities: ops,
+      U,
+      E,
+      icon,
+      companyName,
+      majorName,
+      date,
+      status,
+      url,
+      link,
+      empty,
     });
   }
 
@@ -1346,11 +1306,6 @@
           break;
         }
         case "opportunity": {
-          const row = el.closest(".opportunity-row");
-          if (row) {
-            toggleOpportunity(row);
-            break;
-          }
           const op = U.db.opportunities[id];
           if (!op) throw Error("Opportunity not found.");
           modal(
@@ -1833,13 +1788,6 @@
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      const openRole = document.querySelector(".opportunity-row.is-open");
-      if (openRole) {
-        toggleOpportunity(openRole, false);
-        openRole
-          .querySelector(".opportunity-toggle")
-          .focus({ preventScroll: true });
-      }
       const side = document.querySelector(".sidebar");
       if (side) side.classList.remove("open");
     }
