@@ -1,7 +1,7 @@
-/* Bridgeway visual foundation: original palette, rounded surfaces and blue navigation rail. */
+/* Yarmouk University visual foundation: original palette, rounded surfaces and blue navigation rail. */
 :root {
-  --ui-rail: #12396c;
-  --ui-rail-bottom: #09244a;
+  --ui-rail: #006837;
+  --ui-rail-bottom: #002e18;
   --ui-card: var(--bg);
   --ui-ink: var(--navy);
   --ui-soft: var(--bg-3);
@@ -76,10 +76,10 @@ p {
   display: flex;
   flex-direction: column;
   padding: 26px 16px 18px;
-  color: #dce8ff;
+  color: #e0efe5;
   background: linear-gradient(165deg, var(--ui-rail), var(--ui-rail-bottom));
   border-radius: 27px;
-  box-shadow: 0 12px 30px #09244a22;
+  box-shadow: 0 12px 30px #002e1822;
   overflow: auto;
   scrollbar-width: thin;
 }
@@ -105,7 +105,7 @@ p {
   min-height: 46px;
   padding: 12px 14px;
   border-radius: 13px;
-  color: #dce8ff;
+  color: #e0efe5;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.45;
@@ -115,8 +115,8 @@ p {
   color: white;
 }
 .sidebar a.nav-item.active {
-  background: #f1f6ff;
-  color: #164581;
+  background: #f1f7f3;
+  color: #00552d;
   box-shadow: 0 4px 15px #05182a20;
 }
 .sidebar .bi {
@@ -137,7 +137,7 @@ p {
   background: transparent;
   border: 0;
   border-radius: 12px;
-  color: #dce8ff;
+  color: #e0efe5;
   text-align: left;
   font-size: 13px;
   padding: 10px 14px;
@@ -229,13 +229,13 @@ p {
   transform: translateY(-1px);
 }
 .ui-button.primary {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: #006837;
+  border-color: #006837;
   color: #fff;
-  box-shadow: 0 4px 12px #2563eb22;
+  box-shadow: 0 4px 12px #00683722;
 }
 .ui-button.primary:hover {
-  background: #1d4ed8;
+  background: #00552d;
 }
 .ui-button.danger {
   color: #dc3545;
@@ -261,7 +261,7 @@ p {
   border: 1px solid var(--line);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 4px 14px #0f172a03;
+  box-shadow: 0 4px 14px #173c2a03;
   min-width: 0;
 }
 .card-surface h2,
@@ -280,7 +280,7 @@ p {
   display: grid;
   place-items: center;
   border-radius: 13px;
-  background: #2563eb10;
+  background: #00683710;
   color: var(--blue);
   font-size: 20px;
   margin-bottom: 18px;
@@ -381,7 +381,7 @@ td .actions {
   color: #07845c;
 }
 .status.wait {
-  background: #f59e0b15;
+  background: #c5a05915;
   color: #946000;
 }
 .status.bad {
@@ -493,7 +493,7 @@ td .actions {
 .field input[type="checkbox"] {
   width: 17px;
   height: 17px;
-  accent-color: #2563eb;
+  accent-color: #006837;
 }
 .checkboxes {
   display: grid;
@@ -585,11 +585,11 @@ dialog::backdrop {
 .progress-track span {
   display: block;
   height: 100%;
-  background: #2563eb;
+  background: #006837;
   border-radius: 10px;
 }
 .review-block {
-  border-left: 3px solid #2563eb;
+  border-left: 3px solid #006837;
   padding: 7px 15px;
   margin: 15px 0;
   font-size: 12px;
@@ -609,7 +609,7 @@ dialog::backdrop {
   margin-right: 8px;
 }
 .completion {
-  background: linear-gradient(135deg, #12396c, #1f56ab);
+  background: linear-gradient(135deg, #006837, #003a1e);
   color: #e3efff;
   padding: 38px;
   border-radius: 22px;
@@ -680,7 +680,7 @@ dialog::backdrop {
   width: 100%;
   aspect-ratio: 16/9;
   border-radius: 20px;
-  background: #0a2348;
+  background: #002e18;
   box-shadow: var(--shadow-lg);
 }
 .mobile-toggle {
@@ -758,8 +758,8 @@ dialog::backdrop {
 .certificate-sheet {
   padding: 60px;
   background: #fff;
-  color: #12396c;
-  border: 7px double #2563eb;
+  color: #006837;
+  border: 7px double #006837;
   text-align: center;
 }
 .certificate-sheet img {

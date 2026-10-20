@@ -17,6 +17,8 @@
   const role = document.documentElement.dataset.role,
     view = document.documentElement.dataset.view;
   const params = new URLSearchParams(location.search);
+  let monitorStudentQuery = "";
+  let evaluationStudentQuery = "";
   const names = {
     student: "Student",
     company: "Company Supervisor",
@@ -58,7 +60,7 @@
       ["account", "Coordinator Account", "person-circle"],
     ],
   };
-  const title = () => nav[role]?.find((x) => x[0] === view)?.[1] || "Bridgeway";
+  const title = () => nav[role]?.find((x) => x[0] === view)?.[1] || "Yarmouk University";
   const userName = (id) => U.db.users[id]?.name || "Not assigned";
   const companyName = (id) => U.db.companies[id]?.name || "Company";
   const majorName = (id) => U.db.university.majors[id]?.name || "Not specified";
@@ -164,6 +166,13 @@
   function collegeMark(className = "") {
     return `<span class="college-mark ${className}"><img src="../../assets/yarmouk-college-logo.png" alt="Yarmouk University" width="257" height="70"></span>`;
   }
+  function accountControl() {
+    const initials = U.user.name.split(" ").map((part) => part[0]).slice(0, 2).join("");
+    const profileView = role === "student" ? "profile" : "account";
+    const dark = document.documentElement.dataset.theme === "dark";
+    const appearance = role === "student" ? `<button class="studio-appearance" type="button" data-action="theme" aria-label="${dark ? "Switch to light mode" : "Switch to dark mode"}">${icon(dark ? "sun" : "moon-stars")}</button>` : "";
+    return `<div class="portal-userbar"><div class="studio-header-actions">${appearance}<details class="studio-account portal-account"><summary aria-label="${role === "student" ? "Student account options" : "Account options"}"><span class="studio-avatar" aria-hidden="true">${E(initials)}</span><span class="studio-account-name"><strong>${E(U.user.name)}</strong><small>${E(names[role])}</small></span>${icon("chevron-down")}</summary><nav class="studio-account-menu" aria-label="Account"><p>${E(U.user.email || names[role])}</p><a href="${url(role, profileView)}" ${view === profileView ? 'aria-current="page"' : ""}>${icon("person")}Profile</a><button type="button" data-action="logout">${icon("box-arrow-right")}Sign out</button></nav></details></div></div>`;
+  }
   function studentShell(content, description, action) {
     const shortNames = {
       opportunities: "Explore",
@@ -171,20 +180,14 @@
       tasks: "My tasks",
       progress: "My training",
     };
-    const initials = U.user.name
-      .split(" ")
-      .map((p) => p[0])
-      .slice(0, 2)
-      .join("");
     const heading = view === "progress" ? "My training" : title();
     const kicker =
       view === "opportunities"
         ? "Find your next internship"
         : "Your internship workspace";
-    const dark = document.documentElement.dataset.theme === "dark";
     document.body.classList.add("student-studio");
     document.getElementById("app").innerHTML =
-      `<div class="student-workspace"><main id="main" class="student-main"><header class="studio-top"><a class="studio-brand" href="../home/index.html" aria-label="Bridgeway home"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway" width="112" height="65"></a><nav class="studio-navigation" aria-label="Student workspace">${nav.student
+      `<div class="student-workspace"><main id="main" class="student-main"><div class="studio-tools"><a class="studio-brand" href="../home/index.html" aria-label="Yarmouk University home"><img src="../../assets/yarmouk-logo-on-light.svg" alt="Yarmouk University" width="112" height="48"></a><nav class="studio-navigation" aria-label="Student workspace">${nav.student
         .filter(([key]) => key !== "profile")
         .map(
           ([key, label, ic]) =>
@@ -192,7 +195,7 @@
         )
         .join(
           "",
-        )}</nav><div class="studio-header-actions"><button class="studio-appearance" type="button" data-action="theme" aria-label="${dark ? "Switch to light mode" : "Switch to dark mode"}">${icon(dark ? "sun" : "moon-stars")}</button><details class="studio-account"><summary aria-label="Student account options"><span class="studio-avatar">${E(initials)}</span><span class="studio-account-name">${E(U.user.name)}</span>${icon("chevron-down")}</summary><nav class="studio-account-menu" aria-label="Student account"><p>Student account</p><a href="${url("student", "profile")}" ${view === "profile" ? 'aria-current="page"' : ""}>${icon("person")}My profile</a><button type="button" data-action="logout">${icon("box-arrow-right")}Sign out</button></nav></details></div></header><header class="studio-welcome"><div><p class="studio-kicker">${E(kicker)}</p><h1>${E(heading)}</h1><p>${E(description)}</p></div><div class="studio-welcome-actions">${action}<div class="studio-collaboration"><span>In collaboration with</span>${collegeMark()}</div></div></header>${content}</main></div>`;
+        )}</nav>${accountControl()}</div><header class="studio-welcome"><div><p class="studio-kicker">${E(kicker)}</p><h1>${E(heading)}</h1><p>${E(description)}</p></div><div class="studio-welcome-actions">${action}</div></header>${content}</main></div>`;
     document.getElementById("app").removeAttribute("aria-busy");
   }
   function shell(content, description = "", action = "") {
@@ -201,7 +204,7 @@
       return;
     }
     document.getElementById("app").innerHTML =
-      `<div class="workspace"><div class="sidebar-rail"><aside id="portal-navigation" class="sidebar" aria-label="${E(names[role])} navigation"><header class="sidebar-header"><a href="../home/index.html" aria-label="Bridgeway home"><img class="sidebar-logo" src="../../assets/bridgeway-logo.svg" alt="Bridgeway"></a><button type="button" class="sidebar-toggle" aria-label="Expand navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("chevron-right")}</button></header><nav>${nav[
+      `<div class="workspace"><div class="sidebar-rail"><aside id="portal-navigation" class="sidebar" aria-label="${E(names[role])} navigation"><header class="sidebar-header"><a href="../home/index.html" aria-label="Yarmouk University home"><img class="sidebar-logo" src="../../assets/yarmouk-logo-on-light.svg" alt="Yarmouk University" width="170" height="59"></a><button type="button" class="sidebar-toggle" aria-label="Expand navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("chevron-right")}</button></header><nav aria-label="Workspace pages"><span class="sidebar-section-label">Workspace</span>${nav[
         role
       ]
         .filter(([key]) => key !== "account")
@@ -211,30 +214,25 @@
         )
         .join(
           "",
-        )}</nav><div class="sidebar-bottom"><button class="sidebar-pin" type="button" role="switch" aria-checked="false"><span>Keep sidebar open</span><span class="sidebar-pin-track" aria-hidden="true"></span></button><a class="sidebar-profile ${view === "account" ? "active" : ""}" href="${url(role, "account")}" aria-label="Profile" title="Profile">${icon("person-circle")}<span>Profile</span></a><button type="button" data-action="theme" aria-label="Change appearance" title="Change appearance">${icon("moon-stars")}<span>Dark / light mode</span></button><button type="button" data-action="logout" aria-label="Log out" title="Log out">${icon("box-arrow-right")}<span>Log out</span></button></div></aside></div><main class="workspace-main" id="main"><header class="topbar"><button class="ui-button mobile-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("list")}</button><div class="breadcrumb">Workspace <span>/</span> ${E(names[role])}</div><div class="portal-header-identity">${collegeMark("portal-college-mark")}<a class="viewer" href="${url(role, "account")}"><span class="avatar">${E(
-        U.user.name
-          .split(" ")
-          .map((x) => x[0])
-          .slice(0, 2)
-          .join(""),
-      )}</span><span>${E(U.user.name)}</span></a></div></header><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div>${content}</main></div>`;
+        )}</nav><div class="sidebar-bottom"><span class="sidebar-section-label">Account</span><button class="sidebar-pin" type="button" role="switch" aria-checked="false"><span>Keep sidebar open</span><span class="sidebar-pin-track" aria-hidden="true"></span></button><a class="sidebar-profile ${view === "account" ? "active" : ""}" ${view === "account" ? 'aria-current="page"' : ""} href="${url(role, "account")}" aria-label="Profile" title="Profile">${icon("person-circle")}<span class="sidebar-profile-copy"><strong>${E(U.user.name)}</strong><small>View profile</small></span></a><button type="button" data-action="theme" aria-label="Change appearance" title="Change appearance">${icon("moon-stars")}<span>Dark / light mode</span></button><button type="button" data-action="logout" aria-label="Log out" title="Log out">${icon("box-arrow-right")}<span>Log out</span></button></div></aside></div><main class="workspace-main" id="main">${accountControl()}<button class="ui-button mobile-toggle portal-menu-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("list")}<span>Menu</span></button><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div>${content}</main></div>`;
     document.getElementById("app").removeAttribute("aria-busy");
-    window.BridgewayChrome?.mountSidebar();
+    window.YarmoukChrome?.mountSidebar();
   }
   function publicShell(content) {
+    const navigation = view === "first-login" ? "" : `<header class="public-header"><a href="../home/index.html"><img src="../../assets/yarmouk-logo.svg" alt="Yarmouk University home"></a><nav aria-label="Main navigation"><a href="../home/index.html">Home</a><a href="../about/about.html">About Us</a><a href="../contact/contact.html">Contact Us</a><a class="ui-button primary" href="../login/login.html">Log in</a></nav></header>`;
     document.getElementById("app").innerHTML =
-      `<header class="public-header"><a href="../home/index.html"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway home"></a><nav aria-label="Main navigation"><a href="../home/index.html">Home</a><a href="../about/about.html">About Us</a><a href="../contact/contact.html">Contact Us</a><a class="ui-button primary" href="../login/login.html">Log in</a></nav></header><main class="public-main" id="main">${content}</main>`;
+      `${navigation}<main class="public-main" id="main">${content}</main>`;
   }
   function publicPage() {
     if (view === "about") {
       publicShell(
-        `<div class="public-collaboration">${collegeMark()}<span class="partner">BRIDGEWAY × YARMOUK UNIVERSITY</span></div><h1>Your learning. Put into practice.</h1><p class="lead">Bridgeway connects Yarmouk University's Faculty of Information Technology and Computer Science with company supervisors, academic supervisors and the university internship coordinator. Follow your internship from your first application to your completion certificate.</p><div class="two-columns section-space">${card(
+        `<div class="public-identity">${collegeMark()}<span class="partner">YARMOUK UNIVERSITY</span></div><h1>Your learning. Put into practice.</h1><p class="lead">This internship management system connects the university's Faculty of Information Technology and Computer Science with company supervisors, academic supervisors and the university internship coordinator. Follow your internship from your first application to your completion certificate.</p><div class="two-columns section-space">${card(
           "One faculty. Six paths.",
           `<ul class="activity-list">${Object.values(U.db.university.majors)
             .map((m) => `<li>${E(m.name)}</li>`)
             .join("")}</ul>`,
           "mortarboard",
-        )}${card("Built around your internship", `<ul class="activity-list"><li><strong>Find your opportunity</strong>Explore roles suited to your college and major.</li><li><strong>Confirm your place</strong>Companies decide on applications. You confirm one accepted offer.</li><li><strong>Learn through the work</strong>Submit tasks, respond to feedback and track verified hours.</li><li><strong>Complete your internship</strong>Your coordinator reviews the requirements and releases your certificate.</li></ul>`, "signpost-split")}</div><section id="process" class="section-space"><h2>How your internship works</h2><p class="muted section-space">From application to completion, see each step in the process.</p><video class="process-video section-space" controls playsinline preload="metadata" poster="../../assets/process-poster.jpg"><source src="../../assets/internship-process.mp4" type="video/mp4"><track kind="captions" src="../../assets/internship-process.vtt" srclang="en" label="English" default></video></section>`,
+        )}${card("Built around your internship", `<ul class="activity-list"><li><strong>Find your opportunity</strong>Explore roles suited to your college and major.</li><li><strong>Confirm your place</strong>Companies decide on applications. You confirm one accepted offer.</li><li><strong>Learn through the work</strong>Submit tasks, respond to feedback and track verified hours.</li><li><strong>Complete your internship</strong>Your coordinator reviews the requirements and releases your certificate.</li></ul>`, "signpost-split")}</div><section id="process" class="section-space"><h2>How your internship works</h2><p class="muted section-space">From application to completion, see each step in the process.</p><video class="process-video section-space" controls playsinline preload="metadata" poster="../../assets/yarmouk-journey-poster.webp"><source src="../../assets/yarmouk-journey.webm" type="video/webm"><track kind="captions" src="../../assets/yarmouk-journey.vtt" srclang="en" label="English" default></video></section>`,
       );
     } else if (view === "contact") {
       publicShell(
@@ -424,7 +422,7 @@
         o.deadline >= new Date().toISOString().slice(0, 10) &&
         o.majorIds.includes(U.user.majorId),
     );
-    window.BridgewayOpportunityShowcase(host, {
+    window.YarmoukOpportunityShowcase(host, {
       opportunities: ops,
       U,
       E,
@@ -445,10 +443,14 @@
       ? `<section class="completion">${icon("mortarboard")}<h2>Internship completed.</h2><p>${E(c.message)}</p><p>Approved on ${stamp(c.approvedAt)} · ${E(companyName(p.companyId))}</p><div class="actions">${button("View certificate", "certificate", p.id, true)}${button("Download PDF", "download-certificate", p.id)}</div></section>`
       : "";
   }
+  function passwordChangeForm() {
+    const passwordField = (label, name, autocomplete, extra = "") => `<div class="field${name === "currentPassword" ? " full" : ""}"><label for="profile-${name}">${label}</label><div class="password-control"><input class="ui-input" id="profile-${name}" name="${name}" type="password" autocomplete="${autocomplete}" aria-describedby="${name}-error${name === "newPassword" ? " newPasswordHelp" : ""}" required ${extra}><button class="password-toggle" type="button" data-action="password-visibility" data-id="profile-${name}" aria-controls="profile-${name}" aria-label="Show ${label.toLowerCase()}" aria-pressed="false">Show</button></div>${name === "newPassword" ? '<p class="password-field-hint" id="newPasswordHelp">At least 8 characters; different from your current password.</p>' : ""}<p class="password-field-error" id="${name}-error" aria-live="polite"></p></div>`;
+    return `<details class="card-surface profile-password"><summary><span class="password-section-icon">${icon("key")}</span><span class="password-summary-copy"><span id="passwordChangeTitle">Change password</span><small>Manage your account password</small></span>${icon("chevron-down")}</summary><div class="password-section-body"><p class="help-text" id="passwordChangeHelp">Password updates require account authentication, which is not connected yet. This form checks your entries only.</p><form data-form="change-password" aria-describedby="passwordChangeHelp"><div class="form-grid">${passwordField("Current password", "currentPassword", "current-password")}${passwordField("New password", "newPassword", "new-password", 'minlength="8"')}${passwordField("Confirm new password", "confirmPassword", "new-password", 'minlength="8"')}</div><p class="form-error" role="alert"></p><p class="password-form-status help-text" role="status" aria-live="polite"></p><div class="form-footer"><button class="ui-button primary" type="submit">Change password</button><button class="ui-button password-cancel" type="button" data-action="password-cancel">Cancel</button></div></form></div></details>`;
+  }
   function profileForm() {
     const u = U.user,
       group = U.db.groups[u.groupId];
-    return `<div class="two-columns">${card(role === "student" ? "Academic information" : "Account information", `<dl class="detail-list"><div><dt>Role</dt><dd>${E(names[u.role])}</dd></div><div><dt>Email address</dt><dd>${E(u.email)}</dd></div>${role === "student" ? `<div><dt>University / college</dt><dd>Yarmouk University<br>${E(U.db.university.college)}</dd></div><div><dt>Student number / major</dt><dd>${E(u.studentNumber)} · ${E(majorName(u.majorId))}</dd></div><div><dt>Academic group / supervisor</dt><dd>${E(group?.name)} · ${E(userName(group?.supervisorId))}</dd></div><div><dt>Required training hours</dt><dd>${u.requiredHours} · ${E(u.term)} term</dd></div>` : role === "company" ? `<div><dt>Company</dt><dd>${E(companyName(u.companyId))}</dd></div>` : ""}<div><dt>Account status</dt><dd>${status(u.status)}</dd></div></dl>`, "person-badge")}${card("Personal information", form("profile", field("Full name", "name", u.name) + field("Phone number", "phone", u.phone, "tel", "", false) + (role === "student" ? field("CV link", "cvLink", u.cvLink, "url", "", false) + field("Portfolio link", "portfolioLink", u.portfolioLink, "url", "", false) + field("Portfolio file (up to 1 MB)", "portfolioFile", "", "file", 'accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"', false) + attachment(u.portfolioFile) : role === "company" ? field("Job title", "jobTitle", u.jobTitle, "text", "", false) : ""), "Save information", "", "Changes and selected files are retained in this browser session. No server upload occurs."))}</div>`;
+    return `<div class="two-columns profile-layout">${card(role === "student" ? "Academic information" : "Account information", `<dl class="detail-list"><div><dt>Role</dt><dd>${E(names[u.role])}</dd></div><div><dt>Email address</dt><dd>${E(u.email)}</dd></div>${role === "student" ? `<div><dt>University / college</dt><dd>Yarmouk University<br>${E(U.db.university.college)}</dd></div><div><dt>Student number / major</dt><dd>${E(u.studentNumber)} · ${E(majorName(u.majorId))}</dd></div><div><dt>Academic group / supervisor</dt><dd>${E(group?.name)} · ${E(userName(group?.supervisorId))}</dd></div><div><dt>Required training hours</dt><dd>${u.requiredHours} · ${E(u.term)} term</dd></div>` : role === "company" ? `<div><dt>Company</dt><dd>${E(companyName(u.companyId))}</dd></div>` : ""}<div><dt>Account status</dt><dd>${status(u.status)}</dd></div></dl>`, "person-badge")}<div class="profile-edit-column">${card("Personal information", form("profile", field("Full name", "name", u.name) + field("Phone number", "phone", u.phone, "tel", "", false) + (role === "student" ? field("CV link", "cvLink", u.cvLink, "url", "", false) + field("Portfolio link", "portfolioLink", u.portfolioLink, "url", "", false) + field("Portfolio file (up to 1 MB)", "portfolioFile", "", "file", 'accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"', false) + attachment(u.portfolioFile) : role === "company" ? field("Job title", "jobTitle", u.jobTitle, "text", "", false) : ""), "Save information", "", "Changes and selected files are retained in this browser session. No server upload occurs."))}${passwordChangeForm()}</div></div>`;
   }
   function companyPage() {
     const ops = U.all("opportunities").filter(
@@ -610,6 +612,66 @@
       `<div class="two-columns">${card("Training details", `<dl class="detail-list"><div><dt>Student / major</dt><dd>${E(s.name)} · ${E(majorName(s.majorId))}</dd></div><div><dt>Company / company supervisor</dt><dd>${E(companyName(p.companyId))} · ${E(userName(p.companySupervisorId))}</dd></div><div><dt>Academic group / supervisor</dt><dd>${E(group?.name)} · ${E(userName(group?.supervisorId))}</dd></div><div><dt>Training period</dt><dd>${date(p.startDate)} – ${date(p.endDate)}</dd></div></dl>${role === "company" && p.status !== "Completed" ? `<div class="actions">${button("Record training hours", "record-hours", p.id, true)}</div>` : ""}`)}${card("Academic feedback", comments(p.id) + (role === "supervisor" && p.status !== "Completed" ? `<div class="actions">${button("Add academic comment", "academic-comment", p.id, true)}</div>` : ""))}</div><div class="section-space">${card("Tasks, submissions & evaluations", tasksTable(tasks))}</div><div class="section-space">${card("Training hours", hoursTable(p))}</div>`
     );
   }
+  function studentReportWorkspace(students, placements) {
+    const requested = params.get("student") || placements.find((entry) => entry.id === params.get("placement"))?.studentId;
+    const selected = students.find((student) => student.id === requested);
+    const placement = selected ? placements.find((entry) => entry.studentId === selected.id && entry.id === params.get("placement")) || placements.find((entry) => entry.studentId === selected.id) : null;
+    const query = monitorStudentQuery.trim().toLowerCase();
+    const roster = students.map((student) => {
+      const entry = placements.find((placement) => placement.studentId === student.id);
+      const search = `${student.name} ${student.studentNumber || ""} ${entry ? companyName(entry.companyId) : ""}`.toLowerCase();
+      const pending = entry ? U.all("hourEntries").filter((hour) => hour.placementId === entry.id && hour.status === "Pending").length : 0;
+      return `<button type="button" class="report-student-button" data-action="monitor-student" data-id="${E(student.id)}" data-student-search="${E(search)}" aria-pressed="${selected?.id === student.id}" aria-controls="supervisorReportDetail" ${query && !search.includes(query) ? "hidden" : ""}><strong>${E(student.name)}</strong><span>${E(student.studentNumber || "Student")} · ${E(entry ? companyName(entry.companyId) : "No confirmed internship")}</span><small>${pending ? `${pending} ${pending === 1 ? "entry" : "entries"} to review` : entry ? `${U.approvedHours(entry.id)} / ${student.requiredHours} approved hours · ${E(entry.status)}` : "Awaiting placement"}</small></button>`;
+    }).join("");
+    const matches = students.filter((student) => {
+      const entry = placements.find((placement) => placement.studentId === student.id);
+      return `${student.name} ${student.studentNumber || ""} ${entry ? companyName(entry.companyId) : ""}`.toLowerCase().includes(query);
+    }).length;
+    return `<div class="supervisor-report-workspace"><section class="report-student-directory" aria-labelledby="reportDirectoryTitle"><h2 id="reportDirectoryTitle">Assigned students</h2><p>Company-submitted weekly reports</p><label for="supervisorReportSearch">Find a student</label><input class="ui-input" type="search" id="supervisorReportSearch" placeholder="Name, student ID, or company" value="${E(monitorStudentQuery)}"><p id="supervisorReportCount" class="report-student-count" role="status">${matches} of ${students.length} assigned students</p><div class="report-student-list">${roster}</div><p id="supervisorReportEmpty" ${matches ? "hidden" : ""}>No matching students. Try another name, ID, or company.</p></section><div id="supervisorReportDetail" class="report-student-detail">${selected ? `<button type="button" class="ui-button report-change-student" data-action="monitor-change-student">${icon("arrow-left")}Change student</button>${placement ? weeklyMonitor(placement) : empty("No confirmed internship", `${selected.name} has not confirmed an internship yet. Weekly reports will appear after placement.`)}` : `<section class="report-selection-prompt">${icon("journal-text")}<h2>Select a student</h2><p>Choose an assigned student to review their weekly reports, training hours, and submitted work.</p></section>`}</div></div>`;
+  }
+  function filterReportStudents(input) {
+    monitorStudentQuery = input.value;
+    const query = input.value.trim().toLowerCase();
+    let count = 0;
+    const buttons = document.querySelectorAll(".report-student-button");
+    buttons.forEach((button) => {
+      button.hidden = !button.dataset.studentSearch.includes(query);
+      if (!button.hidden) count++;
+    });
+    document.getElementById("supervisorReportCount").textContent = `${count} of ${buttons.length} assigned students`;
+    document.getElementById("supervisorReportEmpty").hidden = count > 0;
+  }
+  function weeklyMonitor(p) {
+    const student = U.db.users[p.studentId], group = U.db.groups[student.groupId];
+    const day = 86400000, start = Date.parse(p.startDate + "T00:00:00Z"), end = Date.parse(p.endDate + "T00:00:00Z");
+    const iso = (time) => new Date(time).toISOString().slice(0, 10);
+    const allHours = U.all("hourEntries").filter((h) => h.placementId === p.id);
+    const tasks = U.all("tasks").filter((t) => t.placementId === p.id);
+    const submissions = U.all("submissions").filter((entry) => tasks.some((t) => t.id === entry.taskId));
+    const weekCount = Math.max(1, Math.ceil(((end - start) / day + 1) / 7));
+    const weeks = Array.from({ length: weekCount }, (_, index) => {
+      const from = iso(start + index * 7 * day), to = iso(Math.min(end, start + (index * 7 + 6) * day));
+      const hours = allHours.filter((h) => h.date >= from && h.date <= to);
+      const current = hours.filter((h) => !allHours.some((next) => next.replacesId === h.id));
+      const pending = current.filter((h) => h.status === "Pending").length;
+      const approved = current.filter((h) => h.status === "Approved").reduce((sum, h) => sum + Number(h.hours), 0);
+      const total = current.filter((h) => h.status !== "Returned").reduce((sum, h) => sum + Number(h.hours), 0);
+      const label = pending ? "Pending review" : current.some((h) => h.status === "Returned") ? "Returned" : current.length && current.every((h) => h.status === "Approved") ? "Approved" : from > iso(Date.now()) ? "Upcoming" : "No hours recorded";
+      return { number: index + 1, from, to, hours, pending, approved, total, label };
+    });
+    const latest = [...allHours].sort((a, b) => b.date.localeCompare(a.date));
+    const focusDate = latest.find((h) => h.status === "Pending")?.date || latest[0]?.date || iso(Date.now());
+    const defaultWeek = Math.floor((Date.parse(focusDate + "T00:00:00Z") - start) / (7 * day)) + 1;
+    const chosen = Math.min(weekCount, Math.max(1, Math.trunc(Number(params.get("week")) || defaultWeek)));
+    const week = weeks[chosen - 1];
+    const weeklySubmissions = submissions.filter((entry) => entry.createdAt?.slice(0, 10) >= week.from && entry.createdAt.slice(0, 10) <= week.to);
+    const weeklyTasks = tasks.filter((t) => (t.deadline >= week.from && t.deadline <= week.to) || weeklySubmissions.some((entry) => entry.taskId === t.id));
+    const approvedHours = U.approvedHours(p.id);
+    return `<section class="weekly-monitor" aria-label="Weekly student report monitor"><header class="monitor-student"><div><p class="monitor-eyebrow">${E(companyName(p.companyId))}</p><h2>${E(student.name)}</h2><p>${E(majorName(student.majorId))} · ${E(group?.name)}</p></div><div class="monitor-hours"><strong>${approvedHours}<span> / ${E(student.requiredHours)} h</span></strong><progress value="${approvedHours}" max="${E(student.requiredHours)}" aria-label="Approved training hours"></progress><small>Academic-approved hours · ${E(p.status)}</small></div></header><nav class="monitor-weeks" aria-label="Training weeks">${weeks.map((w) => `<button type="button" class="monitor-week ${w.label === "Approved" ? "is-approved" : ""}" data-action="monitor-week" data-id="${w.number}" aria-pressed="${w.number === chosen}" aria-controls="selected-week-report"><span>Week ${w.number}</span><small>${E(w.label)}</small></button>`).join("")}</nav><section id="selected-week-report" class="monitor-week-report" aria-labelledby="selected-week-heading"><header class="monitor-week-heading"><div><p class="monitor-eyebrow">Weekly report</p><h2 id="selected-week-heading">Week ${chosen} <span>· ${date(week.from)} – ${date(week.to)}</span></h2><p>${week.total} recorded hours · ${week.approved} approved · ${weeklySubmissions.length} work submission${weeklySubmissions.length === 1 ? "" : "s"}</p></div>${status(week.label)}</header>${p.status === "Completed" ? '<p class="monitor-readonly">This internship is completed. Its training record is read-only.</p>' : ""}<div class="monitor-report-columns"><div><section class="monitor-report-section"><h3>Company report & training hours</h3><p class="muted">Company-recorded work for this week. Academic verification applies to each dated hours entry.</p>${week.hours.length ? week.hours.slice().sort((a, b) => a.date.localeCompare(b.date)).map((entry) => `<article class="monitor-hour-entry"><header><strong>${date(entry.date)}</strong><div><span>${E(entry.hours)} hours</span>${status(entry.status)}</div></header><p class="pre-wrap">${E(entry.description)}</p>${entry.replacesId ? '<small>Corrected entry · the original record is retained in history.</small>' : ""}${entry.reviewNote ? `<p class="monitor-hour-note"><strong>Academic review</strong><br>${E(entry.reviewNote)}</p>` : ""}${entry.reviewedAt ? `<small>Reviewed ${stamp(entry.reviewedAt)}</small>` : ""}${entry.status === "Pending" && p.status !== "Completed" ? `<div class="actions">${button("Verify hours", "review-hours", entry.id)}</div>` : ""}</article>`).join("") : '<div class="monitor-empty"><span class="monitor-empty-icon">' + icon("journal-text") + '</span><h4>No training hours recorded for this week</h4><p>The company supervisor’s dated work descriptions and hours will appear here.</p></div>'}</section><section class="monitor-report-section"><h3>Assigned work & submissions</h3><p class="muted">Tasks due or work submitted during this week. Task grades and revisions are managed by the company supervisor.</p>${weeklyTasks.length ? weeklyTasks.map((task) => {
+      const entries = weeklySubmissions.filter((entry) => entry.taskId === task.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      return `<article class="monitor-work"><div class="monitor-work-heading"><div><h4>${E(task.title)}</h4><small>${E(task.kind)} · Due ${date(task.deadline)}</small></div>${button("View work & history", "task", task.id)}</div><p>${E(task.description)}</p>${entries.map((entry) => `<div class="monitor-submission"><strong>Submitted ${stamp(entry.createdAt)}</strong>${status(entry.status)}<p class="pre-wrap">${E(entry.description)}</p>${external(entry.link, "Open submitted work")}${attachment(entry.file)}${entry.review ? `<p><strong>Company feedback</strong></p><p>${E(entry.review.feedback)}</p>` : ""}</div>`).join("")}${!entries.length ? '<p class="muted">No work submitted during this week.</p>' : ""}</article>`;
+    }).join("") : '<p class="monitor-empty-text">No tasks due or work submitted during this week.</p>'}</section></div><aside class="monitor-feedback"><h3>Academic feedback</h3><p class="muted">Comments for this internship are kept here across all weeks.</p>${comments(p.id)}${p.status !== "Completed" ? `<div class="actions">${button("Add academic comment", "academic-comment", p.id, true)}</div>` : ""}<details class="monitor-details"><summary>Training details</summary><dl class="detail-list"><div><dt>Company supervisor</dt><dd>${E(userName(p.companySupervisorId))}</dd></div><div><dt>Academic supervisor</dt><dd>${E(userName(group?.supervisorId))}</dd></div><div><dt>Training period</dt><dd>${date(p.startDate)} – ${date(p.endDate)}</dd></div><div><dt>Training weeks</dt><dd>${weekCount}</dd></div></dl></details></aside></div></section><details class="monitor-all-work"><summary>All assigned work & submission history</summary><div class="section-space">${tasksTable(tasks)}</div></details></section>`;
+  }
   function supervisorPage() {
     const students = assignedStudents(),
       ps = visiblePlacements(),
@@ -658,23 +720,12 @@
       );
     } else if (view === "progress") {
       shell(
-        p
-          ? placementPicker(ps) + placementDetail(p)
-          : empty(
-              "No active internships yet",
-              "Your assigned students appear on the dashboard before they confirm an internship.",
-            ),
-        "Monitor work, feedback, deadlines and approved training hours.",
+        studentReportWorkspace(students, ps),
+        "Review each student’s training week by week: company reports, submitted work, feedback and approved hours.",
       );
     } else if (view === "evaluations") {
       shell(
-        p
-          ? placementPicker(ps) +
-              `<div class="two-columns">${card("Company final evaluation", companyEvaluationView(p))}${card("Final academic evaluation", academicEvaluationView(p))}</div>`
-          : empty(
-              "No internships to evaluate",
-              "Your assigned students must confirm an internship before final evaluation.",
-            ),
+        evaluationWorkspace(students, ps),
         "Review the company evaluation, assess the academic components and send your evaluation to the coordinator.",
       );
     } else if (view === "account")
@@ -682,6 +733,41 @@
         profileForm(),
         "View your account and update permitted personal information.",
       );
+  }
+  function evaluationWorkspace(students, placements) {
+    const requested = params.get("student") || placements.find((p) => p.id === params.get("placement"))?.studentId;
+    const selected = students.find((s) => s.id === requested);
+    const placement = selected && (placements.find((p) => p.studentId === selected.id && p.id === params.get("placement")) || placements.find((p) => p.studentId === selected.id));
+    const query = evaluationStudentQuery.trim().toLowerCase();
+    let matches = 0;
+    const roster = students.map((s) => {
+      const p = placements.find((entry) => entry.studentId === s.id);
+      const search = `${s.name} ${s.studentNumber || ""} ${p ? companyName(p.companyId) : ""}`.toLowerCase();
+      const visible = !query || search.includes(query);
+      if (visible) matches++;
+      const state = !p ? "Awaiting placement" : U.db.academicEvaluations[p.id] ? "Sent to coordinator" : U.db.companyEvaluations[p.id] ? "Ready for academic evaluation" : "Awaiting company evaluation";
+      return `<button type="button" class="report-student-button" data-action="evaluation-student" data-id="${E(s.id)}" data-evaluation-search="${E(search)}" aria-pressed="${selected?.id === s.id}" aria-controls="evaluationDetail" ${visible ? "" : "hidden"}><strong>${E(s.name)}</strong><span>${E(s.studentNumber || "Student")} · ${E(p ? companyName(p.companyId) : majorName(s.majorId))}</span><small>${state}</small></button>`;
+    }).join("");
+    return `<div class="supervisor-report-workspace evaluation-workspace"><section class="report-student-directory" aria-labelledby="evaluationDirectoryTitle"><h2 id="evaluationDirectoryTitle">Assigned students</h2><p>Final internship evaluations</p><label for="supervisorEvaluationSearch">Find a student</label><input class="ui-input" type="search" id="supervisorEvaluationSearch" placeholder="Name, student ID, or company" value="${E(evaluationStudentQuery)}"><p id="supervisorEvaluationCount" class="report-student-count" role="status">${matches} of ${students.length} assigned students</p><div class="report-student-list">${roster}</div><p id="supervisorEvaluationEmpty" ${matches ? "hidden" : ""}>${students.length ? "No matching students. Try another name, ID, or company." : "No students are assigned to your academic groups yet."}</p></section><div id="evaluationDetail" class="report-student-detail">${selected ? `<button class="ui-button report-change-student" type="button" data-action="evaluation-clear">${icon("arrow-left")}Change student</button>${placement ? evaluationDetail(placement) : empty("No confirmed internship", `${selected.name} must confirm an internship before final evaluation.`)}` : `<section class="report-selection-prompt">${icon("clipboard-check")}<h2>Select a student</h2><p>Choose an assigned student to review the company assessment and prepare a separate final academic evaluation for the coordinator.</p></section>`}</div></div>`;
+  }
+  function evaluationDetail(p) {
+    const s = U.db.users[p.studentId], company = U.db.companyEvaluations[p.id], academic = U.db.academicEvaluations[p.id];
+    const state = p.status === "Completed" ? "Completed" : academic ? "Sent to coordinator" : company ? "Academic evaluation required" : "Awaiting company evaluation";
+    return `<section class="card-surface evaluation-detail"><header class="evaluation-detail-heading"><div><p class="muted">Final internship evaluation</p><h2>${E(s.name)}</h2><p class="muted">${E(s.studentNumber)} · ${E(majorName(s.majorId))}</p></div>${status(state)}</header><dl class="evaluation-metadata"><div><dt>Host company</dt><dd>${E(companyName(p.companyId))}</dd></div><div><dt>Company supervisor</dt><dd>${E(userName(p.companySupervisorId))}</dd></div><div><dt>Training period</dt><dd>${date(p.startDate)} – ${date(p.endDate)}</dd></div><div><dt>Approved hours</dt><dd>${U.approvedHours(p.id)} / ${E(s.requiredHours)}</dd></div></dl><p class="help-text">Staff-only assessment. Students see task feedback and training progress; coordinator approval releases their completion message and certificate.</p><h3>Company final evaluation</h3><p class="muted">Read-only assessment from the company supervisor · 20% of the final result</p>${company ? `<p class="evaluation-submitted">${status("Sent")} ${stamp(company.sentAt)} · ${E(userName(company.authorId))}</p><div class="evaluation-radar-workspace">${evaluationRadar(company.scores)}<div><h4>Assessment scores</h4><p class="muted">Each criterion is scored from 0 to 5.</p>${table(["Criterion", "Score"], ["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"].map((label, i) => [E(label), `${company.scores[i]} / 5`]))}<p class="evaluation-total">Company component <strong>${company.total} / 20</strong></p></div></div><h4>Company comments</h4><p class="pre-wrap">${E(company.comments)}</p>` : `<div class="evaluation-pending">${icon("hourglass-split")}<h4>Evaluation not submitted</h4><p>The company supervisor has not sent the final evaluation yet. Scores and comments will appear here after submission.</p></div>`}</section><section class="card-surface evaluation-academic"><h2>Final academic evaluation</h2><p class="muted">Your separate assessment is sent to the university internship coordinator.</p>${academicEvaluationView(p)}</section>`;
+  }
+  function evaluationRadar(scores) {
+    const point = (i, radius) => [180 + Math.sin(i * Math.PI / 2) * radius, 160 - Math.cos(i * Math.PI / 2) * radius];
+    const polygon = (radius) => scores.map((_, i) => point(i, radius).join(",")).join(" ");
+    return `<figure class="evaluation-radar"><figcaption>Evaluation at a glance</figcaption><svg viewBox="0 0 360 320" role="img" aria-label="Company evaluation radar chart. Exact scores are listed in the adjacent assessment table.">${[1, 2, 3, 4, 5].map((level) => `<polygon class="radar-grid" points="${polygon(level * 20)}"/>`).join("")}${scores.map((_, i) => { const [x, y] = point(i, 100); return `<line class="radar-grid" x1="180" y1="160" x2="${x}" y2="${y}"/>`; }).join("")}<polygon class="radar-shape" points="${scores.map((score, i) => point(i, score * 20).join(",")).join(" ")}"/>${scores.map((score, i) => { const [x, y] = point(i, score * 20); return `<circle class="radar-dot" cx="${x}" cy="${y}" r="4"><title>${E(["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"][i])}: ${score} / 5</title></circle>`; }).join("")}<text x="180" y="38" text-anchor="middle">Technical</text><text x="292" y="164">Conduct</text><text x="180" y="292" text-anchor="middle">Teamwork</text><text x="68" y="164" text-anchor="end">Attendance</text></svg><p class="muted">Company-submitted scores · Each axis is out of 5.</p></figure>`;
+  }
+  function filterEvaluationStudents(input) {
+    evaluationStudentQuery = input.value;
+    const query = input.value.trim().toLowerCase();
+    let count = 0;
+    const buttons = document.querySelectorAll("[data-evaluation-search]");
+    buttons.forEach((button) => { button.hidden = !button.dataset.evaluationSearch.includes(query); if (!button.hidden) count++; });
+    document.getElementById("supervisorEvaluationCount").textContent = `${count} of ${buttons.length} assigned students`;
+    document.getElementById("supervisorEvaluationEmpty").hidden = count > 0;
   }
   function companyEvaluationView(p) {
     const ev = U.db.companyEvaluations[p.id];
@@ -705,6 +791,11 @@
       return '<p class="muted">The academic supervisor has not sent the final academic evaluation yet.</p>';
     if (!U.db.companyEvaluations[p.id])
       return '<p class="muted">Wait for the company’s final evaluation before preparing your academic evaluation.</p>';
+    if (p.status === "Completed")
+      return '<p class="muted">This completed internship is read-only.</p>';
+    const finalReport = U.all("tasks").find((t) => t.placementId === p.id && t.kind === "Final report");
+    if (!finalReport || U.taskState(finalReport.id) !== "Evaluated")
+      return `<p class="help-text">The student’s final report must be submitted and reviewed by the company before you can send your academic evaluation.</p><div class="actions">${link("Review training record", "supervisor", "progress", "?placement=" + p.id)}</div>`;
     return form(
       "academic-evaluation",
       field(
@@ -1138,6 +1229,34 @@
           el.reset();
           location.href = url(U.user.role, "dashboard");
           return;
+        case "change-password": {
+          if (!U.user || U.user.role !== role) throw Error("Sign in to manage your account.");
+          // Read exact input values: whitespace can be part of a password.
+          const currentPassword = String(f.get("currentPassword") || "");
+          const newPassword = String(f.get("newPassword") || "");
+          const confirmPassword = String(f.get("confirmPassword") || "");
+          el.querySelector(".password-form-status").textContent = "";
+          let invalidField, message;
+          if (!currentPassword) { invalidField = "currentPassword"; message = "Enter your current password."; }
+          else if (newPassword.length < 8) { invalidField = "newPassword"; message = "Use at least 8 characters for your new password."; }
+          else if (newPassword === currentPassword) { invalidField = "newPassword"; message = "Choose a new password different from your current password."; }
+          else if (newPassword !== confirmPassword) { invalidField = "confirmPassword"; message = "The new passwords do not match."; }
+          if (invalidField) {
+            el.elements[invalidField].setAttribute("aria-invalid", "true");
+            document.getElementById(invalidField + "-error").textContent = message;
+            el.elements[invalidField].focus();
+            throw Error(message);
+          }
+          el.reset();
+          el.querySelectorAll(".password-control input").forEach((input) => input.type = "password");
+          el.querySelectorAll(".password-toggle").forEach((toggle) => {
+            toggle.textContent = "Show";
+            toggle.setAttribute("aria-pressed", "false");
+            toggle.setAttribute("aria-label", "Show " + el.querySelector(`label[for="${toggle.dataset.id}"]`).textContent.toLowerCase());
+          });
+          el.querySelector(".password-form-status").textContent = "Your entries match. Your password has not changed; account authentication is not connected. The fields have been cleared.";
+          return;
+        }
         case "profile": {
           const data = { name: get("name"), phone: get("phone") };
           if (role === "student") {
@@ -1288,6 +1407,22 @@
         case "close":
           close();
           break;
+        case "password-cancel": {
+          const details = el.closest(".profile-password");
+          details.open = false;
+          details.querySelector("summary").focus();
+          break;
+        }
+        case "password-visibility": {
+          const input = document.getElementById(id);
+          if (!input || !input.closest('[data-form="change-password"]')) return;
+          const show = input.type === "password";
+          input.type = show ? "text" : "password";
+          el.textContent = show ? "Hide" : "Show";
+          el.setAttribute("aria-pressed", String(show));
+          el.setAttribute("aria-label", `${show ? "Hide" : "Show"} ${document.querySelector(`label[for="${id}"]`).textContent.toLowerCase()}`);
+          break;
+        }
         case "logout":
           U.signOut();
           break;
@@ -1297,12 +1432,49 @@
               ? "light"
               : "dark";
           document.documentElement.dataset.theme = next;
-          localStorage.setItem("bridgeway:portal-theme", next);
-          window.BridgewayChrome?.syncTheme();
+          localStorage.setItem("yarmouk:portal-theme", next);
+          window.YarmoukChrome?.syncTheme();
+          break;
+        }
+        case "evaluation-student":
+        case "monitor-student": {
+          U.require("supervisor");
+          const student = assignedStudents().find((entry) => entry.id === id);
+          if (!student) throw Error("This student is not assigned to you.");
+          params.set("student", id);
+          params.delete("week");
+          const placement = visiblePlacements().find((entry) => entry.studentId === id);
+          if (placement) params.set("placement", placement.id);
+          else params.delete("placement");
+          history.replaceState(null, "", "?" + params.toString());
+          render();
+          document.querySelector(`.report-student-button[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+          if (matchMedia("(max-width: 960px)").matches)
+            document.getElementById(view === "evaluations" ? "evaluationDetail" : "supervisorReportDetail")?.scrollIntoView({ block: "start" });
+          break;
+        }
+        case "evaluation-clear":
+        case "monitor-change-student": {
+          params.delete("student");
+          params.delete("placement");
+          params.delete("week");
+          history.replaceState(null, "", location.pathname + (params.size ? "?" + params.toString() : ""));
+          render();
+          document.getElementById(view === "evaluations" ? "supervisorEvaluationSearch" : "supervisorReportSearch")?.focus();
+          break;
+        }
+        case "monitor-week": {
+          U.require("supervisor");
+          params.set("week", String(id));
+          const selectedPlacement = selection();
+          if (selectedPlacement) params.set("placement", selectedPlacement.id);
+          history.replaceState(null, "", "?" + params.toString());
+          render();
+          document.querySelector(`.monitor-week[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
           break;
         }
         case "menu": {
-          window.BridgewayChrome?.toggleMobile();
+          window.YarmoukChrome?.toggleMobile();
           break;
         }
         case "opportunity": {
@@ -1674,7 +1846,7 @@
     const { c, p, s } = certificateData(pid);
     modal(
       "Internship Completion Certificate",
-      `<div class="certificate-sheet"><div class="certificate-brand-row"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway">${collegeMark()}</div><p>In collaboration with Yarmouk University</p><h1>Internship Completion Certificate</h1><p>This certifies that</p><h2>${E(s.name)}</h2><p>${E(majorName(s.majorId))}<br>${E(U.db.university.college)}</p><p>has successfully completed the internship at<br><strong>${E(companyName(p.companyId))}</strong></p><p>${date(p.startDate)} – ${date(p.endDate)}<br>${U.approvedHours(pid)} approved training hours</p><p>Approved by the University Internship Coordinator<br>${E(userName(c.approvedBy))}</p><p class="serial">${E(c.certificateNumber)} · ${stamp(c.approvedAt)}</p></div><div class="actions section-space">${button("Download PDF", "download-certificate", pid, true)}${button("Print certificate", "print-certificate", pid)}</div>`,
+      `<div class="certificate-sheet"><div class="certificate-brand-row"><img src="../../assets/yarmouk-logo.svg" alt="Yarmouk University"></div><p>Yarmouk University</p><h1>Internship Completion Certificate</h1><p>This certifies that</p><h2>${E(s.name)}</h2><p>${E(majorName(s.majorId))}<br>${E(U.db.university.college)}</p><p>has successfully completed the internship at<br><strong>${E(companyName(p.companyId))}</strong></p><p>${date(p.startDate)} – ${date(p.endDate)}<br>${U.approvedHours(pid)} approved training hours</p><p>Approved by the University Internship Coordinator<br>${E(userName(c.approvedBy))}</p><p class="serial">${E(c.certificateNumber)} · ${stamp(c.approvedAt)}</p></div><div class="actions section-space">${button("Download PDF", "download-certificate", pid, true)}${button("Print certificate", "print-certificate", pid)}</div>`,
     );
   }
   async function downloadCertificate(pid, print = false) {
@@ -1696,30 +1868,21 @@
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, 2100, 1485);
-    ctx.strokeStyle = "#2563eb";
+    ctx.strokeStyle = "#C5A059";
     ctx.lineWidth = 5;
     ctx.strokeRect(55, 55, 1990, 1375);
     ctx.lineWidth = 1;
     ctx.strokeRect(72, 72, 1956, 1341);
-    ctx.fillStyle = "#12396c";
+    ctx.fillStyle = "#006837";
     ctx.textAlign = "center";
     const logo = await new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
       img.onerror = reject;
-      img.src = "../../assets/bridgeway-logo.svg";
+      img.src = "../../assets/yarmouk-logo.svg";
     });
-    ctx.drawImage(logo, 730, 115, 300, 174);
-    const partnerLogo = await new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = reject;
-      image.src = "../../assets/yarmouk-college-logo.png";
-    });
-    ctx.fillStyle = "#12396c";
-    ctx.fillRect(1090, 150, 320, 100);
-    ctx.drawImage(partnerLogo, 1116, 163, 268, 73);
-    ctx.fillStyle = "#12396c";
+    ctx.drawImage(logo, 825, 115, 450, 156);
+    ctx.fillStyle = "#006837";
     const line = (text, y, size = 30, bold = false) => {
       ctx.font = `${bold ? "600" : "400"} ${size}px Inter,Arial`;
       while (ctx.measureText(text).width > 1830 && size > 16) {
@@ -1728,7 +1891,7 @@
       }
       ctx.fillText(text, 1050, y);
     };
-    line("In collaboration with Yarmouk University", 345, 30);
+    line("Yarmouk University", 345, 30);
     line("Internship Completion Certificate", 470, 58, true);
     line("This certifies that", 560, 28);
     line(s.name, 665, 58, true);
@@ -1753,7 +1916,7 @@
       png = await pdf.embedPng(canvas.toDataURL("image/png"));
     page.drawImage(png, { x: 0, y: 0, width: 841.89, height: 595.28 });
     pdf.setTitle("Internship Completion Certificate");
-    pdf.setAuthor("Bridgeway");
+    pdf.setAuthor("Yarmouk University");
     const blob = new Blob([await pdf.save()], { type: "application/pdf" }),
       blobUrl = URL.createObjectURL(blob);
     if (print) {
@@ -1781,6 +1944,31 @@
   }
   document.addEventListener("click", action);
   document.addEventListener("submit", submit);
+  document.addEventListener("toggle", (event) => {
+    const details = event.target;
+    if (!details.matches(".profile-password") || details.open) return;
+    const form = details.querySelector("form");
+    form.reset();
+    form.querySelectorAll("input").forEach((input) => { input.type = "password"; input.removeAttribute("aria-invalid"); });
+    form.querySelectorAll(".password-toggle").forEach((toggle) => {
+      toggle.textContent = "Show";
+      toggle.setAttribute("aria-pressed", "false");
+      toggle.setAttribute("aria-label", "Show " + form.querySelector(`label[for="${toggle.dataset.id}"]`).textContent.toLowerCase());
+    });
+    form.querySelectorAll(".form-error, .password-field-error, .password-form-status").forEach((node) => node.textContent = "");
+  }, true);
+  document.addEventListener("input", (event) => {
+    if (event.target.closest('[data-form="change-password"]')) {
+      event.target.removeAttribute("aria-invalid");
+      event.target.removeAttribute("aria-errormessage");
+      document.getElementById(event.target.name + "-error").textContent = "";
+      const form = event.target.form;
+      form.querySelector(".form-error").textContent = "";
+      form.querySelector(".password-form-status").textContent = "";
+    }
+    if (event.target.id === "supervisorReportSearch") filterReportStudents(event.target);
+    if (event.target.id === "supervisorEvaluationSearch") filterEvaluationStudents(event.target);
+  });
   document.addEventListener("change", (event) => {
     if (event.target.matches("[data-hours-term]"))
       event.target.form.elements.requiredHours.value =

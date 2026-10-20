@@ -33,3 +33,6 @@ node_modules/
 /docs/*walkthrough*.md
 .DS_Store
 Thumbs.db
+
+# Local design inspection artifacts
+/.taste-skill/

@@ -2,8 +2,8 @@
 (() => {
   "use strict";
   let mounted = null;
-  const preference = "bridgeway:sidebar:pinned";
-  window.BridgewayChrome = {
+  const preference = "yarmouk:sidebar:pinned";
+  window.YarmoukChrome = {
     syncTheme() {
       const dark = document.documentElement.dataset.theme === "dark";
       document.querySelectorAll('[data-action="theme"]').forEach((button) => {
@@ -56,8 +56,7 @@
           expanded ? "Collapse navigation" : "Expand navigation",
         );
         toggle.title = expanded ? "Collapse navigation" : "Expand navigation";
-        toggle.querySelector("i").className =
-          "bi bi-" + (expanded ? "chevron-left" : "chevron-right");
+        toggle.querySelector("i").className = "bi bi-chevron-left";
         pin.setAttribute("aria-checked", String(pinned));
         mobileToggle?.setAttribute(
           "aria-expanded",

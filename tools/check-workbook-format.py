@@ -4,7 +4,7 @@ import sys
 from openpyxl import load_workbook
 
 root = Path(__file__).resolve().parent.parent / "output" / "workbooks"
-for filename, count in [("Bridgeway-Partnerships.xlsx", 4), (sys.argv[1] if len(sys.argv)>1 else "Bridgeway-Detailed-Records.xlsx", 7)]:
+for filename, count in [("Yarmouk University-Partnerships.xlsx", 4), (sys.argv[1] if len(sys.argv)>1 else "Yarmouk University-Detailed-Records.xlsx", 7)]:
     workbook = load_workbook(root / filename)
     assert len(workbook.worksheets) == count
     assert not {"Read me", "Objectives", "Ticket messages", "Conversations"}.intersection(workbook.sheetnames)

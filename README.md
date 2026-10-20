@@ -1,8 +1,8 @@
-# Bridgeway internship frontend
+# Yarmouk University Internship Management
 
-Local frontend for Yarmouk University's Faculty of Information Technology and Computer Science. The original Bridgeway identity, bridge animation and login badge remain. Required features follow C# Project 3.docx and the user's clarifications; optional features are excluded.
+University-owned internship frontend for Yarmouk University's Faculty of Information Technology and Computer Science. Yarmouk's supplied logo is the sole identity, with Royal Green #006837, Metallic Gold #C5A059, deep emerald #002e18–#003a1e and white/soft-gray surfaces. There is no personal brand or collaboration identity. The homepage retains its continuous 3D wheat experience; portal layouts and the interactive login badge retain their established behavior. Required features follow C# Project 3.docx and the user's clarifications; optional features are excluded.
 
-Read [AGENTS.md](AGENTS.md) before changing workflows. The authorized repository is `gh2ith/C--project-front-end`; pushes to its `main` branch publish the static frontend through GitHub Pages. Do not push this version to the former Bridgeway repository.
+Read [AGENTS.md](AGENTS.md) before changing workflows. The pending Yarmouk University redesign is local for review: do not push or deploy without new owner authorization. The project repository is `gh2ith/C--project-front-end`; never use the former Bridgeway repository.
 
 ## Run locally
 
@@ -33,9 +33,12 @@ First-login password setup validates the form and records the setup step only fo
 - `shared/css/uims.css`: shared portal controls and surfaces.
 - `shared/css/restored-workspace.css`, `shared/js/workspace-chrome.js`: original student studio/header and collapsible white sidebar, with the Keep sidebar open preference.
 - Opportunities use one searchable horizontal showcase on Explore; Explore is the student landing page and the student Dashboard is removed.
-- `assets/yarmouk-college-logo.png`: the university collaboration logo supplied by the project owner; Bridgeway's own logo remains unchanged.
-- `assets/internship-process.mp4`: locally authored captioned process video. Editable source/notes: `docs/process-film/`.
-- `shared/vendor/`: local PDF generation dependency and license.
+- `assets/yarmouk-college-logo.png`: the supplied university logo. The SVG variants frame that same artwork for navigation and the favicon; the 3D wheat is presentation artwork, not an additional logo.
+- `shared/css/university-theme.css`: shared university colors, surfaces, navigation and document styling.
+- `design-system/yarmouk-portal/MASTER.md`: portal layout guidance; neutral full-width canvases replace the rejected emerald surround and large rounded outer frame.
+- `assets/yarmouk-journey.webm`: locally authored captioned process video on About Us.
+- `pages/home/home.js`: procedural sculpture, physically separate shells and scroll choreography; `tools/verify-exploded-home.cjs` verifies the experience.
+- `shared/vendor/`: local Three.js and PDF generation dependencies, with licenses.
 
 ## Internship cycle
 
@@ -43,7 +46,7 @@ Coordinator creates supervisors/groups and student accounts with academic assign
 
 ## Local behavior and integration limits
 
-Actions and selected files (up to 1 MB each) persist in the same tab via `sessionStorage`, using `bridgeway:uims:v1`. Logout retains records so other roles can continue. A new session starts from the JSON. No server uploads occur.
+Actions and selected files (up to 1 MB each) persist in the same tab via `sessionStorage`, using `yarmouk:uims:v1`. Logout retains records so other roles can continue. A new session starts from the JSON. No server uploads occur.
 
 This task does not implement Firebase, ASP.NET, real login, credential provisioning, recovery email, secure permissions or cross-user synchronization. Importing JSON does not create Firebase Authentication accounts. Browser data is inspectable by the device user; frontend guards cannot enforce security. Future database rules/backend operations must enforce role access and evaluation privacy.
 

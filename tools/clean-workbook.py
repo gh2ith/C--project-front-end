@@ -1,4 +1,4 @@
-"""Polish a Bridgeway XLSX export with openpyxl, preserving its records and formulas.
+"""Polish a Yarmouk University XLSX export with openpyxl, preserving its records and formulas.
 
 Usage: python tools/clean-workbook.py input.xlsx output.xlsx
 """
@@ -89,7 +89,7 @@ def clean(source, destination):
         sheet.page_setup.fitToHeight = 0
         sheet.sheet_properties.pageSetUpPr.fitToPage = True
         sheet.page_margins = PageMargins(left=.3, right=.3, top=.5, bottom=.5, header=.2, footer=.2)
-        sheet.oddFooter.left.text = "Bridgeway"
+        sheet.oddFooter.left.text = "Yarmouk University"
         sheet.oddFooter.right.text = "Page &P of &N"
     destination.parent.mkdir(parents=True, exist_ok=True)
     book.save(destination)

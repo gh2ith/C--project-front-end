@@ -1,7 +1,15 @@
 /* Local frontend domain model. No passwords or Firebase credentials are stored. */
 (() => {
   "use strict";
-  const KEY = "bridgeway:uims:v1";
+  const KEY = "yarmouk:uims:v1";
+  for (const suffix of ["uims:v1", "uims:viewer", "sidebar:pinned"]) {
+    if (sessionStorage.getItem("yarmouk:" + suffix)) continue;
+    for (const prefix of ["riwaq:", "bridgeway:"]) {
+      const previous = sessionStorage.getItem(prefix + suffix);
+      if (previous) { sessionStorage.setItem("yarmouk:" + suffix, previous); break; }
+    }
+  }
+
   const collections = [
     "users",
     "companies",
@@ -34,7 +42,7 @@
       }));
     },
     get userId() {
-      return sessionStorage.getItem("bridgeway:uims:viewer");
+      return sessionStorage.getItem("yarmouk:uims:viewer");
     },
     get user() {
       return this.db?.users[this.userId];
@@ -45,10 +53,10 @@
     signIn(uid) {
       if (!this.db.users[uid] || this.db.users[uid].status !== "Active")
         throw Error("Account is inactive.");
-      sessionStorage.setItem("bridgeway:uims:viewer", uid);
+      sessionStorage.setItem("yarmouk:uims:viewer", uid);
     },
     signOut() {
-      sessionStorage.removeItem("bridgeway:uims:viewer");
+      sessionStorage.removeItem("yarmouk:uims:viewer");
       location.href = "../login/login.html";
     },
     require(role) {
@@ -503,7 +511,7 @@
         placementId: pid,
         studentId: p.studentId,
         certificateNumber:
-          "BW-YU-" +
+          "YU-TRAIN-" +
           new Date().getFullYear() +
           "-" +
           crypto.randomUUID().slice(0, 8).toUpperCase(),

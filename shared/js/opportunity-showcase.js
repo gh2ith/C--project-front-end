@@ -1,7 +1,7 @@
 /* A single catalog with direct manipulation and an interruptible scroll spring. */
 (() => {
   "use strict";
-  window.BridgewayOpportunityShowcase = (host, C) => {
+  window.YarmoukOpportunityShowcase = (host, C) => {
     const {
       opportunities,
       U,

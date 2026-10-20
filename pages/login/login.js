@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BRIDGEWAY AUTHENTICATION & PHYSICS BADGE ENGINE (login.js)
+ * YARMOUK UNIVERSITY AUTHENTICATION & PHYSICS BADGE ENGINE (login.js)
  * ============================================================================
  * Features:
  * 1. 3D Damped-Spring Pendulum Physics Simulation
@@ -85,7 +85,7 @@
       badgeRole: 'Student Intern • Yarmouk University',
       badgeInitials: 'GA',
       badgeSerial: '#STU-2026-YU',
-      avatarBg: 'linear-gradient(135deg, #2563EB, #1D4ED8)'
+      avatarBg: 'linear-gradient(135deg, #006837, #00552d)'
     },
     supervisor: {
       key: 'supervisor',
@@ -113,7 +113,7 @@
       badgeSerial: '#CMP-2026-TC',
       avatarBg: 'linear-gradient(135deg, #4F46E5, #3730A3)'
     },
-    coordinator: {key:'coordinator',title:'University Internship Coordinator',label:'Coordinator Email',hint:'Account provided by your university',defaultEmail:'coordinator@yu.edu.jo',btnText:'Sign In as Coordinator',badgeName:'Rana Al-Khatib',badgeRole:'Internship Coordinator • Yarmouk',badgeInitials:'RK',badgeSerial:'#COO-2026-001',avatarBg:'linear-gradient(135deg,#4338ca,#6366f1)'}
+    coordinator: {key:'coordinator',title:'University Internship Coordinator',label:'Coordinator Email',hint:'Account provided by your university',defaultEmail:'coordinator@yu.edu.jo',btnText:'Sign In as Coordinator',badgeName:'Rana Al-Khatib',badgeRole:'Internship Coordinator • Yarmouk',badgeInitials:'RK',badgeSerial:'#COO-2026-001',avatarBg:'linear-gradient(135deg,#4338ca,#c5a059)'}
   };
 
   let activeRole = 'student';

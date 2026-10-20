@@ -1,6 +1,16 @@
-// Portal-only preference: apply before styles paint, without affecting home or login.
+// University portal preference, with migration of earlier local preferences.
 try {
-  document.documentElement.dataset.theme = localStorage.getItem('bridgeway:portal-theme') === 'dark' ? 'dark' : 'light';
+  if (!localStorage.getItem("yarmouk:portal-theme")) {
+    for (const prefix of ["riwaq:", "bridgeway:"]) {
+      const value = localStorage.getItem(prefix + "portal-theme");
+      if (value) {
+        localStorage.setItem("yarmouk:portal-theme", value);
+        break;
+      }
+    }
+  }
+  document.documentElement.dataset.theme =
+    localStorage.getItem("yarmouk:portal-theme") === "dark" ? "dark" : "light";
 } catch {
-  document.documentElement.dataset.theme = 'light';
+  document.documentElement.dataset.theme = "light";
 }

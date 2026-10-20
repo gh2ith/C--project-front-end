@@ -1,0 +1,17 @@
+# Yarmouk University — animation-first homepage
+
+The owner's latest direction makes the animation the homepage itself. Use one persistent, full-viewport WebGL canvas. Native page scroll is the shared, reversible timeline for assembly, camera position, orientation, the copy's visibility and journey progress. Never constrain the animation to a column, media player, embedded video or a separate mobile artwork row. Never place the copy in an internally scrolling panel.
+
+Keep the university logo, emerald ground, Royal Green actions and restrained gold details. DM Sans is the existing homepage face. Colours, type roles, spacing and control sizes live in home.css tokens. The public header stays available throughout. The signed-in portal styles are a separate context and are unchanged by this design.
+
+Composition: the introduction inhabits the center of an exploded model; the forming structure fills the scene as the viewpoint moves through Apply and Train; the completed arch frames the completion copy; the final view presents the faculty. Copy and camera placement vary by phase. Soft neutral scrims protect text and navigation without adding cards or a separate artboard. The scene remains behind all page layers at every viewport size.
+
+Direct stage navigation, Previous/Next, horizontal arrow-key navigation, drag inspection and ambient-motion pause remain usable. Pause stops idle drift and removes smoothing while preserving deliberate scroll-driven changes. Inactive copy is inert. The skip link focuses the current stage. Dialogs contain supplementary public opportunity summaries, completion requirements and the six undergraduate majors; native focus trapping, Escape and close buttons remain available. Full opportunity details and applications require login.
+
+Reduced motion uses the static illustration and immediate stage changes. Missing WebGL preserves the journey controls and readable copy. Without JavaScript, the copy becomes a readable document with direct portal links. No credentials, database writes or backend services are introduced.
+
+Pro Design reference study: [RISD](https://www.risd.edu/) places institutional storytelling and clear program routes together; [University of the Arts London](https://www.arts.ac.uk/) keeps academic navigation directly available. Adopt the clarity of institutional navigation while following the owner's immersive-animation brief instead of copying either page layout.
+
+Verification: tools/verify-immersive-home.cjs checks five stages at 1920×1080, 1440×900, 1366×650, 768×1024, 390×844 and 375×667. It checks full viewport canvas bounds, readable copy bounds, reversible assembly/camera state, within-stage geometry changes, stage navigation, three dialogs, public summaries, drag, pause, reduced motion, missing WebGL and disabled JavaScript. Screenshots live in ignored output/immersive-home/. Completed the initial screenshot review and one batch of fixes followed by the confirming pass.
+
+Inspector interpretation: photography/footage requirements are inapplicable to this explicitly requested live 3D scene. The pinned-text warning identifies the intended overlay composition; screenshot review verifies neutral contrast protection. The light-cream palette warning refers to the off-white text token, not the emerald background. These are not grounds for inserting unrelated photographs, a video player or stacked homepage sections.
