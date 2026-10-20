@@ -30,7 +30,10 @@ First-login password setup validates the form and records the setup step only fo
 - `pages/<role>-<screen>/`: dedicated screens for the four required roles.
 - `shared/js/uims-store.js`: local state and workflow/ownership guards.
 - `shared/js/uims-app.js`: shared components and page rendering.
-- `shared/css/uims.css`: original Bridgeway palette, typography, blue rail and rounded surfaces.
+- `shared/css/uims.css`: shared portal controls and surfaces.
+- `shared/css/restored-workspace.css`, `shared/js/workspace-chrome.js`: original student studio/header and collapsible white sidebar, with the Keep sidebar open preference.
+- `shared/css/student-deck.css`, `shared/js/student-deck.js`: restored original card-gallery styling and drag/flip behavior, connected to the current required opportunity data.
+- `assets/yarmouk-college-logo.png`: the university collaboration logo supplied by the project owner; Bridgeway's own logo remains unchanged.
 - `assets/internship-process.mp4`: locally authored captioned process video. Editable source/notes: `docs/process-film/`.
 - `shared/vendor/`: local PDF generation dependency and license.
 

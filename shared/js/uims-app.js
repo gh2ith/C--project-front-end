@@ -162,16 +162,71 @@
   function close() {
     document.getElementById("editor").close();
   }
-  function shell(content, description = "", action = "") {
+  function collegeMark(className = "") {
+    return `<span class="college-mark ${className}"><img src="../../assets/yarmouk-college-logo.png" alt="Yarmouk University" width="257" height="70"></span>`;
+  }
+  function studentShell(content, description, action) {
+    const shortNames = {
+      dashboard: "Dashboard",
+      opportunities: "Explore",
+      applications: "Applications",
+      tasks: "My tasks",
+      progress: "My training",
+    };
+    const initials = U.user.name
+      .split(" ")
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("");
+    const heading =
+      view === "dashboard"
+        ? "Find work worth learning."
+        : view === "progress"
+          ? "My training"
+          : title();
+    const kicker =
+      view === "dashboard" || view === "opportunities"
+        ? `${U.user.name.split(" ")[0]}’s opportunity collection`
+        : "Your internship workspace";
+    const dark = document.documentElement.dataset.theme === "dark";
+    document.body.classList.add("student-studio", "student-gallery");
     document.getElementById("app").innerHTML =
-      `<div class="workspace"><aside class="sidebar" aria-label="${E(names[role])} navigation"><a href="../home/index.html" aria-label="Bridgeway home"><img class="sidebar-logo" src="../../assets/bridgeway-logo-on-dark.svg" alt="Bridgeway"></a><div class="sidebar-role">${E(names[role])}</div><nav>${nav[role].map(([key, label, ic]) => `<a class="nav-item ${key === view ? "active" : ""}" ${key === view ? 'aria-current="page"' : ""} href="${url(role, key)}">${icon(ic)}<span>${E(label)}</span></a>`).join("")}</nav><div class="sidebar-bottom"><button type="button" data-action="theme">${icon("moon-stars")}<span>Change appearance</span></button><button type="button" data-action="logout">${icon("box-arrow-right")}<span>Log out</span></button></div></aside><main class="workspace-main" id="main"><header class="topbar"><button class="ui-button mobile-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false">${icon("list")}</button><div class="breadcrumb">Workspace <span>/</span> ${E(names[role])}</div><a class="viewer" href="${url(role, role === "student" ? "profile" : "account")}"><span class="avatar">${E(
+      `<div class="student-workspace"><main id="main" class="student-main"><header class="studio-top"><a class="studio-brand" href="../home/index.html" aria-label="Bridgeway home"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway" width="112" height="65"></a><nav class="studio-navigation" aria-label="Student workspace">${nav.student
+        .filter(([key]) => key !== "profile")
+        .map(
+          ([key, label, ic]) =>
+            `<a href="${url("student", key)}" ${key === view ? 'aria-current="page"' : ""}>${icon(ic)}<span>${E(shortNames[key] || label)}</span></a>`,
+        )
+        .join(
+          "",
+        )}</nav><div class="studio-header-actions"><button class="studio-appearance" type="button" data-action="theme" aria-label="${dark ? "Switch to light mode" : "Switch to dark mode"}">${icon(dark ? "sun" : "moon-stars")}</button><details class="studio-account"><summary aria-label="Student account options"><span class="studio-avatar">${E(initials)}</span><span class="studio-account-name">${E(U.user.name)}</span>${icon("chevron-down")}</summary><nav class="studio-account-menu" aria-label="Student account"><p>Student account</p><a href="${url("student", "profile")}" ${view === "profile" ? 'aria-current="page"' : ""}>${icon("person")}My profile</a><button type="button" data-action="logout">${icon("box-arrow-right")}Sign out</button></nav></details></div></header><header class="studio-welcome"><div><p class="studio-kicker">${E(kicker)}</p><h1>${E(heading)}</h1><p>${E(description)}</p></div><div class="studio-welcome-actions">${action}<div class="studio-collaboration"><span>In collaboration with</span>${collegeMark()}</div></div></header>${content}</main></div>`;
+    document.getElementById("app").removeAttribute("aria-busy");
+  }
+  function shell(content, description = "", action = "") {
+    if (role === "student") {
+      studentShell(content, description, action);
+      return;
+    }
+    document.getElementById("app").innerHTML =
+      `<div class="workspace"><div class="sidebar-rail"><aside id="portal-navigation" class="sidebar" aria-label="${E(names[role])} navigation"><header class="sidebar-header"><a href="../home/index.html" aria-label="Bridgeway home"><img class="sidebar-logo" src="../../assets/bridgeway-logo.svg" alt="Bridgeway"></a><button type="button" class="sidebar-toggle" aria-label="Expand navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("chevron-right")}</button></header><nav>${nav[
+        role
+      ]
+        .filter(([key]) => key !== "account")
+        .map(
+          ([key, label, ic]) =>
+            `<a class="nav-item ${key === view ? "active" : ""}" ${key === view ? 'aria-current="page"' : ""} aria-label="${E(label)}" title="${E(label)}" href="${url(role, key)}">${icon(ic)}<span>${E(label)}</span></a>`,
+        )
+        .join(
+          "",
+        )}</nav><div class="sidebar-bottom"><button class="sidebar-pin" type="button" role="switch" aria-checked="false"><span>Keep sidebar open</span><span class="sidebar-pin-track" aria-hidden="true"></span></button><a class="sidebar-profile ${view === "account" ? "active" : ""}" href="${url(role, "account")}" aria-label="Profile" title="Profile">${icon("person-circle")}<span>Profile</span></a><button type="button" data-action="theme" aria-label="Change appearance" title="Change appearance">${icon("moon-stars")}<span>Dark / light mode</span></button><button type="button" data-action="logout" aria-label="Log out" title="Log out">${icon("box-arrow-right")}<span>Log out</span></button></div></aside></div><main class="workspace-main" id="main"><header class="topbar"><button class="ui-button mobile-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("list")}</button><div class="breadcrumb">Workspace <span>/</span> ${E(names[role])}</div><div class="portal-header-identity">${collegeMark("portal-college-mark")}<a class="viewer" href="${url(role, "account")}"><span class="avatar">${E(
         U.user.name
           .split(" ")
           .map((x) => x[0])
           .slice(0, 2)
           .join(""),
-      )}</span>${E(U.user.name)}</a></header><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div>${content}</main></div>`;
+      )}</span><span>${E(U.user.name)}</span></a></div></header><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div>${content}</main></div>`;
     document.getElementById("app").removeAttribute("aria-busy");
+    window.BridgewayChrome?.mountSidebar();
   }
   function publicShell(content) {
     document.getElementById("app").innerHTML =
@@ -180,7 +235,7 @@
   function publicPage() {
     if (view === "about") {
       publicShell(
-        `<span class="partner">BRIDGEWAY × YARMOUK UNIVERSITY</span><h1>Your learning. Put into practice.</h1><p class="lead">Bridgeway connects Yarmouk University's Faculty of Information Technology and Computer Science with company supervisors, academic supervisors and the university internship coordinator. Follow your internship from your first application to your completion certificate.</p><div class="two-columns section-space">${card(
+        `<div class="public-collaboration">${collegeMark()}<span class="partner">BRIDGEWAY × YARMOUK UNIVERSITY</span></div><h1>Your learning. Put into practice.</h1><p class="lead">Bridgeway connects Yarmouk University's Faculty of Information Technology and Computer Science with company supervisors, academic supervisors and the university internship coordinator. Follow your internship from your first application to your completion certificate.</p><div class="two-columns section-space">${card(
           "One faculty. Six paths.",
           `<ul class="activity-list">${Object.values(U.db.university.majors)
             .map((m) => `<li>${E(m.name)}</li>`)
@@ -273,72 +328,33 @@
       tasks = U.all("tasks").filter((t) => t.placementId === p?.id),
       approved = p ? U.approvedHours(p.id) : 0;
     if (view === "dashboard") {
+      const next = tasks
+        .filter((t) => U.taskState(t.id) !== "Evaluated")
+        .sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
+      const summary = `<section class="studio-overview" aria-label="Internship summary"><div><span>Applications</span><strong>${apps.length}</strong><a href="${url("student", "applications")}">Track company decisions ${icon("arrow-up-right")}</a></div><div><span>Assigned work</span><strong>${tasks.filter((t) => U.taskState(t.id) !== "Evaluated").length}<small>to complete</small></strong><a href="${url("student", "tasks")}">Open my tasks ${icon("arrow-up-right")}</a></div><div><span>Approved training hours</span><strong>${approved}<small>/ ${U.user.requiredHours} h</small></strong><div class="studio-hour-line"><span style="width:${Math.min(100, (approved / U.user.requiredHours) * 100)}%"></span></div></div><div><span>Next deadline</span><strong class="studio-next-date">${next ? date(next.deadline) : "All caught up"}</strong><p>${next ? E(next.title) : "Your upcoming work will appear here."}</p></div></section>`;
       shell(
-        stats([
-          ["Applications", apps.length],
-          [
-            "Tasks to complete",
-            tasks.filter(
-              (t) => !["Evaluated", "Submitted"].includes(U.taskState(t.id)),
-            ).length,
-          ],
-          ["Approved training hours", `${approved} / ${U.user.requiredHours}`],
-          [
-            "Task progress",
-            `${tasks.filter((t) => U.taskState(t.id) === "Evaluated").length} / ${tasks.length}`,
-          ],
-        ]) +
-          (p?.status === "Completed"
-            ? completionBlock(p)
-            : `<div class="two-columns">${card("Your next step", p ? `<p>Continue your assigned work at ${E(companyName(p.companyId))}. Check deadlines, review feedback and submit any requested revisions.</p><div class="actions">${link("Open my tasks", "student", "tasks", "", "true")}</div>` : `<p>Explore internships suited to ${E(majorName(U.user.majorId))}, apply to opportunities, and confirm one accepted offer.</p><div class="actions">${link("Explore opportunities", "student", "opportunities", "", true)}</div>`, "signpost-split")}${card(
-                "Upcoming deadlines",
-                tasks.length
-                  ? `<ul class="activity-list">${
-                      tasks
-                        .filter((t) => U.taskState(t.id) !== "Evaluated")
-                        .sort((a, b) => a.deadline.localeCompare(b.deadline))
-                        .slice(0, 4)
-                        .map(
-                          (t) =>
-                            `<li><strong>${E(t.title)}</strong>${date(t.deadline)} · ${E(U.taskState(t.id))}</li>`,
-                        )
-                        .join("") || "<li>No outstanding deadlines.</li>"
-                    }</ul>`
-                  : "<p>Your company supervisor’s tasks will appear after you confirm an internship.</p>",
-                "calendar3",
-              )}</div>`) +
-          `<div class="section-space">${card("Your applications", applicationTable(apps.slice(-4)))}</div>`,
-        "Your applications, assigned work and internship progress in one place.",
+        (p?.status === "Completed" ? completionBlock(p) : summary) +
+          '<div id="student-discovery" class="student-discovery"></div>',
+        "A closer look at the teams, the work, and your next steps.",
+        p
+          ? link("Continue my training", "student", "progress")
+          : link("Complete my profile", "student", "profile"),
       );
+      mountStudentDiscovery();
     } else if (view === "profile") {
       shell(
         profileForm(),
         "Keep your contact details and CV or portfolio up to date. Academic information is maintained by the coordinator.",
       );
     } else if (view === "opportunities") {
-      const search = (params.get("q") || "").toLowerCase();
-      const ops = U.all("opportunities").filter(
-        (o) =>
-          o.status === "Open" &&
-          o.deadline >= new Date().toISOString().slice(0, 10) &&
-          o.majorIds.includes(U.user.majorId) &&
-          `${o.title} ${companyName(o.companyId)}`
-            .toLowerCase()
-            .includes(search),
-      );
       shell(
-        `<form class="toolbar" data-form="search"><input class="ui-input" type="search" name="q" aria-label="Search opportunities" placeholder="Search by opportunity or company" value="${E(params.get("q") || "")}"><button class="ui-button" type="submit">Search</button></form>` +
-          (p
-            ? `<p class="help-text">You have confirmed an internship. New applications are unavailable.</p>`
-            : "") +
-          (ops.length
-            ? opportunityCards(ops, true)
-            : empty(
-                "No matching opportunities",
-                "Try another search or return later for new openings.",
-              )),
-        "Opportunities matching your college and major. Company acceptance is followed by your confirmation.",
+        '<div id="student-discovery" class="student-discovery"></div>',
+        "A closer look at the teams and opportunities for your college and major.",
+        p
+          ? link("Continue my training", "student", "progress")
+          : link("Complete my profile", "student", "profile"),
       );
+      mountStudentDiscovery();
     } else if (view === "apply") {
       const op = U.db.opportunities[params.get("opportunity")];
       shell(
@@ -352,38 +368,174 @@
         "Review the requirements and tell the company why you want to train with them.",
       );
     } else if (view === "applications") {
+      const list = apps.length
+        ? `<section class="studio-application-list">${apps
+            .map((a) => {
+              const op = U.db.opportunities[a.opportunityId];
+              return `<article class="studio-application"><span class="studio-application-mark ${["Accepted", "Confirmed"].includes(a.status) ? "is-good" : ""}" aria-hidden="true"></span><div><p class="muted">${E(companyName(op?.companyId))}</p><h2>${E(op?.title)}</h2><p class="muted">Applied ${stamp(a.createdAt)}</p></div><div class="studio-application-actions">${status(a.status)}${button("View application", "application", a.id)}${a.status === "Accepted" ? button("Confirm offer", "confirm-offer", a.id, true) : ""}</div></article>`;
+            })
+            .join("")}</section>`
+        : empty(
+            "Your first opportunity is waiting.",
+            "Explore internships and apply to a role that suits your major.",
+            link("Explore internships", "student", "opportunities"),
+          );
       shell(
-        applicationTable(apps),
-        "Track company decisions and confirm only one accepted internship offer.",
+        list,
+        "Your applications, company decisions and confirmed internship offer.",
       );
     } else if (view === "tasks") {
       shell(
         p
-          ? tasks.length
-            ? tasksTable(tasks)
-            : empty(
-                "Your tasks will appear here",
-                "Your company supervisor creates tasks with deadlines and evaluation criteria.",
-              )
+          ? trainingRecord(p) +
+              `<div class="studio-section-title"><h2>Your assigned work</h2><p>Open a task to submit work, see feedback or respond to a revision request.</p></div>` +
+              studentTaskCards(tasks)
           : empty(
               "Confirm an internship to begin",
               "Tasks become available after you confirm an accepted offer.",
               link("My applications", "student", "applications"),
             ),
-        "Read each task, submit your work and respond to requested revisions.",
+        "The work, deadlines and feedback that move your internship forward.",
       );
     } else if (view === "progress") {
+      const latest = tasks
+        .map((t) => ({ task: t, submission: U.latestSubmission(t.id) }))
+        .filter((x) => x.submission?.review)
+        .sort((a, b) =>
+          b.submission.review.reviewedAt.localeCompare(
+            a.submission.review.reviewedAt,
+          ),
+        )[0];
       shell(
         p
-          ? `${p.status === "Completed" ? completionBlock(p) : card("Internship in progress", `<p>${E(companyName(p.companyId))} · ${date(p.startDate)} – ${date(p.endDate)}</p><div class="progress-track" role="progressbar" aria-label="Approved training hours" aria-valuenow="${Math.min(approved, U.user.requiredHours)}" aria-valuemin="0" aria-valuemax="${U.user.requiredHours}"><span style="width:${Math.min(100, (approved / U.user.requiredHours) * 100)}%"></span></div><p>${approved} of ${U.user.requiredHours} training hours approved</p><p class="help-text">Your completion message and certificate appear here after the coordinator approves your internship.</p>`)}<div class="section-space">${card("Task feedback & revisions", tasksTable(tasks))}</div><div class="section-space">${card("Training hours", hoursTable(p))}</div><div class="section-space">${card("Academic feedback", comments(p.id))}</div>`
+          ? (p.status === "Completed"
+              ? completionBlock(p)
+              : trainingRecord(p)) +
+              `<div class="studio-section-title"><h2>Your internship journey</h2><p>Assigned tasks and their current status</p></div>` +
+              studentTaskCards(tasks) +
+              `<div class="studio-training-columns"><section class="studio-training-panel"><h2>Training hours</h2><p class="muted">Recorded by your company supervisor and verified by your academic supervisor.</p><div class="section-space">${hoursTable(p)}</div></section><aside class="studio-feedback-panel"><h2>${icon("chat-left-text")} Company feedback</h2>${latest ? `<p class="muted">${E(latest.task.title)}</p><p class="pre-wrap">${E(latest.submission.review.feedback)}</p>${status(latest.submission.status)}<div class="actions">${button("View work & feedback", "task", latest.task.id)}</div>` : "<p>Company feedback will appear after your submitted work has been reviewed.</p>"}<div class="studio-academic-feedback"><h3>Academic feedback</h3>${comments(p.id)}</div></aside></div>`
           : empty(
               "Your internship journey starts with an offer",
               "Confirm one accepted offer to begin tracking your work and progress.",
             ),
-        "Follow task evaluations, feedback and approved hours. Final evaluation forms and final grades remain private.",
+        "Your work, your progress, and the feedback that moves you forward.",
       );
     }
   }
+  function trainingRecord(p) {
+    const student = U.db.users[p.studentId],
+      group = U.db.groups[student.groupId],
+      hours = U.approvedHours(p.id),
+      tasks = U.all("tasks").filter((t) => t.placementId === p.id);
+    return `<section class="studio-training-record"><div class="studio-training-company"><span class="studio-company-icon">${icon("building")}</span><div><h2>${E(U.db.opportunities[p.opportunityId]?.title)}</h2><p>${E(companyName(p.companyId))}</p><small>Academic supervisor · ${E(userName(group?.supervisorId))}</small></div></div><div class="studio-verified-hours"><div><strong>${hours}</strong><span>/ ${student.requiredHours} h</span><small>Academic-verified</small></div><div class="studio-hour-line"><span style="width:${Math.min(100, (hours / student.requiredHours) * 100)}%"></span></div><p>${tasks.filter((t) => U.taskState(t.id) === "Evaluated").length} of ${tasks.length} tasks evaluated</p></div></section>`;
+  }
+  function studentTaskCards(tasks) {
+    return tasks.length
+      ? `<section class="studio-task-journey" aria-label="Assigned tasks">${tasks.map((t, i) => `<button class="studio-task-stop" type="button" data-action="task" data-id="${E(t.id)}"><span class="studio-task-kind">${E(t.kind)} ${String(i + 1).padStart(2, "0")}</span><strong>${E(t.title)}</strong><span>${taskDeadline(t)}</span>${status(U.taskState(t.id))}</button>`).join("")}</section>`
+      : empty(
+          "Your tasks will appear here",
+          "Your company supervisor creates tasks with deadlines and evaluation criteria.",
+        );
+  }
+  function mountStudentDiscovery() {
+    const host = document.getElementById("student-discovery");
+    if (!host) return;
+    const ops = U.all("opportunities").filter(
+      (o) =>
+        o.status === "Open" &&
+        o.deadline >= new Date().toISOString().slice(0, 10) &&
+        o.majorIds.includes(U.user.majorId),
+    );
+    if (!ops.length) {
+      host.innerHTML = empty(
+        "No matching opportunities",
+        "New roles for your college and major will appear here.",
+      );
+      return;
+    }
+    const node = (tag, copy, cls) => {
+      const n = document.createElement(tag);
+      if (copy) n.textContent = copy;
+      if (cls) n.className = cls;
+      return n;
+    };
+    const append = (parent, ...children) => {
+      parent.append(...children.filter(Boolean));
+      return parent;
+    };
+    const makeButton = (label, handler, primary = false) => {
+      const b = node(
+        "button",
+        label,
+        "ui-button cycle-button" + (primary ? " primary" : ""),
+      );
+      b.type = "button";
+      b.addEventListener("click", handler);
+      return b;
+    };
+    const C = {
+      E: node,
+      A: append,
+      B: makeButton,
+      org: companyName,
+      date,
+      dialog: (title, panel) => {
+        modal(title, "");
+        document.getElementById("editor-content").append(panel);
+        return document.getElementById("editor");
+      },
+    };
+    const roleFit = () => {
+      const panel = node("section", null, "gallery-academic-context");
+      panel.append(
+        node("p", "Your academic path", "muted"),
+        node("h3", majorName(U.user.majorId)),
+        node("p", "Opportunities are selected for your college and major."),
+      );
+      const a = node("a", "Manage CV & portfolio ↗");
+      a.href = url("student", "profile");
+      panel.append(a);
+      return panel;
+    };
+    const applyAction = (l) => {
+      const a = U.all("applications").find(
+        (a) => a.studentId === U.userId && a.opportunityId === l.id,
+      );
+      if (a) {
+        const b = makeButton("Application " + a.status.toLowerCase(), () => {});
+        b.disabled = true;
+        return b;
+      }
+      const link = node(
+        "a",
+        "Apply for this internship ↗",
+        "ui-button primary",
+      );
+      link.href = url("student", "apply", "?opportunity=" + l.id);
+      return link;
+    };
+    const deck = window.BridgewayStudentDeck(host, {
+      C,
+      roleFit,
+      applyAction,
+      placed: !!U.placement(U.userId),
+    });
+    deck.render(
+      ops.map((o, i) => ({
+        ...o,
+        company: o.companyId,
+        location: o.location,
+        capacity: o.seats,
+        skills: o.majorIds.map((v) => v.toUpperCase()).join(","),
+        majorNames: o.majorIds.map(majorName).join(", "),
+        category: o.majorIds.includes("cys") ? "cloud" : "software",
+        categoryLabel: U.db.companies[o.companyId]?.industry || "Technology",
+        accent: ["#2052c4", "#5442a6", "#086c72"][i % 3],
+        prerequisites: [o.requirements],
+      })),
+    );
+  }
+
   function completionBlock(p) {
     const c = U.db.completions[p.id];
     return c
@@ -1243,13 +1395,11 @@
               : "dark";
           document.documentElement.dataset.theme = next;
           localStorage.setItem("bridgeway:portal-theme", next);
+          window.BridgewayChrome?.syncTheme();
           break;
         }
         case "menu": {
-          const isOpen = document
-            .querySelector(".sidebar")
-            .classList.toggle("open");
-          el.setAttribute("aria-expanded", isOpen);
+          window.BridgewayChrome?.toggleMobile();
           break;
         }
         case "opportunity": {
@@ -1621,7 +1771,7 @@
     const { c, p, s } = certificateData(pid);
     modal(
       "Internship Completion Certificate",
-      `<div class="certificate-sheet"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway"><p>In collaboration with Yarmouk University</p><h1>Internship Completion Certificate</h1><p>This certifies that</p><h2>${E(s.name)}</h2><p>${E(majorName(s.majorId))}<br>${E(U.db.university.college)}</p><p>has successfully completed the internship at<br><strong>${E(companyName(p.companyId))}</strong></p><p>${date(p.startDate)} – ${date(p.endDate)}<br>${U.approvedHours(pid)} approved training hours</p><p>Approved by the University Internship Coordinator<br>${E(userName(c.approvedBy))}</p><p class="serial">${E(c.certificateNumber)} · ${stamp(c.approvedAt)}</p></div><div class="actions section-space">${button("Download PDF", "download-certificate", pid, true)}${button("Print certificate", "print-certificate", pid)}</div>`,
+      `<div class="certificate-sheet"><div class="certificate-brand-row"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway">${collegeMark()}</div><p>In collaboration with Yarmouk University</p><h1>Internship Completion Certificate</h1><p>This certifies that</p><h2>${E(s.name)}</h2><p>${E(majorName(s.majorId))}<br>${E(U.db.university.college)}</p><p>has successfully completed the internship at<br><strong>${E(companyName(p.companyId))}</strong></p><p>${date(p.startDate)} – ${date(p.endDate)}<br>${U.approvedHours(pid)} approved training hours</p><p>Approved by the University Internship Coordinator<br>${E(userName(c.approvedBy))}</p><p class="serial">${E(c.certificateNumber)} · ${stamp(c.approvedAt)}</p></div><div class="actions section-space">${button("Download PDF", "download-certificate", pid, true)}${button("Print certificate", "print-certificate", pid)}</div>`,
     );
   }
   async function downloadCertificate(pid, print = false) {
@@ -1656,7 +1806,17 @@
       img.onerror = reject;
       img.src = "../../assets/bridgeway-logo.svg";
     });
-    ctx.drawImage(logo, 900, 115, 300, 174);
+    ctx.drawImage(logo, 730, 115, 300, 174);
+    const partnerLogo = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = "../../assets/yarmouk-college-logo.png";
+    });
+    ctx.fillStyle = "#12396c";
+    ctx.fillRect(1090, 150, 320, 100);
+    ctx.drawImage(partnerLogo, 1116, 163, 268, 73);
+    ctx.fillStyle = "#12396c";
     const line = (text, y, size = 30, bold = false) => {
       ctx.font = `${bold ? "600" : "400"} ${size}px Inter,Arial`;
       while (ctx.measureText(text).width > 1830 && size > 16) {

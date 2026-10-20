@@ -40,6 +40,8 @@ Completion approval requires both final evaluations, approved required hours, ev
 
 ## Video and validation
 
+The student's original horizontal pill navigation, stacked draggable opportunity cards, adjacent role dossier, application rows and training-record composition are restored around the required features. Non-student portals use the original white icon rail with hover/keyboard expansion, an explicit collapse control and a persistent session-level Keep sidebar open switch. No superseded services are reintroduced. The owner-supplied university logo appears as a collaboration mark on the faculty section, About Us, workspace headers and completion certificates; Bridgeway keeps its own identity.
+
 The homepage's dedicated process section and About Us embed the locally authored process MP4 with captions. Editable source and production notes are in `docs/process-film/`. No Google Flow account is required.
 
 Local verification results are recorded under `output/`. Verification covers cross-role application/confirmation, task revisions/history, separate hours verification, completion gates, certificate PDF, role guards, inactive accounts and desktop/phone layout.
