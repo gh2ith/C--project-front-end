@@ -1,4 +1,5 @@
 /* Yarmouk University identity. Shared by public, student and staff pages. */
+.portal-content { display: contents; }
 :root {
   --brand-green: #006837;
   --brand-gold: #c5a059;
@@ -1753,4 +1754,174 @@ body:has(.public-main) {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
+}
+/* Laptop application shell: keep navigation and page controls outside record scrolling. */
+@media screen and (min-width: 1000px) and (min-height: 600px) {
+  html[data-role], html[data-role] body, html[data-role] #app { height:100dvh; min-height:0; overflow:hidden; }
+  html[data-role] .workspace, html[data-role] .student-workspace { height:100dvh; min-height:0; overflow:hidden; }
+  html[data-role] .workspace-main { display:flex; flex-direction:column; height:100dvh; min-height:0; padding:16px 24px 0; }
+  html[data-role] .workspace-main > .portal-userbar { flex:none; min-height:44px; margin-bottom:8px; position:relative; z-index:20; }
+  html[data-role] .page-title { flex:none; margin:0 0 18px; gap:16px; }
+  html[data-role] .page-title h1 { font-size:26px; margin-block:4px 8px; }
+  html[data-role] .page-title p { margin-bottom:0; font-size:14px; line-height:1.5; }
+  html[data-role] .page-title .partner { font-size:10px; }
+  html[data-role] .portal-content { display:block; flex:1 1 auto; min-height:0; width:100%; max-width:none; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; padding:0 6px 20px 2px; scroll-padding:16px; }
+  html[data-role] .portal-content:focus-visible { outline:2px solid var(--blue); outline-offset:-2px; }
+  html[data-role] .student-main { display:flex; flex-direction:column; height:100dvh; min-height:0; padding:0 28px; }
+  html[data-role] .student-main > .studio-tools { flex:none; width:100%; margin:12px auto 0; min-height:48px; position:relative; z-index:20; }
+  html[data-role] .student-main > .studio-welcome { flex:none; width:100%; margin:18px auto; align-items:center; }
+  html[data-role] .studio-welcome h1 { font-size:26px; margin:3px 0 6px; }
+  html[data-role] .studio-welcome > div > p { font-size:14px; line-height:1.5; }
+  html[data-role] .studio-welcome .studio-kicker { font-size:11px; }
+  html[data-role] .student-content { max-width:1400px; margin-inline:auto; }
+  .portal-content > .profile-layout { max-width:1280px; margin-inline:auto; }
+  .portal-content :is(.card-surface,.stat-card) { padding:20px; }
+  .portal-content :is(.two-columns,.stats,.cards) { gap:18px; }
+  .portal-content .stats { margin-bottom:18px; }
+  .portal-content .stat-card strong { font-size:26px; }
+  .portal-content .card-surface > h2 { margin-bottom:16px; font-size:19px; }
+  .portal-content .section-space { margin-top:20px; }
+  .portal-content :is(td,th) { padding:12px 14px; }
+  .portal-content .form-grid { gap:16px; }
+  .portal-content .form-footer { margin-top:18px; padding-top:18px; }
+  .portal-content .company-student-workspace { grid-template-columns:225px minmax(0,1fr); gap:18px; }
+  .portal-content .company-student-detail { padding:20px; min-height:320px; }
+  .portal-content .company-student-heading { padding-bottom:16px; margin-bottom:16px; }
+  .portal-content .company-task-row { padding-block:16px; }
+  .portal-content .report-student-directory { top:0; padding:18px; }
+  .portal-content .report-student-button { padding:12px; gap:5px; }
+  .portal-content .report-student-list { max-height:min(440px,calc(100dvh - 340px)); }
+  .portal-content .evaluation-workspace .report-student-directory { max-height:none; overflow:visible; }
+  .portal-content .evaluation-cycle { gap:10px; margin-bottom:16px; }
+  .portal-content .evaluation-cycle li { padding:12px; }
+  .portal-content .studio-training-record { padding:20px 24px; margin-bottom:18px; }
+  .portal-content .studio-section-title { margin-block:18px 14px; }
+  .portal-content .student-training-weeks { margin-bottom:18px; gap:8px; }
+  .portal-content .student-training-week { min-height:112px; padding:12px; gap:10px; }
+  .portal-content .student-week-panel { padding:20px; }
+  .portal-content .student-week-targets li { padding-block:12px; }
+  .portal-content .showcase-toolbar { margin-bottom:8px; }
+  .portal-content .showcase-track { padding-block:6px 10px; }
+  .portal-content :is(.showcase-identity,.showcase-role) { padding:22px; }
+  .portal-content .showcase-identity h2 { font-size:28px; margin-block:18px; }
+  .portal-content .showcase-copy { margin-top:16px; }
+  .portal-content .showcase-copy p { line-height:1.6; }
+  .portal-content .showcase-controls { margin-block:10px; }
+  .portal-content .showcase-chooser { margin-top:12px; }
+  .portal-content .showcase-chooser button { padding:12px 14px; }
+  html:not([data-role]):has(.public-main) body { height:100dvh; min-height:0; overflow:hidden; }
+  html:not([data-role]):has(.public-main) #app { display:flex; flex-direction:column; height:100dvh; min-height:0; }
+  html:not([data-role]) .public-header { flex:none; padding:8px 28px; }
+  html:not([data-role]) .public-main { flex:1; min-height:0; overflow:auto; margin:0 auto; padding:24px 32px; width:100%; scrollbar-gutter:stable; }
+  .public-main > h1 { font-size:28px; }
+  .public-main .lead { font-size:16px; line-height:1.6; margin-bottom:16px; }
+  .public-main .card-surface { padding:22px; }
+}
+@media screen and (min-width:1000px) and (max-height:900px) {
+  .sidebar-rail > .sidebar { top:8px; height:calc(100dvh - 16px); padding:6px; }
+  .sidebar .sidebar-header, .sidebar.is-collapsed .sidebar-header { height:52px; min-height:52px; flex:none; margin:-6px -6px 4px; padding-block:4px; }
+  .sidebar .sidebar-logo { max-height:46px; object-fit:contain; }
+  .sidebar > nav, .sidebar.is-collapsed > nav { flex:none; padding-top:0; gap:2px; }
+  .sidebar .sidebar-section-label { padding-bottom:4px; font-size:10px; }
+  .sidebar a.nav-item, .sidebar .sidebar-bottom > button, .sidebar .sidebar-profile { height:44px; min-height:44px; padding:8px 10px; flex:none; }
+  .sidebar a.nav-item > span { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sidebar .sidebar-bottom, .sidebar.is-collapsed .sidebar-bottom { margin-top:auto; padding-top:8px; gap:2px; }
+  .sidebar .sidebar-profile { min-height:44px; padding-block:6px; }
+  .sidebar .sidebar-profile-copy small { display:none; }
+  .sidebar .sidebar-bottom .sidebar-pin { height:44px; min-height:44px; margin-top:4px; padding:8px; }
+  .sidebar.is-collapsed .sidebar-profile { padding-block:6px; }
+}
+@media screen and (min-width:1081px) and (max-height:700px) and (pointer:fine) {
+  .sidebar .sidebar-section-label { display:none; }
+  .sidebar a.nav-item, .sidebar .sidebar-bottom > button, .sidebar .sidebar-profile, .sidebar .sidebar-bottom .sidebar-pin { height:40px; min-height:40px; padding-block:6px; }
+  .sidebar .sidebar-header, .sidebar.is-collapsed .sidebar-header { height:46px; min-height:46px; }
+}
+@media print {
+  .portal-content { display:block !important; overflow:visible !important; height:auto !important; }
+}
+@media screen and (min-width:1000px) and (min-height:600px) and (max-height:900px) {
+  .portal-content .studio-training-record { padding:12px 18px; margin-bottom:12px; }
+  .portal-content .studio-training-company { gap:12px; }
+  .portal-content .studio-company-icon { width:38px; height:38px; font-size:19px; border-radius:8px; }
+  .portal-content .studio-training-company h2 { font-size:18px; margin-bottom:3px; }
+  .portal-content .studio-training-company p { margin-bottom:3px; }
+  .portal-content .studio-verified-hours strong { font-size:28px; }
+  .portal-content .studio-hour-line { margin:5px 0; }
+  .portal-content .studio-section-title { margin-block:12px 10px; }
+  .portal-content .studio-section-title h2 { font-size:18px; }
+  .portal-content .student-training-week { min-height:96px; padding:10px; gap:6px; }
+  .portal-content .student-training-week strong { font-size:13px; }
+  .portal-content .student-training-weeks { margin-bottom:12px; }
+  .portal-content .student-week-panel { padding:16px; }
+  .portal-content .student-week-panel h2 { font-size:18px; margin-bottom:6px; }
+  .portal-content .student-week-panel h3 { margin:12px 0 8px; font-size:15px; }
+  .portal-content .student-week-meta { padding-bottom:10px; margin-bottom:10px; font-size:12px; }
+  .portal-content .student-week-targets { margin-bottom:12px; }
+  .portal-content .student-week-targets li { font-size:14px; padding:9px 0; line-height:1.5; }
+  .portal-content .student-week-hours { margin-top:12px; padding-top:8px; }
+  .portal-content .student-week-company { margin-block:12px; }
+  .portal-content .student-week-review { margin-top:14px; padding-top:12px; }
+  .portal-content .student-week-feedback h2 { padding-bottom:12px; }
+  .portal-content :is(.showcase-identity,.showcase-role) { padding:18px 22px; }
+  .portal-content .showcase-facts { padding-bottom:12px; margin-bottom:12px; }
+  .portal-content .showcase-copy { gap:12px; margin-top:0; }
+  .portal-content .showcase-copy h3 { margin-bottom:5px; }
+  .portal-content .showcase-apply { padding-top:14px; }
+  .portal-content .showcase-controls { padding-bottom:4px; margin-block:4px; }
+  .portal-content .showcase-chooser { margin-top:4px; }
+  .portal-content .showcase-chooser button { padding:8px 4px; min-height:44px; }
+  .portal-content .showcase-identity-foot { padding-top:12px; }
+  .portal-content .showcase-identity h2 { font-size:26px; }
+  html[data-view="dashboard"] .portal-content { display:grid; grid-template-rows:92px minmax(0,1fr) minmax(0,1fr); gap:14px; overflow:hidden; }
+  html[data-view="dashboard"] .portal-content > .stats { margin:0; }
+  html[data-view="dashboard"] .portal-content .stat-card { padding:12px 16px; }
+  html[data-view="dashboard"] .portal-content > :is(.two-columns,.section-space) { margin:0; min-height:0; }
+  html[data-view="dashboard"] .portal-content > .section-space { display:flex; }
+  html[data-view="dashboard"] .portal-content :is(.two-columns > .card-surface,.section-space > .card-surface) { display:flex; flex-direction:column; min-height:0; max-height:100%; overflow:auto; width:100%; }
+  html[data-view="dashboard"] .portal-content .card-surface > h2 { flex:none; margin-bottom:10px; font-size:17px; }
+  html[data-view="dashboard"] .portal-content .card-surface > .table-wrap { flex:1; min-height:0; overflow:auto; }
+}
+@media screen and (min-width:1000px) and (min-height:600px) {
+  .portal-content > :is(.company-student-workspace,.supervisor-report-workspace) { height:100%; min-height:0; }
+  .portal-content :is(.company-student-workspace,.supervisor-report-workspace) > .report-student-directory { display:flex; flex-direction:column; max-height:100%; min-height:0; position:static; overflow:hidden; }
+  .portal-content :is(.company-student-workspace,.supervisor-report-workspace) .report-student-list { flex:1; min-height:0; max-height:none; overflow:auto; }
+  .portal-content :is(.company-student-detail,.report-student-detail) { max-height:100%; min-height:0; overflow:auto; scrollbar-gutter:stable; }
+  .portal-content .company-student-detail { height:100%; }
+  html[data-role="student"][data-view="progress"] .portal-content { display:flex; flex-direction:column; gap:0; overflow:hidden; }
+  html[data-role="student"][data-view="progress"] .portal-content > :not(.student-week-columns) { flex:none; }
+  html[data-role="student"][data-view="progress"] .portal-content .student-week-columns { flex:1; min-height:0; align-items:stretch; }
+  html[data-role="student"][data-view="progress"] .student-week-panel { overflow:auto; min-height:0; scrollbar-gutter:stable; }
+  html[data-role="student"][data-view="progress"] .student-week-panel > .help-text { font-size:12px; margin-bottom:0; }
+  html[data-view="dashboard"] .portal-content { grid-template-rows:92px minmax(0,1fr); }
+  html[data-view="dashboard"] .portal-content:has(> .section-space) { grid-template-rows:92px minmax(0,1fr) minmax(0,1fr); }
+  html[data-view="dashboard"] .portal-content > .stats { min-height:0; padding:0; }
+  html[data-view="dashboard"] .portal-content .stat-card { min-height:0; height:100%; }
+  html[data-view="dashboard"] .portal-content > .card-surface { display:flex; flex-direction:column; min-height:0; overflow:auto; }
+}
+@media screen and (min-width:1000px) and (min-height:600px) and (max-height:740px) {
+  html[data-role] .student-main > .studio-welcome { margin-block:12px; }
+  .portal-content :is(.showcase-identity,.showcase-role) { padding:14px 20px; }
+  .portal-content .showcase-copy { gap:10px; }
+  .portal-content .showcase-facts { padding-bottom:8px; margin-bottom:10px; }
+  .portal-content .showcase-identity h2 { font-size:24px; margin-block:12px; }
+  .portal-content .showcase-location { margin-bottom:16px; }
+  .portal-content .showcase-apply { padding-top:10px; }
+}
+@media screen and (min-width:1000px) and (min-height:600px) and (max-height:900px) {
+  html[data-view="dashboard"] .portal-content .stat-card { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  html[data-view="dashboard"] .portal-content .stat-card small { flex:1; min-width:0; margin:0; font-size:12px; line-height:1.4; }
+  html[data-view="dashboard"] .portal-content .stat-card strong { flex:none; font-size:24px; line-height:1.2; }
+  .portal-content .student-training-week { display:grid; grid-template-columns:1fr auto; grid-template-rows:auto 1fr; min-height:78px; padding:8px 10px; gap:4px; }
+  .portal-content .student-training-week > span { grid-column:1; grid-row:1; font-size:11px; }
+  .portal-content .student-training-week > span > .bi { display:none; }
+  .portal-content .student-training-week > small { grid-column:2; grid-row:1; margin:0; font-size:10px; }
+  .portal-content .student-training-week > strong { grid-column:1 / -1; grid-row:2; font-size:13px; line-height:1.35; }
+  .portal-content .student-week-heading p { font-size:12px; line-height:1.4; }
+  .portal-content .student-week-heading h2 { margin-block:3px; }
+  .portal-content .student-week-meta { margin-top:8px; padding-bottom:8px; line-height:1.4; }
+}
+@media screen and (min-width:1000px) and (min-height:600px) and (max-height:900px) {
+  html[data-view="dashboard"] .portal-content .card-surface { position:relative; }
+  html[data-view="dashboard"] .portal-content .card-icon { position:absolute; right:16px; top:16px; width:26px; height:26px; margin:0; font-size:15px; }
+  html[data-view="dashboard"] .portal-content .card-surface:has(> .card-icon) > h2 { padding-right:30px; }
 }

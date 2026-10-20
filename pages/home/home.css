@@ -1,19 +1,19 @@
 /* Yarmouk University: one scroll-controlled scene, with copy placed within it. */
 :root {
-  color-scheme: dark;
-  --scene-ground: #002e18;
-  --scene-deep: #002313;
-  --scene-surface: #003a1e;
+  color-scheme: light;
+  --scene-ground: #ffffff;
+  --scene-deep: #002e18;
+  --scene-surface: #f0f5f2;
   --action: #006837;
   --action-hover: #087d46;
-  --ink: #fbfaf5;
-  --ink-soft: #d1dfd5;
-  --ink-muted: #afc7b7;
+  --ink: #17352b;
+  --ink-soft: #3f554b;
+  --ink-muted: #52685c;
   --gold: #c5a059;
-  --gold-light: #e5c788;
-  --line: #346047;
-  --scrim: rgb(0 35 19 / .83);
-  --focus: #e5c788;
+  --gold-light: #8a6a2f;
+  --line: #d6e1da;
+  --scrim: rgb(16 42 31 / .45);
+  --focus: #006837;
   --font: 'DM Sans', system-ui, sans-serif;
   --type-hero: clamp(52px, 6.8vw, 104px);
   --type-display: clamp(42px, 5vw, 76px);
@@ -52,7 +52,7 @@ button:active, .primary-btn:active { filter: brightness(.88); }
 .skip-link:focus { transform: none; }
 .site-header { position: fixed; z-index: 30; top: 0; left: 0; width: 100%; height: var(--header-height); padding: var(--space-3) var(--gutter); display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); pointer-events: none; }
 .site-header a { pointer-events: auto; }
-.site-header::before { content: ''; position: absolute; inset: 0 0 -28px; z-index: -1; background: linear-gradient(var(--scene-ground) 65%, transparent); pointer-events: none; }
+.site-header::before { content: ''; position: absolute; inset: 0 0 -28px; z-index: -1; background: linear-gradient(var(--scene-ground) 65%, transparent); pointer-events: none; } /* taste-skill-ignore: existing contrast scrim over the live scene. */
 .brand img { width: 160px; height: auto; display: block; }
 .site-nav { display: flex; gap: var(--space-4); align-items: center; font-size: 14px; }
 .site-nav a { min-height: var(--control); display: inline-flex; align-items: center; white-space: nowrap; transition: color var(--transition); }
@@ -100,7 +100,7 @@ button:active, .primary-btn:active { filter: brightness(.88); }
 #chapter-complete .chapter-actions { flex-direction: column; gap: 0; margin-top: var(--space-3); }
 #chapter-faculty { left: var(--gutter); top: 39%; transform: translateY(-15%); width: min(480px, 38vw); text-align: left; }
 .stage-footer { position: absolute; isolation: isolate; left: var(--gutter); right: var(--gutter); bottom: var(--space-3); height: 66px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-4); pointer-events: auto; }
-.stage-footer::before { content: ''; position: absolute; inset: -28px calc(-1 * var(--gutter)) calc(-1 * var(--space-3)); z-index: -1; background: linear-gradient(transparent, var(--scene-ground) 45%); pointer-events: none; }
+.stage-footer::before { content: ''; position: absolute; inset: -28px calc(-1 * var(--gutter)) calc(-1 * var(--space-3)); z-index: -1; background: linear-gradient(transparent, var(--scene-ground) 45%); pointer-events: none; } /* taste-skill-ignore: existing contrast scrim over the live scene. */
 .journey-intro { font-size: var(--type-small); color: var(--ink-muted); display: flex; align-items: center; gap: var(--space-2); }
 .scroll-mark { color: var(--gold-light); font-size: 22px; }
 .chapter-stepper { display: flex; gap: var(--space-4); align-items: center; }
@@ -193,3 +193,127 @@ button:active, .primary-btn:active { filter: brightness(.88); }
   .scene-viewport { opacity: .2; }
   .static-fallback { opacity: 1; }
 }
+/* The existing assembly keeps its original 520vh scroll distance; the thread continues afterwards. */
+:root { --journey-copy-width:360px; --journey-heading:42px; --static-paper:#f4f2e9; }
+.experience-runway { height:1100vh; }
+.static-introduction, .record-illustration, .final-logo { display:none; }
+.replay-btn { color:var(--ink-soft); gap:6px; text-decoration:none; }
+.stage-controls { padding:4px 10px; border-radius:var(--radius); background:var(--scene-ground); }
+/* Clip inactive copy visually, while keeping its text in the accessibility tree. */
+.chapter-card:not(.is-active) { display:block; clip-path:inset(50%); height:1px; overflow:hidden; }
+.after-assembly #chapter-discover.is-active, .after-assembly #chapter-apply.is-active, .after-assembly #chapter-train.is-active, .after-assembly #chapter-complete.is-active, .after-assembly #chapter-faculty.is-active {
+  left:auto; right:var(--gutter); top:50%; bottom:auto; transform:translateY(-50%); width:var(--journey-copy-width); text-align:left;
+}
+.after-assembly #chapter-apply.is-active, .after-assembly #chapter-complete.is-active { left:var(--gutter); right:auto; }
+.after-assembly .chapter-title, .after-assembly #chapter-discover .chapter-title, .after-assembly #chapter-complete .chapter-title { font-size:var(--journey-heading); margin-bottom:var(--space-3); }
+.after-assembly .chapter-desc, .after-assembly #chapter-complete .chapter-desc { font-size:16px; margin-left:0; }
+.after-assembly .chapter-actions, .after-assembly #chapter-discover .chapter-actions, .after-assembly #chapter-complete .chapter-actions { flex-direction:row; justify-content:flex-start; gap:var(--space-2); }
+.after-assembly .final-logo { display:block; width:190px; height:auto; margin-bottom:var(--space-4); background:var(--scene-ground); }
+.after-assembly #chapter-faculty { width:390px; }
+.after-assembly .scene-caption, .after-assembly .stage-controls { background:var(--scene-ground); padding:6px 12px; border-radius:var(--radius); }
+.record-illustration { width:140px; height:140px; fill:none; stroke:var(--gold-light); stroke-width:2; margin-bottom:var(--space-3); }
+/* A readable document replaces camera motion on phones and for motion/WebGL fallbacks. */
+.static-journey .scene-viewport { display:none; }
+.static-journey .experience-runway { height:auto; }
+.static-journey .sticky-stage { display:flex; flex-direction:column; position:relative; height:auto; overflow:visible; padding-top:calc(var(--header-height) + var(--space-3)); }
+.static-journey .static-introduction { display:grid; place-items:center; order:-3; margin:var(--space-4) var(--gutter) var(--space-5); text-align:center; }
+.static-introduction svg { width:180px; height:180px; fill:none; stroke:var(--gold-light); stroke-width:6; }
+.static-introduction p { font-size:24px; color:var(--ink-soft); }
+.static-journey .scene-caption { display:none; }
+.static-journey .stage-controls { position:relative; inset:auto; order:-2; justify-content:flex-end; margin-inline:var(--gutter); }
+.static-journey .orbit-hint { display:none; }
+.static-journey .stage-footer { position:sticky; order:-1; inset:var(--header-height) auto auto; height:auto; min-height:85px; padding:var(--space-2) var(--gutter); margin:0; z-index:10; background:var(--scene-ground); }
+.static-journey .stage-footer::before { display:none; }
+.static-journey .counter-track { bottom:0; }
+.static-journey .chapter-container { position:relative; }
+.static-journey .chapter-card, .static-journey .chapter-card.is-active, .static-journey .chapter-card:not(.is-active) { display:block; position:relative; inset:auto !important; width:auto !important; height:auto; clip-path:none; overflow:visible; transform:none !important; text-align:left; margin:0; padding:var(--space-5) var(--gutter); scroll-margin-top:calc(var(--header-height) + 100px); }
+.static-journey .chapter-card::before { display:none; }
+.static-journey .chapter-card::after { content:''; position:absolute; left:12px; top:0; bottom:0; width:2px; background:var(--gold); }
+.static-journey .record-illustration { display:block; }
+.static-journey .final-logo { display:block; width:190px; height:auto; margin-bottom:var(--space-4); }
+.static-journey .chapter-title, .static-journey #chapter-discover .chapter-title, .static-journey #chapter-complete .chapter-title { font-size:36px; }
+.static-journey .chapter-desc { margin-left:0; }
+.static-journey .chapter-actions, .static-journey #chapter-discover .chapter-actions, .static-journey #chapter-complete .chapter-actions { justify-content:flex-start; flex-direction:row; }
+@media(min-width:761px) and (max-width:1100px) { :root { --journey-copy-width:300px; --journey-heading:36px; } .after-assembly #chapter-faculty { width:320px; } }
+@media(max-height:720px) and (min-width:761px) { :root { --journey-heading:36px; } .after-assembly .final-logo { width:150px; margin-bottom:16px; } }
+@media(max-width:760px) {
+  .stage-controls { gap:6px; font-size:11px; }
+  .static-journey .journey-intro { display:none; }
+  .static-journey .stage-footer { grid-template-columns:1fr auto; min-height:74px; }
+  .static-journey .chapter-stepper { grid-column:1; grid-row:1; justify-content:flex-start; flex-wrap:wrap; gap:0 12px; }
+  .static-journey .journey-pagination { grid-column:2; grid-row:1; }
+  .static-journey .journey-pagination button { width:30px; }
+}
+@media(scripting:none) {
+  .experience-runway { height:auto; }
+  .chapter-card::before { display:none; }
+  .static-introduction { display:grid; place-items:center; text-align:center; }
+  .scene-viewport { display:none; }
+  .record-illustration { display:block; }
+  .chapter-card:not(.is-active) { clip-path:none; height:auto; overflow:visible; }
+  .final-logo { display:block; width:190px; height:auto; margin-bottom:var(--space-4); }
+}
+.static-journey .record-transcript { position:static; width:auto; height:auto; clip-path:none; white-space:normal; padding:16px; margin-top:20px; max-width:52ch; border-radius:var(--radius); background:var(--scene-surface); color:var(--ink-soft); font-size:14px; line-height:1.65; }
+@media(scripting:none) { .record-transcript { position:static; width:auto; height:auto; clip-path:none; white-space:normal; color:var(--ink-soft); font-size:14px; line-height:1.65; } }
+@media(max-width:760px) { .site-nav .home-link { display:inline-flex; } .brand img { width:90px; } .site-nav { gap:10px; } }
+
+/* The river and alternating bank panels follow the supplied scroll-path reference. */
+:root { --river-panel-width:560px; --river-panel-padding:32px; --paper:#ffffff; --river-border:#e0e8e3; --button-ink:#ffffff; --logo-backing:#002e18; }
+.brand { padding:8px 12px; border-radius:var(--radius); background:var(--logo-backing); }
+.brand img { width:142px; }
+.primary-btn,.site-nav .login-action-btn { color:var(--button-ink); }
+.chapter-title { color:var(--action); }
+.after-assembly .chapter-card.is-river-visible { background:var(--paper); border:1px solid var(--river-border); border-radius:12px; padding:var(--river-panel-padding); box-shadow:0 8px 32px rgb(27 63 44 / .06); } /* taste-skill-ignore: owner explicitly requested the large floating panels from the supplied video reference. */
+.after-assembly .chapter-card::before { display:none; }
+.after-assembly #chapter-discover.is-river-visible,.after-assembly #chapter-train.is-river-visible,.after-assembly #chapter-faculty.is-river-visible { left:var(--gutter); right:auto; width:var(--river-panel-width); }
+.after-assembly #chapter-apply.is-river-visible,.after-assembly #chapter-complete.is-river-visible { right:var(--gutter); left:auto; width:var(--river-panel-width); }
+.after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:42px; max-width:10ch; }
+.after-assembly .chapter-desc { max-width:36ch; }
+.after-assembly .record-illustration { display:block; float:right; width:104px; height:124px; margin:0 0 16px 20px; stroke:var(--action); background:var(--scene-surface); border-radius:8px; padding:14px; }
+.after-assembly .final-logo,.static-journey .final-logo { padding:10px; background:var(--logo-backing); border-radius:var(--radius); }
+.after-assembly .scene-detail,.after-assembly .chapter-actions { clear:both; }
+.static-journey .chapter-card.is-river-visible { box-shadow:none; border:0; border-radius:0; background:transparent; }
+.static-journey .chapter-card::after { width:4px; border-radius:4px; background:#629eaa; }
+@media(min-width:901px) and (max-width:1200px) { :root { --river-panel-width:440px; --river-panel-padding:26px; } .after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:36px; } .after-assembly .record-illustration { width:80px; height:104px; margin-left:12px; } }
+@media(max-height:720px) and (min-width:901px) { :root { --river-panel-padding:24px; } .after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:36px; } .after-assembly .chapter-desc { font-size:15px; } .after-assembly .final-logo { width:150px; } }
+@media(max-width:760px) { .brand { padding:6px 8px; } .brand img { width:90px; } }
+
+.after-assembly .chapter-card.is-river-visible { display:block; height:auto; clip-path:none; overflow:visible; top:50%; bottom:auto; text-align:left; }
+.after-assembly .chapter-card:not(.is-river-visible) { clip-path:inset(50%); height:1px; overflow:hidden; }
+.static-journey.after-assembly .chapter-card { clip-path:none; height:auto; overflow:visible; padding:var(--space-5) var(--gutter); }
+@media(scripting:none) { .final-logo { background:var(--logo-backing); padding:10px; border-radius:var(--radius); } }
+
+.static-introduction .static-river { width:180px; height:90px; stroke:#629eaa; stroke-width:12; }
+
+/* Faculty copy stays left; the gate and a partial stretch of river share the right. */
+.after-assembly #chapter-faculty.is-river-visible { left:var(--gutter); right:auto; width:440px; }
+@media(min-width:901px) and (max-width:1200px) { .after-assembly #chapter-faculty.is-river-visible { width:380px; top:55%; } }
+
+/* Keep the light theme's focus target and fallback explanations readable. */
+.skip-link { background:var(--action); color:var(--button-ink); }
+.static-journey .record-transcript { font-size:16px; }
+.static-journey .site-header { background:var(--paper); }
+.static-journey .site-header::before { display:none; }
+.static-journey .stage-controls { position:sticky; top:var(--header-height); z-index:25; margin:0; padding:0 var(--gutter); min-height:46px; background:var(--paper); }
+.static-journey .stage-footer { top:calc(var(--header-height) + 46px); }
+.static-journey .chapter-card { scroll-margin-top:calc(var(--header-height) + 146px); }
+@media(scripting:none) { .record-transcript { font-size:16px; } }
+@media(max-width:760px) { .scene-caption,.scene-detail,.stage-controls { font-size:13px; } }
+@media(max-width:760px) {
+  .site-header { padding-inline:16px; gap:8px; }
+  .brand img { width:72px; }
+  .site-nav { gap:8px; }
+  .site-nav .login-action-btn { padding-inline:10px; }
+}
+
+/* Restore the original opening independently of the later river theme. */
+body:not(.after-assembly):not(.static-journey) {
+  color-scheme:dark;
+  --scene-ground:#002e18; --scene-deep:#002313; --scene-surface:#003a1e;
+  --ink:#fbfaf5; --ink-soft:#d1dfd5; --ink-muted:#afc7b7;
+  --gold-light:#e5c788; --line:#346047; --scrim:rgb(0 35 19 / .83); --focus:#e5c788;
+}
+body:not(.after-assembly):not(.static-journey) .chapter-title { color:var(--ink); }
+body:not(.after-assembly):not(.static-journey) .brand { padding:0; background:transparent; border-radius:0; }
+body:not(.after-assembly):not(.static-journey) .brand img { width:160px; }
+body:not(.after-assembly):not(.static-journey) .skip-link { background:var(--ink); color:var(--scene-deep); }

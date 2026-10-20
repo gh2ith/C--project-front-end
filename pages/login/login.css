@@ -265,32 +265,50 @@ body#page-login {
   transition: transform 0.65s var(--lb-ease);
 }
 
-/* Default state: Open */
+/* Default state: Closed (Dignified ancient stone gates locked to unauthenticated visitors) */
 .gate-door-left {
-  transform: translateX(-110px);
-}
-
-.gate-door-right {
-  transform: translateX(110px);
-}
-
-/* Closed state: Doors Slide Shut */
-.gate-panel.is-doors-closed .gate-door-left,
-.gate-panel.is-doors-closed .gate-door-right {
   transform: translateX(0);
 }
 
-/* 3. Central Gold Seal (Primary Gold Focal Point on Doors - Kept Exactly As-Is) */
-.gate-seal-medallion {
-  opacity: 0;
-  transform-origin: 250px 325px;
-  transform: scale(0.7);
-  transition: opacity 0.45s var(--lb-ease), transform 0.5s var(--lb-ease);
+.gate-door-right {
+  transform: translateX(0);
 }
 
-.gate-panel.is-doors-closed .gate-seal-medallion {
+/* Meeting strip moves with right door leaf */
+.gate-meeting-strip {
+  transition: opacity 0.4s var(--lb-ease);
+}
+
+/* 3. Central Gold Seal (Primary Gold Focal Point on Closed Doors - Kept Exactly As-Is) */
+.gate-seal-medallion {
   opacity: 1;
+  transform-origin: 250px 325px;
   transform: scale(1);
+  transition: opacity 0.45s var(--lb-ease), transform 0.5s var(--lb-ease), filter 0.45s var(--lb-ease);
+}
+
+/* Password Focus: Seal awakens with radiant golden lock pulse */
+.gate-panel.is-password-focus .gate-seal-medallion {
+  filter: drop-shadow(0 0 10px rgba(245, 223, 168, 0.95)) drop-shadow(0 0 22px rgba(197, 160, 89, 0.65));
+  animation: sealLockPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes sealLockPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.gate-panel.is-password-focus .gate-golden-thread {
+  stroke: #fff8db;
+  filter: drop-shadow(0 0 5.5px rgba(230, 198, 124, 0.85));
+}
+
+.gate-panel.is-password-focus .gate-carved-dot:not(.is-active) {
+  stroke: rgba(230, 198, 124, 0.6);
 }
 
 /* 4. Square Bronze Bosses (Password Character Visualizer) */
@@ -304,14 +322,27 @@ body#page-login {
   filter: drop-shadow(0 0 4.5px rgba(230, 198, 124, 0.85));
 }
 
-/* 5. Show Password: Narrow Gap with Warm Light Spill */
+/* 5. Behind the Doors: Receding Stone Hall & Warm Gold Light (Hidden by default when doors closed) */
+.gate-stone-hall {
+  opacity: 0;
+  transition: opacity 0.6s var(--lb-ease);
+}
+
 .gate-light-spill {
   opacity: 0;
-  transform-origin: 250px 325px;
-  transition: opacity 0.4s var(--lb-ease), transform 0.5s var(--lb-ease);
+  transition: opacity 0.6s var(--lb-ease);
   pointer-events: none;
 }
 
+.gate-light-bloom {
+  opacity: 0;
+  transform-origin: 250px 325px;
+  transform: scale(0.8);
+  transition: opacity 0.6s var(--lb-ease), transform 0.7s var(--lb-ease);
+  pointer-events: none;
+}
+
+/* Show Password: Doors crack open a narrow slit (16px), revealing warm light within */
 .gate-panel.is-password-revealed .gate-door-left {
   transform: translateX(-16px);
 }
@@ -321,14 +352,18 @@ body#page-login {
 }
 
 .gate-panel.is-password-revealed .gate-seal-medallion {
-  opacity: 0.4;
-  transform: scale(0.9);
+  opacity: 0.55;
+  transform: scale(0.92);
 }
 
+.gate-panel.is-password-revealed .gate-stone-hall,
 .gate-panel.is-password-revealed .gate-light-spill {
-  opacity: 0.92;
-  transform: scaleX(1.3);
-  filter: drop-shadow(0 0 14px rgba(230, 198, 124, 0.75));
+  opacity: 0.95;
+}
+
+.gate-panel.is-password-revealed .gate-light-bloom {
+  opacity: 0.85;
+  transform: scale(1.05);
 }
 
 /* 6. Error State: One Short, Subtle Tremor (Dignified & Calm) */
@@ -365,14 +400,23 @@ body#page-login {
 .gate-panel.is-success .gate-seal-medallion {
   opacity: 0;
   transform: scale(1.4);
-  transition: all 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.4s ease;
+}
+
+.gate-panel.is-success .gate-stone-hall {
+  opacity: 1;
+  transition: opacity 0.6s var(--lb-ease);
 }
 
 .gate-panel.is-success .gate-light-spill {
   opacity: 1;
-  transform: scale(3.2);
-  filter: drop-shadow(0 0 45px rgba(255, 235, 175, 0.9));
-  transition: all 0.95s var(--lb-ease);
+  transition: opacity 0.85s var(--lb-ease);
+}
+
+.gate-panel.is-success .gate-light-bloom {
+  opacity: 0.95;
+  transform: scale(1.35);
+  transition: opacity 0.8s var(--lb-ease), transform 0.95s var(--lb-ease);
 }
 
 /* Formal HTML Caption (Contrast >= 4.5:1, Never Clipped) */
@@ -777,6 +821,7 @@ body#page-login {
   .gate-door-leaf,
   .gate-seal-medallion,
   .gate-light-spill,
+  .gate-light-bloom,
   .gate-arch-svg {
     transition: none !important;
     animation: none !important;
@@ -789,4 +834,20 @@ body#page-login {
   .gate-panel.is-error .gate-stage-area {
     animation: none !important;
   }
+}
+/* Fit laptop sign-in controls within the available browser height. */
+@media screen and (min-width:1000px) and (min-height:600px) {
+  body#page-login, .login-page, .login-page .lb-container { height:100dvh; min-height:0; }
+  body#page-login { overflow:hidden; }
+  .login-page .lb-form-panel { min-height:0; padding:16px 28px; }
+  .login-page .lb-top-nav-bar { margin-bottom:10px; }
+  .login-page .lb-header-block, .login-page .lb-roles-section { margin-bottom:12px; }
+  .login-page .lb-auth-card { padding:16px 20px; }
+}
+@media screen and (min-width:1000px) and (max-height:740px) {
+  .login-page .lb-form-control { height:44px; min-height:44px; }
+  .login-page .lb-auth-card .mb-3 { margin-bottom:10px !important; }
+  .login-page .lb-title { font-size:24px; }
+  .login-page .lb-form-panel { padding-block:12px; }
+  .login-page .lb-form-label, .login-page .form-label { margin-bottom:5px; }
 }

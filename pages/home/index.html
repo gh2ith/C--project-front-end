@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#002e18">
+  <meta name="theme-color" content="#ffffff">
   <title>Yarmouk University — Your practical training journey</title>
   <meta name="description" content="Explore practical training at Yarmouk University. Discover an opportunity, confirm your placement, develop your skills and complete your internship.">
   <link rel="icon" href="../../assets/yarmouk-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="home.css?v=immersive-3">
+  <link rel="stylesheet" href="home.css?v=whole-river-pathway-8">
   <script src="../../shared/vendor/three.min.js" defer></script>
-  <script src="home.js?v=immersive-data-4" defer></script>
+  <script src="home.js?v=whole-river-pathway-8" defer></script>
 </head>
 <body data-scene="discover">
   <a class="skip-link" href="#chapter-discover">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="#chapter-discover" data-stage-jump="0" aria-label="Yarmouk University home"><img src="../../assets/yarmouk-logo-on-dark.svg" width="160" height="58" alt="Yarmouk University"></a>
+    <a class="brand" href="#chapter-discover" data-replay aria-label="Yarmouk University home"><img src="../../assets/yarmouk-logo-on-dark.svg" width="160" height="58" alt="Yarmouk University"></a>
     <nav class="site-nav" aria-label="Main navigation">
-      <a href="#chapter-discover" data-stage-jump="0" class="home-link">Home</a>
+      <a href="#chapter-discover" data-replay class="home-link">Home</a>
       <a href="../about/about.html">About Us</a>
       <a href="../contact/contact.html">Contact Us</a>
       <a href="../login/login.html" class="login-action-btn">Log in <span aria-hidden="true">↗</span></a>
@@ -39,38 +39,39 @@
   <main id="experience-runway" class="experience-runway" aria-label="Practical training journey">
     <div class="sticky-stage">
       <div class="scene-caption"><span>Yarmouk University</span><span>Practical training · Irbid</span></div>
-      <div class="stage-controls">
+      <div class="stage-controls"><span id="step-label">Gate assembly</span><button class="text-btn replay-btn" type="button" data-replay aria-label="Replay gate assembly">↺ <span>Replay</span></button>
         <span class="orbit-hint">Drag to inspect</span>
         <button class="motion-btn" id="motion-toggle" type="button" aria-pressed="false" aria-label="Pause ambient motion"><span class="motion-icon" aria-hidden="true">Ⅱ</span><span id="motion-label">Pause</span></button>
       </div>
 
+      <div class="static-introduction"><svg viewBox="0 0 200 200" role="img" aria-label="Assembled heritage stone gate"><path d="M40 180V95a60 60 0 01120 0v85M61 180V95a39 39 0 0178 0v85M30 183h42m56 0h42M32 143h30m76 0h30M32 110h30m76 0h30M42 72l24 12m92-12l-24 12M66 43l13 23m55-23l-13 23M100 32v23"/></svg><svg class="static-river" viewBox="0 0 200 90" aria-hidden="true"><path d="M100 0C35 20 165 35 100 55S35 75 100 90"/></svg><p>A river of possibility.</p></div>
       <div class="chapter-container">
-        <article class="chapter-card is-active" id="chapter-discover" data-chapter-index="0" aria-labelledby="discover-heading">
+        <article class="chapter-card is-active" id="chapter-discover" data-chapter-index="0" aria-labelledby="discover-heading"><svg class="record-illustration" viewBox="0 0 120 120" aria-hidden="true"><path d="M25 18h70v86H25zM39 37h42M39 49h30M39 66h42M39 78h35"/></svg>
           <h1 class="chapter-title" id="discover-heading" tabindex="-1">Your future.<br>In the making.</h1>
-          <p class="chapter-desc">Turn what you know into what you can do.<br class="desktop-break"> Your practical training journey starts at Yarmouk.</p>
+          <p class="chapter-desc">Turn what you know into what you can do.<br class="desktop-break"> Your practical training journey starts at Yarmouk.</p><p class="record-transcript a11y-sr-only">Browse public opportunity summaries. Log in to view full details and apply for a role suited to your major.</p>
           <div class="chapter-actions"><a class="primary-btn" href="../login/login.html">Explore internships <span aria-hidden="true">↗</span></a><button type="button" class="text-btn" data-open-dialog="opportunities-dialog">View open opportunities</button></div>
         </article>
-        <article class="chapter-card" id="chapter-apply" data-chapter-index="1" aria-labelledby="apply-heading">
+        <article class="chapter-card" id="chapter-apply" data-chapter-index="1" aria-labelledby="apply-heading"><svg class="record-illustration" viewBox="0 0 120 120" aria-hidden="true"><path d="M25 18h70v86H25zM39 37h42M39 49h30M39 74l14 13 28-31"/></svg>
           <h2 class="chapter-title" id="apply-heading" tabindex="-1">A place to begin.</h2>
-          <p class="chapter-desc">Find a role that fits your major. The company reviews your application; you confirm one accepted offer to make it your placement.</p>
+          <p class="chapter-desc">Find a role that fits your major. The company reviews your application; you confirm one accepted offer to make it your placement.</p><p class="record-transcript a11y-sr-only">Applications begin Pending. The company accepts or rejects them. Confirm one accepted offer to begin your placement.</p>
           <p class="scene-detail">Apply. Receive an offer. Make your choice.</p>
           <div class="chapter-actions"><a class="primary-btn" href="../login/login.html">Find your opportunity <span aria-hidden="true">↗</span></a></div>
         </article>
-        <article class="chapter-card" id="chapter-train" data-chapter-index="2" aria-labelledby="train-heading">
+        <article class="chapter-card" id="chapter-train" data-chapter-index="2" aria-labelledby="train-heading"><svg class="record-illustration" viewBox="0 0 120 120" aria-hidden="true"><path d="M25 18h70v86H25zM39 36l5 5 8-10m8 6h20M39 57l5 5 8-10m8 6h20M39 81h42m-42 8h24"/></svg>
           <h2 class="chapter-title" id="train-heading" tabindex="-1">Build your ability.</h2>
-          <p class="chapter-desc">Take on real tasks, learn from company feedback and track the hours approved by your academic supervisor.</p>
+          <p class="chapter-desc">Take on real tasks, learn from company feedback and track the hours approved by your academic supervisor.</p><p class="record-transcript a11y-sr-only">Company supervisors review your submitted work and give feedback. Your academic supervisor approves training hours independently.</p>
           <p class="scene-detail">Every task. Every revision. Every hour.</p>
           <div class="chapter-actions"><a class="primary-btn" href="../login/login.html">Continue your training <span aria-hidden="true">↗</span></a></div>
         </article>
-        <article class="chapter-card" id="chapter-complete" data-chapter-index="3" aria-labelledby="complete-heading">
+        <article class="chapter-card" id="chapter-complete" data-chapter-index="3" aria-labelledby="complete-heading"><svg class="record-illustration" viewBox="0 0 120 120" aria-hidden="true"><path d="M13 25h94v70H13zM21 33h78v54H21zM36 48h48M29 60h62M47 75h26"/></svg>
           <h2 class="chapter-title" id="complete-heading" tabindex="-1">Your next<br>beginning.</h2>
-          <p class="chapter-desc">Complete your training. Receive coordinator approval. Take your certificate into what comes next.</p>
+          <p class="chapter-desc">Complete your training. Receive coordinator approval. Take your certificate into what comes next.</p><p class="record-transcript a11y-sr-only">Completion requires reviewed work and a final report, approved hours, staff evaluations, an ended training period and coordinator approval.</p>
           <div class="chapter-actions"><a class="primary-btn" href="../login/login.html">View your progress <span aria-hidden="true">↗</span></a><button type="button" class="text-btn" data-open-dialog="requirements-dialog">Completion requirements</button></div>
         </article>
-        <article class="chapter-card" id="chapter-faculty" data-chapter-index="4" aria-labelledby="faculty-heading">
-          <h2 class="chapter-title" id="faculty-heading" tabindex="-1">Six paths.<br>One Yarmouk.</h2>
-          <p class="chapter-desc">Practical training for the Faculty of Information Technology and Computer Science. One journey, shaped by your ambition.</p>
-          <div class="chapter-actions"><button type="button" id="open-majors-modal" class="primary-btn" aria-haspopup="dialog">Explore our six majors <span aria-hidden="true">↗</span></button><a class="text-btn" href="../about/about.html">About the university</a></div>
+        <article class="chapter-card" id="chapter-faculty" data-chapter-index="4" aria-labelledby="faculty-heading"><svg class="record-illustration" viewBox="0 0 120 120" aria-hidden="true"><path d="M20 92h80M27 43v44m16-44v44m17-44v44m17-44v44m16-44v44M20 37l40-19 40 19z"/></svg>
+          <img class="final-logo" src="../../assets/yarmouk-logo-on-dark.svg" alt="Yarmouk University" width="210" height="73"><h2 class="chapter-title" id="faculty-heading" tabindex="-1">Your journey.<br>One Yarmouk.</h2>
+          <p class="chapter-desc">Let your next chapter begin at Yarmouk. Explore practical training at the Faculty of Information Technology and Computer Science.</p><p class="record-transcript a11y-sr-only">Practical training connects students, company supervisors, academic supervisors and the university internship coordinator. Explore the faculty’s six majors.</p>
+          <div class="chapter-actions"><a class="primary-btn" href="../login/login.html">Start your journey <span aria-hidden="true">↗</span></a><button type="button" id="open-majors-modal" class="text-btn" aria-haspopup="dialog">Explore our six majors</button></div>
         </article>
       </div>
 
@@ -98,7 +99,7 @@
   <dialog id="requirements-dialog" class="journey-dialog" aria-labelledby="requirements-title">
     <div class="dialog-header"><h2 id="requirements-title">Ready to complete.</h2><button type="button" class="dialog-close-btn" data-close-dialog aria-label="Close requirements">×</button></div>
     <p class="dialog-intro">The university internship coordinator reviews your record before approving completion.</p>
-    <ul class="requirements-list"><li>Company and academic final evaluations received.</li><li>Required training hours approved by your academic supervisor.</li><li>Assigned tasks evaluated and final report submitted.</li><li>A passing calculated result and the end of the training period.</li></ul>
+    <ul class="requirements-list"><li>Company and academic final evaluations received.</li><li>Required training hours approved by your academic supervisor.</li><li>Assigned tasks completed and reviewed; final report reviewed.</li><li>A passing calculated result and the end of the training period.</li></ul>
     <p class="dialog-note">Approval releases your successful-completion message and certificate. Final evaluation forms and results remain private to staff.</p>
     <a class="primary-btn" href="../login/login.html">View your training record <span aria-hidden="true">↗</span></a>
   </dialog>

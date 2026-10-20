@@ -1,6 +1,6 @@
 /* ==========================================================================
    Yarmouk University Internship Management System
-   Roman Stone Arch & The Golden Thread 3D Experience
+   Roman Stone Arch & Yarmouk River Experience
    Faculty of Information Technology and Computer Science — Irbid, Jordan
    ========================================================================== */
 
@@ -23,10 +23,8 @@
   const STAGES = [
     {
       id: "discover",
-      num: "01",
       name: "Discover",
       badge: "Stage 01 · Discover",
-      glyph: "🏛️",
       label: "Step 1 of 5",
       scrollRange: [0.0, 0.2],
       targetScroll: 0.05,
@@ -35,10 +33,8 @@
     },
     {
       id: "apply",
-      num: "02",
       name: "Apply",
       badge: "Stage 02 · Apply",
-      glyph: "📜",
       label: "Step 2 of 5",
       scrollRange: [0.2, 0.4],
       targetScroll: 0.28,
@@ -47,10 +43,8 @@
     },
     {
       id: "train",
-      num: "03",
       name: "Train",
       badge: "Stage 03 · Train",
-      glyph: "⚒️",
       label: "Step 3 of 5",
       scrollRange: [0.4, 0.65],
       targetScroll: 0.52,
@@ -59,10 +53,8 @@
     },
     {
       id: "complete",
-      num: "04",
       name: "Complete",
       badge: "Stage 04 · Complete",
-      glyph: "👑",
       label: "Step 4 of 5",
       scrollRange: [0.65, 0.85],
       targetScroll: 0.79,
@@ -71,10 +63,8 @@
     },
     {
       id: "faculty",
-      num: "05",
       name: "Our faculty",
       badge: "Our faculty",
-      glyph: "🎓",
       label: "Step 5 of 5",
       scrollRange: [0.85, 1.0],
       targetScroll: 0.95,
@@ -96,6 +86,15 @@
   const announcer = $("#a11y-announcer");
   const stepperButtons = $$(".stepper-btn");
   const chapterCards = $$(".chapter-card");
+
+  // Scroll-driven values are kept in stylesheet rules, without inline style attributes.
+  const timelineStyles=document.createElement('style');document.head.append(timelineStyles);
+  timelineStyles.sheet.insertRule('.counter-fill { width:100%; transform:scaleX(0); }');
+  const progressRule=timelineStyles.sheet.cssRules[0];
+  const chapterRules=chapterCards.map((card,index)=>{
+    timelineStyles.sheet.insertRule('#'+card.id+' { opacity:1; }',index+1);
+    return timelineStyles.sheet.cssRules[index+1];
+  });
 
   // State
   let currentStageIndex = -1;
@@ -132,6 +131,27 @@
   let goldMaterial = null;
   let threadGlowMaterial = null;
   let isSceneReady = false;
+  let journeyGroup = null;
+  let journeyCurve = null;
+
+
+  let journeyRecords = [];
+
+
+  let riverWater = null;
+  let openingLights = null;
+
+  const ASSEMBLY_END = .52;
+  const originalStages = STAGES.map(stage=>({...stage}));
+  const revealStarts = [.58,.67,.76,.85];
+  const journeyStops = [.625,.715,.805,.895,.98];
+  const riverStops = [.12,.32,.52,.72,.91];
+  const smallViewport = matchMedia('(max-width: 900px)');
+  const staticJourney = () => isReducedMotion || smallViewport.matches || document.body.classList.contains('no-webgl');
+  STAGES.forEach((stage,index)=>{
+    stage.targetScroll=journeyStops[index];
+    stage.scrollRange=[index<4?revealStarts[index]:.94,index<3?revealStarts[index+1]:index===3?.94:1];
+  });
 
   // ========================================================================
   // Procedural Stone Texture Generator (Decapolis Limestone & Carvings)
@@ -244,29 +264,35 @@
     renderer.setPixelRatio(maxPixelRatio);
     const sceneBounds = canvas.parentElement.getBoundingClientRect();
     renderer.setSize(sceneBounds.width, sceneBounds.height, false);
+    renderer.shadowMap.enabled=false;
+    renderer.shadowMap.type=T.PCFSoftShadowMap;
     renderer.outputEncoding = T.sRGBEncoding;
     renderer.toneMapping = T.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.88;
 
     scene = new T.Scene();
+    scene.fog=new T.Fog(0xffffff,170,350);
     camera = new T.PerspectiveCamera(40, sceneBounds.width / sceneBounds.height, 0.1, 100);
     camera.position.set(0, 0.4, 14.2);
 
     // Ambient & Directional Lighting tailored for Jordan limestone
-    const hemiLight = new T.HemisphereLight(0xf5edd8, 0x002e18, 0.85);
+    const hemiLight = new T.HemisphereLight(0xf5edd8, 0x002e18, 0.7);
     scene.add(hemiLight);
 
-    const mainSun = new T.DirectionalLight(0xfff3db, 2.2);
+    const mainSun = new T.DirectionalLight(0xfff3db, 1.35);
     mainSun.position.set(8, 12, 10);
     scene.add(mainSun);
+    mainSun.castShadow=true;mainSun.position.set(-30,65,75);mainSun.target.position.set(0,-3,35);scene.add(mainSun.target);
+    mainSun.shadow.mapSize.set(2048,2048);Object.assign(mainSun.shadow.camera,{left:-43,right:43,top:43,bottom:-43,near:.5,far:120});mainSun.shadow.bias=-.0004;mainSun.shadow.normalBias=.035;
 
-    const rimLight = new T.DirectionalLight(0xc5a059, 1.4);
+    const rimLight = new T.DirectionalLight(0xc5a059, 0.65);
     rimLight.position.set(-9, 6, -6);
     scene.add(rimLight);
 
-    const fillLight = new T.DirectionalLight(0x709982, 0.6);
+    const fillLight = new T.DirectionalLight(0x709982, 0.35);
     fillLight.position.set(0, -6, 8);
     scene.add(fillLight);
+    openingLights={hemiLight,mainSun,rimLight,fillLight};
 
     // Stone Materials
     const stoneTex = createProceduralStoneTexture(false);
@@ -278,7 +304,7 @@
       bumpScale: 0.04,
       roughness: 0.84,
       metalness: 0.04,
-      color: 0xdfd8c8,
+      color: 0xbab09a,
     });
 
     carvedMaterial = new T.MeshStandardMaterial({
@@ -287,7 +313,7 @@
       bumpScale: 0.09,
       roughness: 0.78,
       metalness: 0.06,
-      color: 0xe6dfcf,
+      color: 0xcac0a8,
     });
 
     goldMaterial = new T.MeshStandardMaterial({
@@ -555,6 +581,7 @@
 
     const threadCurve = new T.CatmullRomCurve3(threadPoints);
 
+
     // Glowing Golden Thread Tube
     const threadGeo = new T.TubeGeometry(threadCurve, 120, 0.045, 8, false);
     threadMesh = new T.Mesh(threadGeo, threadGlowMaterial);
@@ -578,6 +605,194 @@
   // ========================================================================
   // Update Assembly State Driven by Scroll Progress [0.0 - 1.0]
   // ========================================================================
+  // Compact channel: only a feathered bank ribbon exists, never a rectangular ground plane.
+  function buildJourney(T) {
+    journeyGroup=new T.Group();journeyGroup.name='Yarmouk river';scene.add(journeyGroup);camera.far=650;
+    journeyCurve=new T.CatmullRomCurve3([
+      new T.Vector3(0,-3.3,0),new T.Vector3(0,-3.3,4),new T.Vector3(2,-3.3,10),
+      new T.Vector3(-2,-3.3,19),new T.Vector3(2,-3.3,28),
+      new T.Vector3(-2,-3.3,37),new T.Vector3(0,-3.3,48)
+    ],false,'centripetal');
+    const segments=480,samples=journeyCurve.getSpacedPoints(segments);
+    const waterWidth=t=>1.35+Math.sin(t*19)*.09+Math.sin(t*43)*.035;
+    // Generate and reuse a small grass texture with fine blades and irregular colour.
+    const grassCanvas=document.createElement('canvas');grassCanvas.width=grassCanvas.height=512;
+    const grassContext=grassCanvas.getContext('2d'),grassPixels=grassContext.createImageData(512,512);
+    let seed=831;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    for(let i=0;i<grassPixels.data.length;i+=4){const n=(random()-.5)*9;grassPixels.data[i]=89+n;grassPixels.data[i+1]=109+n;grassPixels.data[i+2]=66+n*.65;grassPixels.data[i+3]=255;}
+    grassContext.putImageData(grassPixels,0,0);
+    for(let i=0;i<18000;i++){const x=random()*512,y=random()*512;grassContext.strokeStyle=i%3?'rgba(151,158,96,.25)':'rgba(37,66,39,.25)';grassContext.lineWidth=.6;grassContext.beginPath();grassContext.moveTo(x,y);grassContext.lineTo(x+(random()-.5)*3,y-random()*5);grassContext.stroke();}
+    const grassTexture=new T.CanvasTexture(grassCanvas);grassTexture.encoding=T.sRGBEncoding;grassTexture.wrapS=grassTexture.wrapT=T.RepeatWrapping;grassTexture.repeat.set(2,24);grassTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+    // The reference's open grassy terraces run along the WHOLE river. One distance
+    // field joins both banks without strip folds, cliffs or a separate pathway layer.
+    const bankVertices=[],bankUvs=[],bankAlpha=[],bankIndices=[];
+    const columns=128,rows=288,nearestSamples=journeyCurve.getSpacedPoints(160);
+    const riverSample=(x,z)=>{
+      let nearest=Infinity,nearestT=0,side=1;
+      for(let k=0;k<nearestSamples.length-1;k++){
+        const a=nearestSamples[k],b=nearestSamples[k+1],dx=b.x-a.x,dz=b.z-a.z;
+        const along=clamp(((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz));
+        const d=(x-a.x-dx*along)**2+(z-a.z-dz*along)**2;
+        if(d<nearest){nearest=d;nearestT=(k+along)/160;side=Math.sign((x-a.x)*dz-(z-a.z)*dx)||1;}
+      }
+      return {distance:Math.sqrt(nearest),width:waterWidth(nearestT),side};
+    };
+    const terrainHeight=(x,z,distance,width)=>{
+      const submerged=lerp(-3.85,-3.3,smoothstep(width-.7,width,distance));
+      const mound=.28+.26*Math.sin(z*.27+x*.37)**2+.18*Math.cos(z*.43-x*.24);
+      const meadow=submerged+smoothstep(width,width+1.25,distance)*(.46+mound);
+      // A level landing beneath the whole gate keeps its plinths grounded without pits.
+      return lerp(-3.32,meadow,smoothstep(.35,4,Math.abs(z)));
+    };
+    for(let i=0;i<=rows;i++)for(let j=0;j<=columns;j++){
+      const x=-12+j/columns*24,z=-5+i/rows*60,{distance,width,side}=riverSample(x,z);
+      const ends=smoothstep(-4,-.6,z)*(1-smoothstep(48,53,z));
+      const outer=width+5.1+Math.sin(z*.26+side*1.8)*.85+Math.cos(z*.59+side*.3)*.35;
+      bankVertices.push(x,terrainHeight(x,z,distance,width),z);bankUvs.push(j/columns,i/rows);
+      bankAlpha.push((1-smoothstep(outer-1.25,outer,distance))*ends);
+      if(i<rows&&j<columns){const a=i*(columns+1)+j;bankIndices.push(a,a+columns+1,a+1,a+1,a+columns+1,a+columns+2);}
+    }
+    const terrainGeometry=new T.BufferGeometry();terrainGeometry.setAttribute('position',new T.Float32BufferAttribute(bankVertices,3));terrainGeometry.setAttribute('uv',new T.Float32BufferAttribute(bankUvs,2));terrainGeometry.setAttribute('bankAlpha',new T.Float32BufferAttribute(bankAlpha,1));terrainGeometry.setIndex(bankIndices);terrainGeometry.computeVertexNormals();
+    const bankMaterial=new T.MeshStandardMaterial({map:grassTexture,bumpMap:grassTexture,bumpScale:.006,roughness:.98,metalness:0,transparent:true,depthWrite:false,opacity:0,side:T.DoubleSide});
+    bankMaterial.onBeforeCompile=shader=>{
+      shader.vertexShader='attribute float bankAlpha; varying float vBankAlpha;\n'+shader.vertexShader;
+      shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvBankAlpha = bankAlpha;');
+      shader.fragmentShader='varying float vBankAlpha;\n'+shader.fragmentShader;
+      shader.fragmentShader=shader.fragmentShader.replace('#include <alphamap_fragment>','#include <alphamap_fragment>\ndiffuseColor.a *= vBankAlpha;');
+    };
+    const land=new T.Mesh(terrainGeometry,bankMaterial);land.name='Continuous grass banks and recessed riverbed';land.receiveShadow=true;journeyGroup.add(land);
+    // Small details stay on the banks, leaving the field shoulders clear.
+    const rocks=new T.InstancedMesh(new T.DodecahedronGeometry(1,0),new T.MeshStandardMaterial({color:0xb5b4a4,roughness:1}),48);
+    const reeds=new T.InstancedMesh(new T.ConeGeometry(.045,.24,3),new T.MeshStandardMaterial({color:0x72845a,roughness:1}),72);
+    rocks.name='Small riverbank rocks';reeds.name='Small riverbank grass';
+    const detail=new T.Object3D();
+    for(const mesh of [rocks,reeds]){for(let i=0;i<mesh.count;i++){
+      const t=.035+random()*.92,p=journeyCurve.getPointAt(t),tangent=journeyCurve.getTangentAt(t),normal=new T.Vector3(tangent.z,0,-tangent.x).normalize();
+      p.addScaledVector(normal,(i%2?1:-1)*(waterWidth(t)+.35+random()*.65));
+      const sample=riverSample(p.x,p.z);
+      detail.position.set(p.x,terrainHeight(p.x,p.z,sample.distance,sample.width),p.z);detail.rotation.set(0,random()*Math.PI,0);
+      if(mesh===rocks){const size=.055+random()*.065;detail.scale.set(size,size*.65,size*1.3);}else detail.scale.setScalar(.6+random()*.4);
+      detail.updateMatrix();mesh.setMatrixAt(i,detail.matrix);
+    }journeyGroup.add(mesh);}
+    // Curved blade clusters and small pebbles stay grounded in the terraces at every stop.
+    const blades=[];
+    for(let i=0;i<7;i++){
+      const angle=i*2.39996,height=.52+(i%3)*.15,lean=.28+(i%2)*.2;
+      const rotate=(x,y,z)=>[x*Math.cos(angle)-z*Math.sin(angle),y,x*Math.sin(angle)+z*Math.cos(angle)];
+      const a=rotate(-.065,0,0),b=rotate(.065,0,0),c=rotate(lean*.32-.035,height*.48,0),d=rotate(lean*.32+.035,height*.48,0),tip=rotate(lean,height,0);
+      blades.push(...a,...b,...c,...b,...d,...c,...c,...d,...tip);
+    }
+    const bladeGeometry=new T.BufferGeometry();bladeGeometry.setAttribute('position',new T.Float32BufferAttribute(blades,3));bladeGeometry.computeVertexNormals();
+    const meadowGrass=new T.InstancedMesh(bladeGeometry,new T.MeshStandardMaterial({color:0x334c1b,roughness:1,side:T.DoubleSide}),36);
+    const meadowStones=new T.InstancedMesh(rocks.geometry,rocks.material,56);
+    meadowGrass.name='Meadow grass clumps';meadowStones.name='Meadow pebbles';
+    for(const mesh of [meadowGrass,meadowStones]){
+      mesh.userData.instances=[];mesh.userData.blend=-1;mesh.frustumCulled=false;
+      for(let i=0;i<mesh.count;i++){
+        const t=.025+random()*.92,p=journeyCurve.getPointAt(t),tangent=journeyCurve.getTangentAt(t),normal=new T.Vector3(tangent.z,0,-tangent.x).normalize();
+        const distance=waterWidth(t)+1.1+random()*2.4;
+        p.addScaledVector(normal,(i%2?1:-1)*distance);
+        const sample=riverSample(p.x,p.z),ground=terrainHeight(p.x,p.z,sample.distance,sample.width);
+        mesh.userData.instances.push({x:p.x,z:p.z,ground,angle:random()*Math.PI*2,size:mesh===meadowGrass?.85+random()*.4:.055+random()*.045});
+      }
+      journeyGroup.add(mesh);
+    }
+    // A normal map creates fine reflected ripples instead of drawn strokes on the water.
+    const normalCanvas=document.createElement('canvas');normalCanvas.width=normalCanvas.height=512;
+    const normalContext=normalCanvas.getContext('2d'),normalPixels=normalContext.createImageData(512,512);
+    for(let y=0;y<512;y++)for(let x=0;x<512;x++){
+      const u=x/512*Math.PI*2,v=y/512*Math.PI*2;
+      const a=Math.cos(u*7+Math.sin(v*3)*.6)*.28+Math.cos(u*19-v*11)*.12;
+      const b=Math.cos(v*15+Math.sin(u*4)*.5)*.31+Math.sin(u*13+v*21)*.12;
+      const at=(y*512+x)*4;normalPixels.data[at]=128+a*90;normalPixels.data[at+1]=128+b*90;normalPixels.data[at+2]=250;normalPixels.data[at+3]=255;
+    }
+    normalContext.putImageData(normalPixels,0,0);
+    const normalTexture=new T.CanvasTexture(normalCanvas);normalTexture.wrapS=normalTexture.wrapT=T.RepeatWrapping;normalTexture.repeat.set(2,18);normalTexture.anisotropy=grassTexture.anisotropy;
+    const skyCanvas=document.createElement('canvas');skyCanvas.width=512;skyCanvas.height=256;
+    const sky=skyCanvas.getContext('2d'),skyGradient=sky.createLinearGradient(0,0,0,256);
+    skyGradient.addColorStop(0,'#a9c3cc');skyGradient.addColorStop(.48,'#eff4f3');skyGradient.addColorStop(.55,'#9cafa1');skyGradient.addColorStop(1,'#546f57');sky.fillStyle=skyGradient;sky.fillRect(0,0,512,256);
+    const skyTexture=new T.CanvasTexture(skyCanvas);skyTexture.mapping=T.EquirectangularReflectionMapping;skyTexture.encoding=T.sRGBEncoding;
+    const reflection=new T.PMREMGenerator(renderer);const environment=reflection.fromEquirectangular(skyTexture).texture;reflection.dispose();skyTexture.dispose();
+    const vertices=[],uvs=[],indices=[];
+    for(let i=0;i<=segments;i++){
+      const t=i/segments,p=samples[i],tangent=journeyCurve.getTangentAt(t),normal=new T.Vector3(tangent.z,0,-tangent.x).normalize();
+      for(const side of [-1,1]){const point=p.clone().addScaledVector(normal,waterWidth(t)*side);vertices.push(point.x,point.y,point.z);uvs.push((side+1)/2,t);}
+      if(i<segments){const a=i*2;indices.push(a,a+2,a+1,a+1,a+2,a+3);}
+    }
+    const waterGeometry=new T.BufferGeometry();waterGeometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));waterGeometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));waterGeometry.setIndex(indices);waterGeometry.computeVertexNormals();
+    const waterMaterial=new T.MeshPhysicalMaterial({color:new T.Color(0x326c69).convertSRGBToLinear(),roughness:.38,metalness:.04,clearcoat:.6,clearcoatRoughness:.3,normalMap:normalTexture,normalScale:new T.Vector2(.12,.09),envMap:environment,envMapIntensity:.65,side:T.DoubleSide});
+    waterMaterial.userData.flow={time:0,reveal:0};
+    riverWater=new T.Mesh(waterGeometry,waterMaterial);riverWater.name='Flowing river surface';journeyGroup.add(riverWater);
+    journeyGroup.visible=false;
+  }
+
+  function updateJourney(progress) {
+    if(!isSceneReady||staticJourney())return;
+    if(!journeyGroup&&progress>=ASSEMBLY_END)buildJourney(window.THREE);
+    if(!journeyGroup)return;
+    journeyGroup.visible=progress>=ASSEMBLY_END;
+    if(progress<ASSEMBLY_END){threadMesh.visible=true;threadWireMesh.visible=true;return;}
+    const reveal=smoothstep(.52,.605,progress);
+    const land=journeyGroup.getObjectByName('Continuous grass banks and recessed riverbed'),finalBlend=smoothstep(.895,.98,progress);
+    land.material.opacity=reveal;
+    for(const name of ['Meadow grass clumps','Meadow pebbles']){
+      const mesh=journeyGroup.getObjectByName(name);mesh.visible=reveal>0;
+      if(mesh.userData.blend!==reveal){
+        const instance=new window.THREE.Object3D();
+        mesh.userData.instances.forEach((item,i)=>{
+          instance.position.set(item.x,item.ground,item.z);
+          instance.rotation.y=item.angle;instance.scale.setScalar(item.size*reveal);instance.updateMatrix();mesh.setMatrixAt(i,instance.matrix);
+        });
+        mesh.instanceMatrix.needsUpdate=true;mesh.userData.blend=reveal;
+      }
+    }
+    for(const name of ['Small riverbank rocks','Small riverbank grass'])journeyGroup.getObjectByName(name).visible=reveal>.98;
+    riverWater.geometry.setDrawRange(0,Math.floor(riverWater.geometry.index.count*reveal/3)*3);
+    riverWater.material.normalMap.offset.y=-idleTime*.003;
+    riverWater.material.normalMap.offset.x=Math.sin(idleTime*.07)*.008;
+    riverWater.material.normalScale.set(lerp(.12,.06,finalBlend),lerp(.09,.045,finalBlend));
+    riverWater.material.envMapIntensity=lerp(.65,.4,finalBlend);
+    riverWater.material.userData.flow={time:idleTime,reveal};
+    threadMesh.visible=progress<.565;threadWireMesh.visible=progress<.565;
+  }
+
+  function updateJourneyCamera(progress) {
+    if(!camera||!archGroup||staticJourney()||progress<ASSEMBLY_END)return;
+    const T=window.THREE,align=smoothstep(.52,.58,progress);
+    const first=new T.Vector3(0,6,16),firstLook=new T.Vector3(0,-3,5);
+    if(progress<.58) {
+      camera.position.lerp(first,align);camera.lookAt(new T.Vector3(-3.8,1,0).lerp(firstLook,align));
+      archGroup.rotation.y*=1-align;archGroup.rotation.x*=1-align;archGroup.position.y*=1-align;
+    } else {
+      const times=[.58,...journeyStops],points=riverStops.slice(0,4).map(t=>journeyCurve.getPointAt(t));
+      const looks=[firstLook,...points.map((p,i)=>new T.Vector3(p.x+(i%2?3.8:-3.8),-3.3,p.z))];
+      const poses=[first,...looks.slice(1).map(p=>new T.Vector3(p.x,6,p.z+15)),new T.Vector3(14,16,28)];
+      // Frame the gate and a partial river stretch on the right of the faculty copy.
+      looks.push(new T.Vector3(-11,-5,6));
+      let index=0;while(index<times.length-2&&progress>times[index+1])index++;
+      const t=smoothstep(times[index],times[index+1],progress);
+      camera.position.copy(poses[index]).lerp(poses[index+1],t);camera.lookAt(looks[index].clone().lerp(looks[index+1],t));
+      camera.rotateY(dragYaw*.24);camera.rotateX(dragPitch*.24);archGroup.rotation.set(0,0,0);archGroup.position.y=0;
+    }
+    camera.fov=lerp(43,52,align);camera.updateProjectionMatrix();
+  }
+
+  // Keep the original gate lighting and materials isolated from the river's appearance.
+  function restoreOpeningAppearance(progress) {
+    if(!openingLights)return;
+    const T=window.THREE,t=smoothstep(.52,.58,progress);
+    const {hemiLight,mainSun,rimLight,fillLight}=openingLights;
+    hemiLight.intensity=lerp(.85,.7,t);mainSun.intensity=lerp(2.2,1.35,t);
+    rimLight.intensity=lerp(1.4,.65,t);fillLight.intensity=lerp(.6,.35,t);
+    mainSun.position.set(lerp(8,-30,t),lerp(12,65,t),lerp(10,75,t));
+    mainSun.target.position.set(0,lerp(0,-3,t),lerp(0,35,t));
+    stoneMaterial.color.setHex(0xdfd8c8).lerp(new T.Color(0xbab09a),t);
+    carvedMaterial.color.setHex(0xe6dfcf).lerp(new T.Color(0xcac0a8),t);
+    renderer.shadowMap.enabled=progress>=ASSEMBLY_END;
+    scene.fog=progress<ASSEMBLY_END?null:scene.fog||new T.Fog(0xffffff,170,350);
+    camera.far=progress<ASSEMBLY_END?100:650;
+  }
+
   function updateArchAssembly(progress) {
     if (!isSceneReady || !archGroup) return;
 
@@ -667,11 +882,11 @@
     if (!camera || !archGroup) return;
 
     // Camera poses are sampled from the same reversible scroll timeline as the stones.
-    let stageA = STAGES[0], stageB = STAGES[0], segmentT = 0;
-    for (let i = 0; i < STAGES.length - 1; i++) {
-      if (progress >= STAGES[i].targetScroll) {
-        stageA = STAGES[i];
-        stageB = STAGES[i + 1];
+    let stageA = originalStages[0], stageB = originalStages[0], segmentT = 0;
+    for (let i = 0; i < originalStages.length - 1; i++) {
+      if (progress >= originalStages[i].targetScroll) {
+        stageA = originalStages[i];
+        stageB = originalStages[i + 1];
         segmentT = smoothstep(stageA.targetScroll, stageB.targetScroll, progress);
       }
     }
@@ -688,7 +903,7 @@
         { z: 13.3, lookX: 0, lookY: 0.45, modelY: 0 },
         { z: 15.5, lookX: -1.8, lookY: 2.3, modelY: -1.1 },
       ];
-      const a = mobilePose[STAGES.indexOf(stageA)], b = mobilePose[STAGES.indexOf(stageB)];
+      const a = mobilePose[originalStages.indexOf(stageA)], b = mobilePose[originalStages.indexOf(stageB)];
       camX *= 0.25;
       camZ = lerp(a.z, b.z, segmentT);
       lookX = lerp(a.lookX, b.lookX, segmentT);
@@ -727,70 +942,50 @@
   // DOM UI Sync (Chapter Activation, Stepper, Step N of 5)
   // ========================================================================
   function syncStageUI(progress) {
-    // Determine active stage
-    let activeIdx = 0;
-    for (let i = 0; i < STAGES.length; i++) {
-      const [minP, maxP] = STAGES[i].scrollRange;
-      if (progress >= minP && progress <= maxP) {
-        activeIdx = i;
-        break;
-      }
-      if (i === STAGES.length - 1 && progress > maxP) {
-        activeIdx = i;
-      }
+    const fallback=staticJourney(),assembly=progress<ASSEMBLY_END;
+    document.body.classList.toggle('static-journey',fallback);
+    document.body.classList.toggle('after-assembly',!assembly);
+    document.body.classList.toggle('river-overview',!fallback&&progress>=.935);
+    document.body.dataset.phase=assembly?'assembly':progress<.58?'pulse':progress<.94?'journey':'overview';
+    const source=assembly?originalStages:STAGES,p=assembly?clamp(progress/ASSEMBLY_END):progress;
+    let index=source.findIndex(stage=>p>=stage.scrollRange[0]&&p<=stage.scrollRange[1]);
+    if(!assembly&&progress<.58)index=-1;
+    if(progress>=.94)index=4;
+    if(fallback){
+      const readingLine=document.querySelector('.stage-footer').getBoundingClientRect().bottom+48;
+      index=chapterCards.findLastIndex(card=>card.getBoundingClientRect().top<readingLine);
+      // Short final chapters can reach the document end before crossing the reading line.
+      if(scrollY>0&&scrollY+innerHeight>=document.documentElement.scrollHeight-2)index=4;
     }
-
-    if (activeIdx !== currentStageIndex) {
-      const previousCard = chapterCards[currentStageIndex];
-      const moveFocus = previousCard?.contains(document.activeElement);
-      currentStageIndex = activeIdx;
-      const stage = STAGES[activeIdx];
-      document.body.dataset.scene = stage.id;
-
-      // Update Step counter & badge
-      if (stepLabel) stepLabel.textContent = stage.label;
-      if (badgeTitle) badgeTitle.textContent = stage.badge;
-      if (cueText) cueText.textContent = stage.cue;
-
-      // Update Chapter Cards visibility
-      chapterCards.forEach((card, idx) => {
-        const isActive = idx === activeIdx;
-        card.classList.toggle("is-active", isActive);
-        card.setAttribute("aria-hidden", String(!isActive));
-        card.inert = !isActive;
-      });
-      const chapterArea = $(".chapter-container");
-      if (chapterArea) chapterArea.scrollTop = 0;
-      $("#journey-previous").disabled = activeIdx === 0;
-      $("#journey-next").disabled = activeIdx === STAGES.length - 1;
-      if (moveFocus) chapterCards[activeIdx].querySelector(".chapter-title").focus({ preventScroll: true });
-
-      // Update Stepper buttons
-      stepperButtons.forEach((btn, idx) => {
-        const isActive = idx === activeIdx;
-        btn.classList.toggle("is-active", isActive);
-        if (isActive) {
-          btn.setAttribute("aria-current", "step");
-        } else {
-          btn.removeAttribute("aria-current");
-        }
-      });
-
-      // Screen reader announcement
-      if (announcer) {
-        announcer.textContent = `${stage.label}: ${stage.name}. ${stage.badge}`;
-      }
+    const previous=chapterCards[currentStageIndex],moveFocus=!fallback&&index!==currentStageIndex&&previous?.contains(document.activeElement);
+    currentStageIndex=index;
+    const caption=document.querySelector('.scene-caption span:last-child');if(caption)caption.textContent=assembly?'Practical training · Irbid':'نهر اليرموك · The Yarmouk River';
+    const stage=STAGES[Math.max(0,index)];document.body.dataset.scene=index<0?'pulse':stage.id;
+    chapterCards.forEach((card,i)=>{
+      card.classList.toggle('is-active',i===index);card.removeAttribute('aria-hidden');card.inert=false;
+      card.querySelectorAll('a,button').forEach(control=>control.tabIndex=fallback||i===index?0:-1);
+      chapterRules[i].style.opacity='1';
+      const along=(i===4?Math.min(progress,journeyStops[4]):progress)-journeyStops[i],onBank=!fallback&&!assembly&&progress>=.58&&Math.abs(along)<.11;
+      card.classList.toggle('is-river-visible',onBank);
+      // Neighbouring panels share the scroll timeline, so both banks can be seen between holds.
+      if(!fallback&&!assembly) {
+        const offset=-along/.09*innerHeight*.82,scale=1-Math.min(1,Math.abs(along)/.09)*.06;
+        chapterRules[i].style.setProperty('transform','translateY(calc(-50% + '+offset+'px)) scale('+scale+')','important');
+        chapterRules[i].style.opacity=String(1-smoothstep(.085,.11,Math.abs(along)));
+      } else chapterRules[i].style.removeProperty('transform');
+    });
+    if(moveFocus&&index>=0)chapterCards[index].querySelector('.chapter-title').focus({preventScroll:true});
+    if(index>=0&&!fallback&&!isPaused&&assembly) {
+      const [a,b]=source[index].scrollRange;
+      const opacity=(index===0?1:smoothstep(a,a+.018,p))*(index===4?1:1-smoothstep(b-.018,b,p));
+      chapterRules[index].style.opacity=String(opacity);
     }
-
-    // Text belongs to the scroll timeline: it clears before the next scene takes over.
-    const [start, end] = STAGES[activeIdx].scrollRange;
-    const entering = activeIdx === 0 ? 1 : smoothstep(start, start + 0.025, progress);
-    const leaving = activeIdx === STAGES.length - 1 ? 1 : 1 - smoothstep(end - 0.025, end, progress);
-    chapterCards[activeIdx].style.opacity = isReducedMotion || isPaused ? "1" : String(entering * leaving);
-    // Update Progress Bar
-    const percent = Math.round(progress * 100);
-    if (progressFill) progressFill.style.width = `${percent}%`;
-    if (progressBarEl) progressBarEl.setAttribute("aria-valuenow", String(percent));
+    stepperButtons.forEach((button,i)=>{button.classList.toggle('is-active',i===index);if(i===index)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');});
+    $('#journey-previous').disabled=index<=0;$('#journey-next').disabled=index===4;
+    if(stepLabel)stepLabel.textContent=fallback?stage.label:index<0?'Follow the river':assembly?'Gate assembly':stage.label;
+    if(cueText)cueText.textContent=assembly?'Scroll to assemble':index<0?'Follow the Yarmouk River':index===4?'Your next chapter begins here':['Follow the river to your opportunity','Choose where your training begins','Develop your skills along the way','Carry your experience forward'][index];
+    progressRule.style.transform='scaleX('+progress+')';progressBarEl?.setAttribute('aria-valuenow',String(Math.round(progress*100)));
+    if(announcer.dataset.stage!==String(index)+'-'+assembly){announcer.textContent=index<0?'The gate is formed. Follow the Yarmouk River.':stage.label+': '+stage.name;announcer.dataset.stage=String(index)+'-'+assembly;}
   }
 
   // ========================================================================
@@ -812,11 +1007,17 @@
       scrollProgress = targetProgress;
     }
 
-    updateArchAssembly(scrollProgress);
-    updateCameraAndOrbit(scrollProgress);
+    restoreOpeningAppearance(scrollProgress);
+    const assemblyProgress=clamp(scrollProgress/ASSEMBLY_END);
+    updateArchAssembly(assemblyProgress);
+    if(!staticJourney()) {
+      updateCameraAndOrbit(assemblyProgress);
+      updateJourney(scrollProgress);
+      updateJourneyCamera(scrollProgress);
+    }
     syncStageUI(scrollProgress);
 
-    if (isSceneReady && renderer && scene && camera) {
+    if (!staticJourney() && isSceneReady && renderer && scene && camera) {
       renderer.render(scene, camera);
     }
   }
@@ -832,6 +1033,9 @@
   }
 
   function onResize() {
+    document.body.classList.toggle('static-journey',staticJourney());
+    if(!staticJourney()&&!renderer)initThreeScene();
+    onScroll();
     if (!renderer || !camera) return;
     const { width, height } = canvas.parentElement.getBoundingClientRect();
     camera.aspect = width / height;
@@ -842,6 +1046,10 @@
 
   function jumpToStage(stageIndex) {
     if (!runway || stageIndex < 0 || stageIndex >= STAGES.length) return;
+    if(staticJourney()) {
+      chapterCards[stageIndex].scrollIntoView({behavior:'auto',block:'start'});
+      chapterCards[stageIndex].querySelector('.chapter-title').focus({preventScroll:true});return;
+    }
     const targetP = STAGES[stageIndex].targetScroll;
     const maxScroll = runway.offsetHeight - window.innerHeight;
     const targetY = targetP * maxScroll;
@@ -857,6 +1065,7 @@
       event.preventDefault();
       chapterCards[Math.max(0, currentStageIndex)].querySelector(".chapter-title").focus({ preventScroll: true });
     });
+    document.querySelectorAll('[data-replay]').forEach(button=>button.addEventListener('click',event=>{event.preventDefault();window.scrollTo({top:0,behavior:staticJourney()?'auto':'smooth'});}));
     // Scroll listener
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
@@ -953,6 +1162,7 @@
     // Reduced motion listener
     motionMediaQuery.addEventListener("change", (e) => {
       isReducedMotion = e.matches;
+      if(!staticJourney()&&!renderer)initThreeScene();
       document.body.classList.toggle("reduced-motion", isReducedMotion);
       if (isReducedMotion) {
         targetDragYaw = 0;
@@ -1045,7 +1255,7 @@
   // ========================================================================
   function init() {
     document.body.classList.toggle("reduced-motion", isReducedMotion);
-    initThreeScene();
+    if(!staticJourney())initThreeScene();
     setupInteractions();
     loadOpportunityPreviews();
     onScroll();
@@ -1058,9 +1268,14 @@
       getProgress: () => scrollProgress,
       jumpTo: jumpToStage,
       toggleMotion: () => motionToggle && motionToggle.click(),
-      scene,
-      camera,
-      archGroup,
+      get scene(){return scene;},
+      get camera(){return camera;},
+      get archGroup(){return archGroup;},
+      getJourney:()=>journeyGroup,
+      getRecords:()=>journeyRecords,
+      getCurve:()=>journeyCurve,
+      getRenderer:()=>renderer,
+      getStops:()=>journeyStops,
     };
   }
 

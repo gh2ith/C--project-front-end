@@ -197,7 +197,7 @@
         )
         .join(
           "",
-        )}</nav>${accountControl()}</div><header class="studio-welcome"><div><p class="studio-kicker">${E(kicker)}</p><h1>${E(heading)}</h1><p>${E(description)}</p></div><div class="studio-welcome-actions">${action}</div></header>${content}</main></div>`;
+        )}</nav>${accountControl()}</div><header class="studio-welcome"><div><p class="studio-kicker">${E(kicker)}</p><h1>${E(heading)}</h1><p>${E(description)}</p></div><div class="studio-welcome-actions">${action}</div></header><div class="portal-content student-content" tabindex="0" role="region" aria-label="Page content">${content}</div></main></div>`;
     document.getElementById("app").removeAttribute("aria-busy");
   }
   function shell(content, description = "", action = "") {
@@ -216,7 +216,7 @@
         )
         .join(
           "",
-        )}</nav><div class="sidebar-bottom"><span class="sidebar-section-label">Account</span><button class="sidebar-pin" type="button" role="switch" aria-checked="false"><span>Keep sidebar open</span><span class="sidebar-pin-track" aria-hidden="true"></span></button><a class="sidebar-profile ${view === "account" ? "active" : ""}" ${view === "account" ? 'aria-current="page"' : ""} href="${url(role, "account")}" aria-label="Profile" title="Profile">${icon("person-circle")}<span class="sidebar-profile-copy"><strong>${E(U.user.name)}</strong><small>View profile</small></span></a><button type="button" data-action="theme" aria-label="Change appearance" title="Change appearance">${icon("moon-stars")}<span>Dark / light mode</span></button><button type="button" data-action="logout" aria-label="Log out" title="Log out">${icon("box-arrow-right")}<span>Log out</span></button></div></aside></div><main class="workspace-main" id="main">${accountControl()}<button class="ui-button mobile-toggle portal-menu-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("list")}<span>Menu</span></button><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div>${content}</main></div>`;
+        )}</nav><div class="sidebar-bottom"><span class="sidebar-section-label">Account</span><button class="sidebar-pin" type="button" role="switch" aria-checked="false"><span>Keep sidebar open</span><span class="sidebar-pin-track" aria-hidden="true"></span></button><a class="sidebar-profile ${view === "account" ? "active" : ""}" ${view === "account" ? 'aria-current="page"' : ""} href="${url(role, "account")}" aria-label="Profile" title="Profile">${icon("person-circle")}<span class="sidebar-profile-copy"><strong>${E(U.user.name)}</strong><small>View profile</small></span></a><button type="button" data-action="theme" aria-label="Change appearance" title="Change appearance">${icon("moon-stars")}<span>Dark / light mode</span></button><button type="button" data-action="logout" aria-label="Log out" title="Log out">${icon("box-arrow-right")}<span>Log out</span></button></div></aside></div><main class="workspace-main" id="main">${accountControl()}<button class="ui-button mobile-toggle portal-menu-toggle" type="button" data-action="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="portal-navigation">${icon("list")}<span>Menu</span></button><div class="page-title"><div><span class="partner">YARMOUK UNIVERSITY · FACULTY OF IT & COMPUTER SCIENCE</span><h1>${E(title())}</h1><p>${E(description)}</p></div>${action}</div><div class="portal-content" tabindex="0" role="region" aria-label="Page content">${content}</div></main></div>`;
     document.getElementById("app").removeAttribute("aria-busy");
     window.YarmoukChrome?.mountSidebar();
   }
@@ -238,8 +238,21 @@
       );
     } else if (view === "contact") {
       publicShell(
-        `<span class="partner">CONTACT THE INTERNSHIP COORDINATOR</span><h1>Let's get you moving.</h1><p class="lead">Have a question about the internship process? Leave your details and message for the university internship coordinator.</p><div class="two-columns section-space">${card("Send a message", form("contact", field("Name", "name") + field("Email address", "email", "", "email") + field("Subject", "subject") + textarea("Message", "message"), "Save message"))}${card("Yarmouk University", `<p>Faculty of Information Technology and Computer Science<br>Irbid, Jordan</p><p class="section-space">Messages are saved in this browser session. Firebase delivery will be available after integration.</p>`, "geo-alt")}</div>`,
+        `<div class="contact-layout">
+          <section class="contact-introduction" aria-labelledby="contact-title">
+            <p class="contact-context">Practical training at Yarmouk</p><h1 id="contact-title">Contact Us</h1>
+            <p class="contact-lead">Have a question about your internship? Leave a message for your university internship coordinator.</p>
+            <div class="contact-letter-mount"></div>
+          </section>
+          <section class="contact-form-panel" data-ui aria-labelledby="contact-form-title">
+            <header class="contact-form-heading"><h2 id="contact-form-title">Leave a message</h2><p>All fields are required.</p></header>
+            ${form("contact", field("Name", "name") + field("Email address", "email", "", "email") + field("Subject", "subject") + textarea("Message", "message"), "Save message")}
+            <p class="contact-session-note">${icon("info-circle")}<span>Messages are saved in this browser session.</span></p>
+          </section>
+          <dl class="contact-directory"><div><dt>Faculty</dt><dd>Information Technology and<br class="contact-desktop-break"> Computer Science</dd></div><div><dt>Location</dt><dd>Yarmouk University<br>Irbid, Jordan</dd></div></dl>
+        </div>`,
       );
+      document.querySelector('.public-header nav a[href="../contact/contact.html"]').setAttribute("aria-current", "page");
     } else {
       if (!U.user) {
         location.replace("../login/login.html");
@@ -1232,6 +1245,8 @@
           });
           el.reset();
           toast("Message saved in this browser session.");
+          // Animate the illustration only after the existing save succeeds.
+          el.dispatchEvent(new CustomEvent("contact:saved", { bubbles: true }));
           return;
         case "first-login":
           if (get("temporary") === get("password"))

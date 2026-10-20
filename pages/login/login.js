@@ -133,20 +133,20 @@
     });
   }
 
-  // State 3 & 4: Password Focus, Typing Dots & Door Closure
+  // State 3 & 4: Password Focus & Typing Dot Arming
   function initPasswordReactions() {
     if (!passwordInput || !gatePanel) return;
 
-    // Focus: Doors slide shut smoothly and deliberately
+    // Focus: Password field selected -> Activate seal aura & lock mechanism
     passwordInput.addEventListener("focus", () => {
       gatePanel.classList.add("is-password-focus", "is-doors-closed");
     });
 
-    // Blur: Reopen doors only if password field is completely empty
+    // Blur: Deactivate focus glow; reset reveal if empty
     passwordInput.addEventListener("blur", () => {
       gatePanel.classList.remove("is-password-focus");
       if (passwordInput.value.length === 0) {
-        gatePanel.classList.remove("is-doors-closed", "is-password-revealed");
+        gatePanel.classList.remove("is-password-revealed");
         resetCarvedDots();
       }
     });
@@ -158,10 +158,6 @@
       carvedDots.forEach((dot, index) => {
         dot.classList.toggle("is-active", index < charCount);
       });
-
-      if (passwordInput.value.length > 0) {
-        gatePanel.classList.add("is-doors-closed");
-      }
     });
   }
 
@@ -258,9 +254,9 @@
     if (emailError) emailError.style.display = "none";
     if (passwordError) passwordError.style.display = "none";
 
-    // Reopen doors if password was cleared
+    // Reset typing dots & reveal state if password was cleared
     if (passwordInput && passwordInput.value.length === 0 && gatePanel) {
-      gatePanel.classList.remove("is-doors-closed", "is-password-revealed");
+      gatePanel.classList.remove("is-password-revealed");
       resetCarvedDots();
     }
   }
