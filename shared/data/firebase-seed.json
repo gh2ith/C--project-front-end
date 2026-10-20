@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "university": {
+    "id": "yarmouk",
+    "name": "Yarmouk University",
+    "nameAr": "جامعة اليرموك",
+    "city": "Irbid",
+    "college": "Faculty of Information Technology and Computer Science",
+    "majors": {
+      "cs": {
+        "name": "Computer Science"
+      },
+      "cis": {
+        "name": "Computer Information Systems"
+      },
+      "bit": {
+        "name": "Business Information Technology"
+      },
+      "cys": {
+        "name": "Cybersecurity"
+      },
+      "dai": {
+        "name": "Data Science and Artificial Intelligence"
+      },
+      "drg": {
+        "name": "Digital Reality and Game Development"
+      }
+    }
+  },
+  "policy": {
+    "sourceUrl": "https://it.yu.edu.jo/images/IT_Faculty/Practical_Training_-_RULES.pdf",
+    "sourceScope": "CIS498 Computer Information Systems; proposed baseline for the other majors pending their departmental confirmation.",
+    "summerWeeks": 8,
+    "summerHoursPerWeek": 36,
+    "regularWeeks": 14,
+    "regularHoursPerWeek": 18,
+    "minimumCredits": 98,
+    "passMark": 50,
+    "companyMaximum": 20,
+    "academicMaximum": 30,
+    "reportMaximum": 25,
+    "presentationMaximum": 25,
+    "interpretation": "The final report and presentation component carries 50%. Split equally (25 + 25) as a documented implementation assumption; the published wording does not unambiguously allocate the subcomponents.",
+    "hoursApproval": "Company supervisor records dated hours; academic supervisor verifies or returns them. This digital approval sequence is a proposed implementation process, not a published university requirement.",
+    "maximumGroupSize": 9
+  },
+  "users": {
+    "coordinator-1": {
+      "name": "Rana Al-Khatib",
+      "email": "coordinator@yu.edu.jo",
+      "role": "coordinator",
+      "phone": "+962 2 721 1111",
+      "firstLogin": false,
+      "status": "Active"
+    },
+    "academic-1": {
+      "name": "Dr. Ahmad Haddad",
+      "email": "academic@yu.edu.jo",
+      "role": "supervisor",
+      "phone": "",
+      "firstLogin": false,
+      "status": "Active",
+      "department": "Information Systems"
+    },
+    "academic-2": {
+      "name": "Dr. Lina Al-Zoubi",
+      "email": "lina@yu.edu.jo",
+      "role": "supervisor",
+      "phone": "",
+      "firstLogin": false,
+      "status": "Active",
+      "department": "Computer Science"
+    },
+    "company-1": {
+      "name": "Omar Al-Nasser",
+      "email": "supervisor@northstar.example",
+      "role": "company",
+      "companyId": "northstar",
+      "phone": "",
+      "firstLogin": false,
+      "status": "Active",
+      "jobTitle": "Engineering Lead"
+    },
+    "company-2": {
+      "name": "Sara Khalil",
+      "email": "supervisor@horizon.example",
+      "role": "company",
+      "companyId": "horizon",
+      "phone": "",
+      "firstLogin": false,
+      "status": "Active",
+      "jobTitle": "Training Supervisor"
+    },
+    "student-1": {
+      "name": "Ghaith Amourah",
+      "email": "student1@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "cs",
+      "studentNumber": "2023100001",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-1",
+      "firstLogin": true,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    },
+    "student-2": {
+      "name": "Noor Al-Omari",
+      "email": "student2@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "cis",
+      "studentNumber": "2023100002",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-1",
+      "firstLogin": false,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    },
+    "student-3": {
+      "name": "Yazan Al-Ahmad",
+      "email": "student3@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "bit",
+      "studentNumber": "2023100003",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-1",
+      "firstLogin": false,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    },
+    "student-4": {
+      "name": "Hala Al-Zoubi",
+      "email": "student4@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "cys",
+      "studentNumber": "2023100004",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-2",
+      "firstLogin": false,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    },
+    "student-5": {
+      "name": "Leen Haddad",
+      "email": "student5@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "dai",
+      "studentNumber": "2023100005",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-2",
+      "firstLogin": false,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    },
+    "student-6": {
+      "name": "Omar Bani Hani",
+      "email": "student6@students.yu.edu.jo",
+      "role": "student",
+      "phone": "",
+      "majorId": "drg",
+      "studentNumber": "2023100006",
+      "completedCredits": 105,
+      "requiredHours": 288,
+      "term": "Summer",
+      "groupId": "group-2",
+      "firstLogin": false,
+      "status": "Active",
+      "cvLink": "",
+      "portfolioLink": ""
+    }
+  },
+  "companies": {
+    "northstar": {
+      "name": "Northstar Software",
+      "city": "Irbid",
+      "industry": "Software development",
+      "website": "https://example.com"
+    },
+    "horizon": {
+      "name": "Horizon Digital",
+      "city": "Amman",
+      "industry": "Digital technology",
+      "website": "https://example.com"
+    }
+  },
+  "groups": {
+    "group-1": {
+      "name": "IT Group A",
+      "supervisorId": "academic-1"
+    },
+    "group-2": {
+      "name": "IT Group B",
+      "supervisorId": "academic-2"
+    }
+  },
+  "opportunities": {
+    "opportunity-1": {
+      "title": "Software Development Intern",
+      "companyId": "northstar",
+      "supervisorId": "company-1",
+      "majorIds": [
+        "cs",
+        "cis",
+        "bit"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Irbid"
+    },
+    "opportunity-2": {
+      "title": "Cybersecurity Intern",
+      "companyId": "horizon",
+      "supervisorId": "company-2",
+      "majorIds": [
+        "cys",
+        "cs"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Amman"
+    },
+    "opportunity-3": {
+      "title": "Data and AI Intern",
+      "companyId": "northstar",
+      "supervisorId": "company-1",
+      "majorIds": [
+        "dai",
+        "cis"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Irbid"
+    },
+    "opportunity-4": {
+      "title": "Digital Reality and Game Development Intern",
+      "companyId": "horizon",
+      "supervisorId": "company-2",
+      "majorIds": [
+        "drg",
+        "cs"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Amman"
+    },
+    "opportunity-5": {
+      "title": "Business Systems Intern",
+      "companyId": "horizon",
+      "supervisorId": "company-2",
+      "majorIds": [
+        "bit",
+        "cis"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Amman"
+    },
+    "opportunity-6": {
+      "title": "Information Systems Intern",
+      "companyId": "northstar",
+      "supervisorId": "company-1",
+      "majorIds": [
+        "cis",
+        "cs"
+      ],
+      "description": "Work with the team on practical projects, receive guided assignments, and document your learning throughout the internship.",
+      "requirements": "Relevant major, foundational technical skills, clear communication, and commitment to the agreed training schedule.",
+      "seats": 4,
+      "status": "Open",
+      "deadline": "2026-11-30",
+      "location": "Irbid"
+    }
+  },
+  "applications": {
+    "application-1": {
+      "studentId": "student-2",
+      "opportunityId": "opportunity-1",
+      "status": "Confirmed",
+      "statement": "I want to develop practical software engineering skills.",
+      "createdAt": "2026-10-01T09:00:00Z",
+      "reason": ""
+    },
+    "application-2": {
+      "studentId": "student-3",
+      "opportunityId": "opportunity-5",
+      "status": "Pending",
+      "statement": "I am interested in business information systems.",
+      "createdAt": "2026-10-18T09:00:00Z",
+      "reason": ""
+    }
+  },
+  "placements": {
+    "placement-1": {
+      "studentId": "student-2",
+      "opportunityId": "opportunity-1",
+      "companyId": "northstar",
+      "companySupervisorId": "company-1",
+      "startDate": "2026-10-01",
+      "endDate": "2026-11-25",
+      "status": "Active"
+    }
+  },
+  "tasks": {
+    "task-1": {
+      "placementId": "placement-1",
+      "title": "Build an accessible application form",
+      "description": "Create a responsive application form with visible labels, validation and a clear confirmation.",
+      "deadline": "2026-10-28",
+      "kind": "Task",
+      "criteria": [
+        {
+          "label": "Functionality",
+          "maximum": 10
+        },
+        {
+          "label": "Accessibility",
+          "maximum": 5
+        },
+        {
+          "label": "Documentation",
+          "maximum": 5
+        }
+      ],
+      "createdBy": "company-1"
+    },
+    "task-2": {
+      "placementId": "placement-1",
+      "title": "Final internship report",
+      "description": "Describe your training, assigned work, acquired skills and supporting evidence. Submit within one week of the end of training.",
+      "deadline": "2026-12-02",
+      "kind": "Final report",
+      "criteria": [
+        {
+          "label": "Report quality",
+          "maximum": 25
+        }
+      ],
+      "createdBy": "company-1"
+    }
+  },
+  "submissions": {},
+  "hourEntries": {
+    "hours-1": {
+      "placementId": "placement-1",
+      "date": "2026-10-18",
+      "hours": 6,
+      "description": "Application form implementation and review",
+      "status": "Pending",
+      "recordedBy": "company-1",
+      "reviewNote": ""
+    }
+  },
+  "academicComments": {},
+  "companyEvaluations": {},
+  "academicEvaluations": {},
+  "completions": {},
+  "contactMessages": {}
+}

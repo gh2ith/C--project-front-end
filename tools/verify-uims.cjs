@@ -1,0 +1,70 @@
+/* End-to-end local frontend verification. Test fixtures affect only an isolated browser session. */
+const {chromium}=require('C:/Users/user/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const BASE='http://127.0.0.1:8080/';
+(async()=>{
+ const browser=await chromium.launch({channel:'chrome',headless:true});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true});const page=await context.newPage();const errors=[],checks=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ const ok=(name,value=true)=>{assert(value,name);checks.push(name);console.log('PASS',name);};
+ const go=async(role,view)=>{await page.goto(`${BASE}pages/${role}-${view}/${role}-${view}.html`);await page.waitForSelector('main h1');};
+ const sign=async uid=>{await page.evaluate(id=>UIMS.signIn(id),uid);};
+ const fill=async(name,value)=>page.locator(`dialog[open] [name="${name}"]`).fill(String(value));
+ const submit=async()=>{await page.locator('dialog[open] [type=submit]').click();};
+ const click=async(action,id)=>page.locator(`[data-action="${action}"]${id?`[data-id="${id}"]`:''}`).first().click();
+ await page.goto(BASE+'pages/login/login.html');await page.evaluate(()=>UIMS.ready);
+ await page.locator('#loginEmail').fill('student1@students.yu.edu.jo');await page.locator('#loginPassword').fill('Temporary1!');await page.locator('#loginSubmitBtn').click();await page.waitForURL('**/first-login.html');ok('First login routes to password setup');
+ await page.locator('[name=temporary]').fill('Temporary1!');await page.locator('[name=password]').fill('Replacement2!');await page.locator('[name=confirm]').fill('Replacement2!');await page.locator('[type=submit]').click();await page.waitForURL('**/student-dashboard.html');
+ ok('Password setup stores no passwords',await page.evaluate(()=>!JSON.stringify(sessionStorage).includes('Replacement2!')&&!JSON.stringify(sessionStorage).includes('Temporary1!')));
+ await go('student','opportunities');await click('opportunity');await page.getByRole('link',{name:'Apply for this internship'}).click();await page.waitForURL('**/student-apply.html?*');await page.locator('[name=statement]').fill('I want to learn practical software development.');await page.locator('[type=submit]').click();await page.waitForURL('**/student-applications.html');
+ const app1=await page.evaluate(()=>UIMS.all('applications').find(a=>a.studentId==='student-1').id);ok('Applying creates Pending with no placement',await page.evaluate(id=>UIMS.db.applications[id].status==='Pending'&&!UIMS.placement('student-1'),app1));
+ await sign('company-1');await go('company','applications');await click('application',app1);await click('accept',app1);ok('Company acceptance does not create placement',await page.evaluate(()=>!UIMS.placement('student-1')));
+ await sign('student-1');await go('student','applications');await click('confirm-offer',app1);await click('confirm-offer-final',app1);ok('Student confirmation creates internship',await page.evaluate(()=>!!UIMS.placement('student-1')));
+ ok('Duplicate confirmation blocked',await page.evaluate(id=>{try{UIMS.confirmOffer(id);return false;}catch{return true;}},app1));
+ await sign('company-2');await go('company','applications');await click('application','application-2');await click('reject','application-2');await fill('reason','The current role requires a different technical background.');await submit();ok('Company rejection includes reason',await page.evaluate(()=>UIMS.db.applications['application-2'].status==='Rejected'&&!!UIMS.db.applications['application-2'].reason));
+ await sign('company-1');await go('company','tasks');await click('new-task');await fill('title','Build a validation component');await fill('deadline','2026-11-15');await fill('description','Implement clear validation and explain the decisions.');await page.locator('dialog [name=placementId]').selectOption('placement-1');await fill('criterionLabel','Validation quality');await submit();ok('Company task creation',await page.evaluate(()=>UIMS.all('tasks').some(t=>t.title==='Build a validation component')));
+ await sign('student-2');await go('student','tasks');await click('task','task-1');await fill('description','Implemented the responsive form and documented validation.');await page.locator('dialog [name=file]').setInputFiles({name:'work.txt',mimeType:'text/plain',buffer:Buffer.from('Accessible application form implementation')});await submit();
+ let sid=await page.evaluate(()=>UIMS.latestSubmission('task-1').id);ok('Student submission retains local attachment',await page.evaluate(id=>!!UIMS.db.submissions[id].file.dataUrl,sid));
+ await sign('company-1');await go('company','tasks');await click('task','task-1');await click('review-submission',sid);await page.locator('dialog [name=decision]').selectOption('revision');await fill('feedback','Add visible labels and improve the error summary.');await submit();
+ ok('Revision request does not require scores',await page.evaluate(()=>UIMS.taskState('task-1')==='Revision requested'));
+ await sign('student-2');await go('student','tasks');await click('task','task-1');await fill('description','Added visible labels and improved the error summary.');await submit();sid=await page.evaluate(()=>UIMS.latestSubmission('task-1').id);
+ await sign('company-1');await go('company','tasks');await click('task','task-1');await click('review-submission',sid);for(let i=0;i<3;i++)await fill('score'+i,[9,5,5][i]);await fill('feedback','The revised form meets the criteria.');await submit();
+ ok('Submission history retains revision and evaluation',await page.evaluate(()=>UIMS.all('submissions').filter(s=>s.taskId==='task-1').length===2&&UIMS.taskState('task-1')==='Evaluated'));
+ ok('Task evaluation does not approve hours',await page.evaluate(()=>UIMS.approvedHours('placement-1')===0));
+ await sign('academic-1');await go('supervisor','progress');await click('review-hours','hours-1');await fill('reviewNote','Verified against the company record.');await submit();ok('Assigned academic supervisor approves hours separately',await page.evaluate(()=>UIMS.approvedHours('placement-1')===6));
+ await click('academic-comment','placement-1');await fill('comment','Your revised application form shows good progress.');await submit();ok('Academic feedback saved',await page.evaluate(()=>UIMS.all('academicComments').length===1));
+ await sign('company-1');await go('company','trainees');await click('placement','placement-1');await click('record-hours','placement-1');await fill('date','2026-10-17');await fill('hours','2');await fill('description','Training work requiring a corrected record.');await submit();const hoursId=await page.evaluate(()=>UIMS.all('hourEntries').find(h=>h.date==='2026-10-17').id);
+ await sign('academic-1');await go('supervisor','progress');await click('review-hours',hoursId);await page.locator('dialog [name=decision]').selectOption('return');await fill('reviewNote','Please correct the hours to match the company record.');await submit();
+ await sign('company-1');await go('company','trainees');await click('placement','placement-1');await click('correct-hours',hoursId);await fill('hours','3');await fill('description','Corrected training hours against the company record.');await submit();const correctedId=await page.evaluate(id=>UIMS.all('hourEntries').find(h=>h.replacesId===id).id,hoursId);
+ await sign('academic-1');await go('supervisor','progress');await click('review-hours',correctedId);await submit();ok('Returned hours can be corrected and reverified with history retained',await page.evaluate(id=>UIMS.db.hourEntries[id].status==='Returned'&&UIMS.approvedHours('placement-1')===9,hoursId));
+ await sign('coordinator-1');await go('coordinator','completion');ok('Premature completion blocked',await page.evaluate(()=>{try{UIMS.approveCompletion('placement-1');return false;}catch{return true;}}));
+ await go('coordinator','students');await click('new-account','student');ok('Student creation requires group and omits status/password',await page.locator('dialog [name=groupId]').count()===1&&await page.locator('dialog [name=status]').count()===0&&await page.locator('dialog [type=password]').count()===0);await click('close');
+ await page.goto(BASE+'pages/contact/contact.html');for(const [name,value] of Object.entries({name:'A Visitor',email:'visitor@example.com',subject:'Internship question',message:'How do I access my student account?'}))await page.locator(`[name=${name}]`).fill(value);await page.locator('[type=submit]').click();await sign('coordinator-1');await go('coordinator','messages');ok('Contact messages reach coordinator',await page.locator('td').filter({hasText:'Internship question'}).count()===1);
+ // Complete all remaining work in an isolated fixture to exercise actual final-evaluation forms.
+ await page.evaluate(()=>{
+   const U=UIMS,p=U.db.placements['placement-1'];p.startDate='2026-09-01';p.endDate='2026-10-19';
+   U.db.hourEntries={};for(let i=1;i<=24;i++)U.db.hourEntries['fixture-hours-'+i]={placementId:'placement-1',date:'2026-09-'+String(i).padStart(2,'0'),hours:12,description:'Verified training work',status:'Approved',recordedBy:'company-1',reviewedBy:'academic-1'};
+   for(const t of U.all('tasks').filter(t=>t.placementId==='placement-1'&&t.id!=='task-1'))U.db.submissions['fixture-'+t.id]={taskId:t.id,studentId:'student-2',description:'Completed work and final report',createdAt:new Date().toISOString(),status:'Evaluated',review:{scores:t.criteria.map(c=>c.maximum),feedback:'Reviewed and ready for academic assessment.',reviewedBy:'company-1',reviewedAt:new Date().toISOString()}};
+   U.save();
+ });
+ await sign('company-1');await go('company','evaluations');for(let i=0;i<4;i++)await page.locator(`[name=score${i}]`).fill('4');await page.locator('[name=comments]').fill('The student completed the training and demonstrated professional progress.');await page.locator('[type=submit]').filter({hasText:'Send to academic supervisor'}).click();ok('Company final evaluation sent independently',await page.evaluate(()=>UIMS.db.companyEvaluations['placement-1'].total===16));
+ await sign('academic-1');await go('supervisor','evaluations');for(const [name,value] of Object.entries({academicScore:'27',reportScore:'22',presentationScore:'23',comments:'Academic work, final report and presentation have been assessed.'}))await page.locator(`[name=${name}]`).fill(value);await page.locator('[type=submit]').filter({hasText:'Send to coordinator'}).click();ok('Weighted result is automatically calculated',await page.evaluate(()=>UIMS.finalResult('placement-1')===88));
+ await sign('student-2');await go('student','progress');ok('Student cannot see final evaluations or result',!((await page.locator('main').innerText()).includes('88 / 100'))&&await page.locator('[name=academicScore]').count()===0);
+ await go('coordinator','completion');ok('Role route guard prevents student accessing coordinator',await page.getByRole('heading',{name:'Open your workspace'}).count()===1);
+ await sign('coordinator-1');await go('coordinator','completion');await click('approve-completion','placement-1');await click('approve-completion-final','placement-1');ok('Coordinator approval completes internship',await page.evaluate(()=>UIMS.db.placements['placement-1'].status==='Completed'));
+ await sign('student-2');await go('student','progress');ok('Student receives completion message',await page.getByRole('heading',{name:'Internship completed.'}).count()===1);
+ const downloadPromise=page.waitForEvent('download');await click('download-certificate','placement-1');const download=await downloadPromise;await download.saveAs('output/completion-certificate.pdf');ok('Download is a real PDF',fs.readFileSync('output/completion-certificate.pdf').subarray(0,5).toString()==='%PDF-');
+ await click('certificate','placement-1');await page.screenshot({path:'output/certificate-preview.png'});await click('close');
+ ok('Completed internship mutations are blocked',await page.evaluate(()=>{UIMS.signIn('company-1');try{UIMS.recordHours({placementId:'placement-1',date:'2026-10-01',hours:1,description:'late'});return false;}catch{return true;}}));
+ ok('Other company ownership is enforced',await page.evaluate(()=>{UIMS.signIn('company-2');try{UIMS.createTask({placementId:'placement-1'});return false;}catch{return true;}}));
+ // Crawl every required role page at desktop and phone widths, in a fresh independent session.
+ await context.close();const crawl=await browser.newContext({viewport:{width:1440,height:1000}});const p=await crawl.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(BASE+'pages/contact/contact.html');await p.evaluate(()=>UIMS.ready);
+ const roles={student:'student-2',company:'company-1',supervisor:'academic-1',coordinator:'coordinator-1'};
+ for(const folder of fs.readdirSync('pages')){
+   const r=folder.split('-')[0];if(!roles[r])continue;
+   await p.evaluate(uid=>UIMS.signIn(uid),roles[r]);await p.goto(BASE+`pages/${folder}/${folder}.html`);await p.waitForSelector('main h1');ok('Page renders: '+folder);
+   await p.setViewportSize({width:390,height:844});ok('No phone overflow: '+folder,await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await p.setViewportSize({width:1440,height:1000});
+ }
+ await p.evaluate(()=>{UIMS.db.users['company-1'].status='Inactive';UIMS.save();});ok('Inactive account login blocked',await p.evaluate(()=>{try{UIMS.signIn('company-1');return false;}catch{return true;}}));
+ ok('No browser JavaScript errors',errors.length===0);fs.writeFileSync('output/verification-results.json',JSON.stringify({checks:checks.length,passed:checks,errors},null,2));console.log('COMPLETE',checks.length,'checks');await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});

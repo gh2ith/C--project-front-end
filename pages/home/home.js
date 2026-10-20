@@ -25,7 +25,7 @@
     { id: 'progress',     range: [0.60, 0.70], target: 0.65, nav: 'features' },
     { id: 'openings',     range: [0.70, 0.81], target: 0.75, nav: 'openings' },
     { id: 'roles',        range: [0.81, 0.90], target: 0.85, nav: 'roles' },
-    { id: 'faq',          range: [0.90, 0.96], target: 0.93, nav: 'faq' },
+    { id: 'faculty',          range: [0.90, 0.96], target: 0.93, nav: 'faculty' },
     { id: 'finale',       range: [0.96, 1.00], target: 0.98, nav: null }
   ];
 
@@ -88,28 +88,6 @@
     });
   }
 
-  // FAQ Accordion
-  $$('.qa__q').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-      const targetId = btn.getAttribute('aria-controls');
-      const targetPanel = document.getElementById(targetId);
-
-      // Close others for clean accordion experience
-      $$('.qa__q').forEach(b => {
-        b.setAttribute('aria-expanded', 'false');
-        const p = document.getElementById(b.getAttribute('aria-controls'));
-        if (p) p.hidden = true;
-      });
-
-      if (!isExpanded && targetPanel) {
-        btn.setAttribute('aria-expanded', 'true');
-        targetPanel.hidden = false;
-      }
-
-      if (window.ScrollTrigger) window.ScrollTrigger.refresh();
-    });
-  });
 
   // Discovery Filter Chips (Showcase interactive behavior)
   $$('.chip').forEach(chip => {
@@ -1128,7 +1106,7 @@
 
       const currentMilestone = activeMilestoneIndex >= 0 ? MILESTONES[activeMilestoneIndex] : null;
       if (!reduceMotion && !document.documentElement.classList.contains('no-webgl')) {
-        atmosphere?.classList.toggle('is-visible', ['faq', 'finale'].includes(currentMilestone?.id));
+        atmosphere?.classList.toggle('is-visible', ['faculty', 'finale'].includes(currentMilestone?.id));
         atmosphere?.classList.toggle('is-hero', currentMilestone?.id === 'hero');
       }
       updateActiveNav(currentMilestone ? currentMilestone.nav : null);
@@ -1323,7 +1301,7 @@
         atmosphere?.classList.toggle('is-visible', closingSections.size > 0);
         atmosphere?.classList.toggle('is-hero', heroVisible);
       }, { threshold:.1 });
-      ['faq', 'finale'].forEach(id => { const section = document.getElementById(id); if (section) observer.observe(section); });
+      ['faculty', 'finale'].forEach(id => { const section = document.getElementById(id); if (section) observer.observe(section); });
       let heroVisible=false;
       const heroObserver=new IntersectionObserver(entries=>{heroVisible=entries.some(entry=>entry.isIntersecting);atmosphere?.classList.toggle('is-hero',heroVisible);},{threshold:.1});
       const hero=document.getElementById('hero');if(hero)heroObserver.observe(hero);

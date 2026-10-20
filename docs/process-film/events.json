@@ -1,0 +1,110 @@
+[
+ {
+  "t": 0,
+  "frame": 0,
+  "type": "show",
+  "label": "#s1"
+ },
+ {
+  "t": 0,
+  "frame": 0,
+  "type": "cut",
+  "label": "Process step 1"
+ },
+ {
+  "t": 5,
+  "frame": 150,
+  "type": "show",
+  "label": "#s2"
+ },
+ {
+  "t": 5,
+  "frame": 150,
+  "type": "cut",
+  "label": "Process step 2"
+ },
+ {
+  "t": 7.8333,
+  "frame": 235,
+  "type": "show",
+  "label": "#offer"
+ },
+ {
+  "t": 11,
+  "frame": 330,
+  "type": "show",
+  "label": "#s3"
+ },
+ {
+  "t": 11,
+  "frame": 330,
+  "type": "cut",
+  "label": "Process step 3"
+ },
+ {
+  "t": 14.1667,
+  "frame": 425,
+  "type": "show",
+  "label": "#submitted"
+ },
+ {
+  "t": 14.1667,
+  "frame": 425,
+  "type": "hide",
+  "label": "#submit"
+ },
+ {
+  "t": 16,
+  "frame": 480,
+  "type": "show",
+  "label": "#s4"
+ },
+ {
+  "t": 16,
+  "frame": 480,
+  "type": "cut",
+  "label": "Process step 4"
+ },
+ {
+  "t": 19,
+  "frame": 570,
+  "type": "show",
+  "label": "#reviewed"
+ },
+ {
+  "t": 22,
+  "frame": 660,
+  "type": "show",
+  "label": "#s5"
+ },
+ {
+  "t": 22,
+  "frame": 660,
+  "type": "cut",
+  "label": "Process step 5"
+ },
+ {
+  "t": 27,
+  "frame": 810,
+  "type": "show",
+  "label": "#s6"
+ },
+ {
+  "t": 27,
+  "frame": 810,
+  "type": "cut",
+  "label": "Process step 6"
+ },
+ {
+  "t": 32,
+  "frame": 960,
+  "type": "show",
+  "label": "#s7"
+ },
+ {
+  "t": 32,
+  "frame": 960,
+  "type": "cut",
+  "label": "Process step 7"
+ }
+]

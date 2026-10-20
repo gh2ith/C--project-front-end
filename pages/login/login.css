@@ -121,7 +121,7 @@
 .login-page .lb-subtitle { font-size: 0.86rem; color: var(--lb-text-secondary); line-height: 1.35; margin-bottom: 0; }
 .login-page .lb-roles-section { margin-bottom: 0.85rem; }
 .login-page .lb-roles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.login-page .role-card--student, .login-page .role-card--supervisor, .login-page .role-card--company, .login-page .role-card--admin { grid-column: span 1; }
+.login-page .role-card--student, .login-page .role-card--supervisor, .login-page .role-card--company, .login-page .role-card--coordinator { grid-column: span 1; }
 .login-page .lb-role-card { width: 100%; min-height: 46px; background: var(--lb-surface); border: 1px solid var(--lb-border); border-radius: var(--lb-radius-sm); padding: 5px 8px; display: flex; align-items: center; gap: 7px; text-align: left; cursor: pointer; position: relative; transition: all 0.2s var(--lb-ease); color: var(--lb-text); box-shadow: var(--lb-shadow-sm); }
 .login-page .lb-role-card:hover { border-color: var(--lb-primary); background: var(--lb-surface-elevated); transform: translateY(-1px); }
 .login-page .lb-role-card.is-active { border-color: var(--lb-primary); background: var(--lb-primary-light); box-shadow: 0 0 0 1px var(--lb-primary), 0 4px 12px var(--lb-primary-glow); }
@@ -134,11 +134,11 @@
 .role-icon--student { background: #eff6ff; color: #2563eb; }
 .role-icon--supervisor { background: #ecfdf5; color: #059669; }
 .role-icon--company { background: #eef2ff; color: #4f46e5; }
-.role-icon--admin { background: #f5f3ff; color: #7c3aed; }
+.role-icon--coordinator { background: #f5f3ff; color: #7c3aed; }
 [data-theme="dark"] .role-icon--student { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
 [data-theme="dark"] .role-icon--supervisor { background: rgba(16, 185, 129, 0.2); color: #34d399; }
 [data-theme="dark"] .role-icon--company { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
-[data-theme="dark"] .role-icon--admin { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; }
+[data-theme="dark"] .role-icon--coordinator { background: rgba(124, 58, 237, 0.2); color: #c4b5fd; }
 .login-page .lb-role-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .login-page .lb-role-card__title { font-size: 0.78rem; font-weight: 700; color: var(--lb-text); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .login-page .lb-role-card__desc { font-size: 0.65rem; color: var(--lb-text-secondary); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -196,7 +196,7 @@
   .login-page .lb-badge-assembly { transform: scale(0.85); transform-origin: 50% 0%; }
   .login-page .lb-form-panel { padding: 1.25rem 0.75rem; }
   .login-page .lb-roles-grid { grid-template-columns: repeat(2, 1fr); }
-  .login-page .role-card--student, .login-page .role-card--supervisor, .login-page .role-card--company, .login-page .role-card--admin { grid-column: span 1; }
+  .login-page .role-card--student, .login-page .role-card--supervisor, .login-page .role-card--company, .login-page .role-card--coordinator { grid-column: span 1; }
   .login-page .lb-auth-card { padding: 1.15rem 1rem; }
   .login-page .lb-title { font-size: 1.5rem; }
 }
@@ -222,4 +222,9 @@
 [data-theme="dark"] #page-login :is(button,input,a):focus-visible { outline:2px solid #afceff;outline-offset:3px; }
 [data-theme="dark"] #page-login .modal-header,[data-theme="dark"] #page-login .modal-footer { border-color:var(--lb-border); }
 [data-theme="dark"] #page-login ::selection { background:#315888;color:#fff; }
+.login-page .form-floating > .form-control::placeholder { color:transparent!important; }
+@media(max-width:576px) {
+  .login-page .lb-role-card { min-height:58px; }
+  .login-page .lb-role-card__title,.login-page .lb-role-card__desc { white-space:normal;overflow:visible;text-overflow:clip;line-height:1.3; }
+}
 

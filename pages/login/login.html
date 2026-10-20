@@ -1,459 +1,760 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-page="login">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Sign In &mdash; Bridgeway | Next-Gen Internship Management Platform
+    </title>
+    <meta
+      name="description"
+      content="Role-based internship workspace for the Bridgeway Academic Internship Management Platform."
+    />
+    <script src="../../shared/js/theme-init.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In &mdash; Bridgeway | Next-Gen Internship Management Platform</title>
-  <meta name="description"
-    content="Secure role-based authentication portal for the Bridgeway Academic Internship Management Platform." />
-  <script src="../../shared/js/theme-init.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="login.css?v=night-2" />
 
-  <link rel="stylesheet" href="login.css?v=night-2">
+    <script src="../../shared/js/uims-store.js"></script>
+    <script src="login.js?v=uims-1" defer></script>
+    <link rel="stylesheet" href="../../shared/css/uims.css" />
+    <link
+      rel="stylesheet"
+      href="../../shared/css/typography.css?v=project-type-89"
+    />
+    <link
+      rel="icon"
+      href="../../assets/bridgeway-cap-on-dark.svg"
+      type="image/svg+xml"
+    />
+  </head>
 
-  <script src="login.js?v=night-2" defer></script>
-  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
-  <link rel="stylesheet" href="../../shared/css/typography.css?v=project-type-89">
-</head>
+  <body id="page-login">
+    <div class="login-page">
+      <div class="lb-ambience" aria-hidden="true"></div>
 
-<body id="page-login">
+      <div class="lb-container">
+        <section
+          class="lb-badge-panel"
+          aria-label="Interactive Academic Identity Badge Visual"
+        >
+          <header class="lb-panel-brand">
+            <a
+              href="../home/index.html"
+              class="lb-brand-link"
+              title="Return to Bridgeway Journey"
+            >
+              <div class="lb-brand-emblem" aria-hidden="true">
+                <svg viewBox="146 36 108 56" width="30" height="20">
+                  <path
+                    d="M172 62 L172 80 Q200 93 228 80 L228 62 Q200 72 172 62 Z"
+                    fill="#60A5FA"
+                  />
+                  <polygon
+                    points="200,38 252,56 200,74 148,56"
+                    fill="#FFFFFF"
+                  />
+                  <path
+                    d="M200 56 L246 57.5 L246 78"
+                    stroke="#F59E0B"
+                    stroke-width="3"
+                    fill="none"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="200" cy="56" r="3.2" fill="#F59E0B" />
+                  <path
+                    d="M242.5 76 L249.5 76 L251 89 L241 89 Z"
+                    fill="#F59E0B"
+                  />
+                </svg>
+              </div>
+              <div class="lb-brand-title">
+                Bridgeway<span class="lb-brand-tag">Portal</span>
+              </div>
+            </a>
+          </header>
 
-  <div class="login-page">
-    <div class="lb-ambience" aria-hidden="true"></div>
-
-    <div class="lb-container">
-
-      <section class="lb-badge-panel" aria-label="Interactive Academic Identity Badge Visual">
-
-        <header class="lb-panel-brand">
-          <a href="../home/index.html" class="lb-brand-link" title="Return to Bridgeway Journey">
-            <div class="lb-brand-emblem" aria-hidden="true">
-
-              <svg viewBox="146 36 108 56" width="30" height="20">
-                <path d="M172 62 L172 80 Q200 93 228 80 L228 62 Q200 72 172 62 Z" fill="#60A5FA"/>
-                <polygon points="200,38 252,56 200,74 148,56" fill="#FFFFFF"/>
-                <path d="M200 56 L246 57.5 L246 78" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round"/>
-                <circle cx="200" cy="56" r="3.2" fill="#F59E0B"/>
-                <path d="M242.5 76 L249.5 76 L251 89 L241 89 Z" fill="#F59E0B"/>
-              </svg>
+          <div class="lb-deco-item lb-deco-1" aria-hidden="true">
+            <div class="lb-deco-icon">
+              <i class="bi bi-mortarboard-fill"></i>
             </div>
-            <div class="lb-brand-title">
-              Bridgeway<span class="lb-brand-tag">Portal</span>
+            <div class="lb-deco-text">
+              <span class="lb-deco-title">4 Internship Roles</span>
+              <span class="lb-deco-desc">Academic Hierarchy</span>
             </div>
-          </a>
-        </header>
-
-        <div class="lb-deco-item lb-deco-1" aria-hidden="true">
-          <div class="lb-deco-icon"><i class="bi bi-mortarboard-fill"></i></div>
-          <div class="lb-deco-text">
-            <span class="lb-deco-title">5 Governed Roles</span>
-            <span class="lb-deco-desc">Academic Hierarchy</span>
           </div>
-        </div>
 
-        <div class="lb-deco-item lb-deco-2" aria-hidden="true">
-          <div class="lb-deco-icon"><i class="bi bi-clock-history"></i></div>
-          <div class="lb-deco-text">
-            <span class="lb-deco-title">320h Training Audit</span>
-            <span class="lb-deco-desc">8-Week Verified Logs</span>
+          <div class="lb-deco-item lb-deco-2" aria-hidden="true">
+            <div class="lb-deco-icon"><i class="bi bi-clock-history"></i></div>
+            <div class="lb-deco-text">
+              <span class="lb-deco-title">Internship Completion</span>
+              <span class="lb-deco-desc"
+                >Tasks, feedback and verified hours</span
+              >
+            </div>
           </div>
-        </div>
 
-        <div class="lb-deco-item lb-deco-3" aria-hidden="true">
-          <div class="lb-deco-icon"><i class="bi bi-award-fill"></i></div>
-          <div class="lb-deco-text">
-            <span class="lb-deco-title">Crown Prince Foundation</span>
-            <span class="lb-deco-desc">National Governance</span>
+          <div class="lb-deco-item lb-deco-3" aria-hidden="true">
+            <div class="lb-deco-icon"><i class="bi bi-award-fill"></i></div>
+            <div class="lb-deco-text">
+              <span class="lb-deco-title">Yarmouk University</span>
+              <span class="lb-deco-desc">University Collaboration</span>
+            </div>
           </div>
-        </div>
 
-        <div class="lb-deco-item lb-deco-4" aria-hidden="true">
-          <div class="lb-deco-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-          <div class="lb-deco-text">
-            <span class="lb-deco-title">Orange Coding Academy</span>
-            <span class="lb-deco-desc">Masterpiece Project</span>
+          <div class="lb-deco-item lb-deco-4" aria-hidden="true">
+            <div class="lb-deco-icon">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <div class="lb-deco-text">
+              <span class="lb-deco-title"
+                >Faculty of IT & Computer Science</span
+              >
+              <span class="lb-deco-desc">Internship Management</span>
+            </div>
           </div>
-        </div>
 
-        <div class="lb-stage-area">
+          <div class="lb-stage-area">
+            <svg
+              class="lb-lanyard-svg"
+              viewBox="0 0 400 130"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient
+                  id="lanyardBandGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stop-color="#1e3a8a" />
+                  <stop offset="50%" stop-color="#2563eb" />
+                  <stop offset="100%" stop-color="#1d4ed8" />
+                </linearGradient>
+                <linearGradient
+                  id="metalClipGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stop-color="#f8fafc" />
+                  <stop offset="50%" stop-color="#cbd5e1" />
+                  <stop offset="100%" stop-color="#94a3b8" />
+                </linearGradient>
+              </defs>
 
-          <svg class="lb-lanyard-svg" viewBox="0 0 400 130" fill="none" xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true">
-            <defs>
-              <linearGradient id="lanyardBandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#1e3a8a" />
-                <stop offset="50%" stop-color="#2563eb" />
-                <stop offset="100%" stop-color="#1d4ed8" />
-              </linearGradient>
-              <linearGradient id="metalClipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#f8fafc" />
-                <stop offset="50%" stop-color="#cbd5e1" />
-                <stop offset="100%" stop-color="#94a3b8" />
-              </linearGradient>
-            </defs>
+              <path
+                id="lanyardLeftStrap"
+                d="M 152 0 Q 176 52 196 98"
+                stroke="url(#lanyardBandGrad)"
+                stroke-width="14"
+                stroke-linecap="round"
+                fill="none"
+              />
+              <path
+                d="M 152 0 Q 176 52 196 98"
+                stroke="rgba(255, 255, 255, 0.45)"
+                stroke-width="1.5"
+                stroke-dasharray="3 3"
+                fill="none"
+              />
 
-            <path id="lanyardLeftStrap" d="M 152 0 Q 176 52 196 98" stroke="url(#lanyardBandGrad)" stroke-width="14"
-              stroke-linecap="round" fill="none" />
-            <path d="M 152 0 Q 176 52 196 98" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.5"
-              stroke-dasharray="3 3" fill="none" />
+              <path
+                id="lanyardRightStrap"
+                d="M 248 0 Q 224 52 204 98"
+                stroke="url(#lanyardBandGrad)"
+                stroke-width="14"
+                stroke-linecap="round"
+                fill="none"
+              />
+              <path
+                d="M 248 0 Q 224 52 204 98"
+                stroke="rgba(255, 255, 255, 0.45)"
+                stroke-width="1.5"
+                stroke-dasharray="3 3"
+                fill="none"
+              />
 
-            <path id="lanyardRightStrap" d="M 248 0 Q 224 52 204 98" stroke="url(#lanyardBandGrad)" stroke-width="14"
-              stroke-linecap="round" fill="none" />
-            <path d="M 248 0 Q 224 52 204 98" stroke="rgba(255, 255, 255, 0.45)" stroke-width="1.5"
-              stroke-dasharray="3 3" fill="none" />
+              <g id="lanyardClip" transform="translate(200, 98)">
+                <ellipse
+                  cx="0"
+                  cy="0"
+                  rx="9"
+                  ry="6"
+                  fill="none"
+                  stroke="url(#metalClipGrad)"
+                  stroke-width="3"
+                />
+                <rect
+                  x="-7"
+                  y="5"
+                  width="14"
+                  height="12"
+                  rx="2"
+                  fill="url(#metalClipGrad)"
+                  stroke="#64748b"
+                  stroke-width="0.8"
+                />
+                <rect
+                  x="-4"
+                  y="10"
+                  width="8"
+                  height="2"
+                  rx="1"
+                  fill="#475569"
+                />
+                <path
+                  d="M -5 17 L -5 27 C -5 30, 5 30, 5 27 L 5 17 Z"
+                  fill="url(#metalClipGrad)"
+                  stroke="#64748b"
+                  stroke-width="0.8"
+                />
+                <circle cx="0" cy="23" r="2" fill="#334155" />
+              </g>
+            </svg>
 
-            <g id="lanyardClip" transform="translate(200, 98)">
-              <ellipse cx="0" cy="0" rx="9" ry="6" fill="none" stroke="url(#metalClipGrad)" stroke-width="3" />
-              <rect x="-7" y="5" width="14" height="12" rx="2" fill="url(#metalClipGrad)" stroke="#64748b"
-                stroke-width="0.8" />
-              <rect x="-4" y="10" width="8" height="2" rx="1" fill="#475569" />
-              <path d="M -5 17 L -5 27 C -5 30, 5 30, 5 27 L 5 17 Z" fill="url(#metalClipGrad)" stroke="#64748b"
-                stroke-width="0.8" />
-              <circle cx="0" cy="23" r="2" fill="#334155" />
-            </g>
-          </svg>
+            <div
+              class="lb-badge-shadow"
+              id="badgeShadow"
+              aria-hidden="true"
+            ></div>
 
-          <div class="lb-badge-shadow" id="badgeShadow" aria-hidden="true"></div>
+            <div
+              class="lb-badge-assembly"
+              id="badgeAssembly"
+              aria-hidden="true"
+            >
+              <div class="lb-badge-tilt" id="badgeTilt">
+                <div class="lb-badge-idle-sway">
+                  <div class="lb-badge-card" id="badgeCard">
+                    <div class="lb-badge-sheen" aria-hidden="true"></div>
 
-          <div class="lb-badge-assembly" id="badgeAssembly" aria-hidden="true">
+                    <div
+                      class="lb-badge-error-overlay"
+                      aria-hidden="true"
+                    ></div>
 
-            <div class="lb-badge-tilt" id="badgeTilt">
+                    <div class="lb-badge-glare" aria-hidden="true"></div>
 
-              <div class="lb-badge-idle-sway">
+                    <div class="lb-badge-face lb-badge-front">
+                      <div class="lb-badge-sweep" aria-hidden="true"></div>
+                      <div class="lb-badge-slot"></div>
 
-                <div class="lb-badge-card" id="badgeCard">
-
-                  <div class="lb-badge-sheen" aria-hidden="true"></div>
-
-                  <div class="lb-badge-error-overlay" aria-hidden="true"></div>
-
-                  <div class="lb-badge-glare" aria-hidden="true"></div>
-
-                  <div class="lb-badge-face lb-badge-front">
-                    <div class="lb-badge-sweep" aria-hidden="true"></div>
-                    <div class="lb-badge-slot"></div>
-
-                    <div class="lb-card-brand lb-stagger-item lb-stagger-1">
-                      <span class="lb-card-brand-icon">
-                        <i class="bi bi-mortarboard-fill"></i>
-                      </span>
-                      <span>Bridgeway<span class="lb-card-brand-accent">.identity</span></span>
-                    </div>
-
-                    <div class="lb-avatar-wrap lb-stagger-item lb-stagger-2">
-                      <span class="lb-avatar-initials" id="badgeInitials">GA</span>
-                      <span class="lb-avatar-badge-dot" id="badgeStatusDot"></span>
-                    </div>
-
-                    <div class="lb-name-line lb-stagger-item lb-stagger-3" id="badgeName">Ghaith Al-Student</div>
-                    <div class="lb-role-line lb-stagger-item lb-stagger-4" id="badgeRole">Student Intern &bull; Al-Balqa Applied Univ.</div>
-
-                    <div class="lb-front-details lb-stagger-item lb-stagger-5">
-                      <div class="lb-front-chip"></div>
-                      <span class="font-monospace fw-bold" id="badgeIdSerial" data-style="s1">#STU-2026-BAU</span>
-                      <i class="bi bi-shield-check text-primary fs-6"></i>
-                    </div>
-
-                    <div class="lb-front-stripe lb-stagger-item lb-stagger-5" id="badgeBottomStripe"></div>
-                  </div>
-
-                  <div class="lb-badge-face lb-badge-back">
-                    <div class="lb-badge-slot" data-style="s2"></div>
-
-                    <div class="lb-back-tag">
-                      <i class="bi bi-lock-fill"></i> Verified Gateway
-                    </div>
-
-                    <div class="lb-padlock-stage">
-                      <svg class="lb-padlock-svg" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                          <linearGradient id="padlockBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#3b82f6" />
-                            <stop offset="100%" stop-color="#1e3a8a" />
-                          </linearGradient>
-                          <linearGradient id="shackleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#f8fafc" />
-                            <stop offset="50%" stop-color="#cbd5e1" />
-                            <stop offset="100%" stop-color="#94a3b8" />
-                          </linearGradient>
-                        </defs>
-
-                        <path id="padlockShackle" d="M 22 30 L 22 20 C 22 13, 48 13, 48 20 L 48 30"
-                          stroke="url(#shackleGrad)" stroke-width="5" stroke-linecap="round" fill="none" />
-
-                        <rect id="padlockBody" x="16" y="28" width="38" height="28" rx="6" fill="url(#padlockBodyGrad)"
-                          stroke="#60a5fa" stroke-width="1.2" />
-
-                        <circle cx="35" cy="39" r="3" fill="#0f172a" />
-                        <path d="M 33.5 39 L 36.5 39 L 37.5 46 L 32.5 46 Z" fill="#0f172a" />
-                      </svg>
-                    </div>
-
-                    <div>
-                      <div class="lb-back-title">ACADEMIC GOVERNANCE</div>
-                      <div class="lb-back-desc">Crown Prince Foundation &bull; Orange Coding Academy Protocol</div>
-                    </div>
-
-                    <div class="lb-barcode-wrap">
-                      <div class="lb-barcode-lines">
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s5"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s6"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s5"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s6"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s5"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s6"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s5"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
-                        <div class="lb-bar-line" data-style="s3"></div>
-                        <div class="lb-bar-line" data-style="s4"></div>
+                      <div class="lb-card-brand lb-stagger-item lb-stagger-1">
+                        <span class="lb-card-brand-icon">
+                          <i class="bi bi-mortarboard-fill"></i>
+                        </span>
+                        <span
+                          >Bridgeway<span class="lb-card-brand-accent"
+                            >.identity</span
+                          ></span
+                        >
                       </div>
-                      <div class="lb-barcode-num" id="badgeBackSerial">CPF-BW-2026-AUTH</div>
+
+                      <div class="lb-avatar-wrap lb-stagger-item lb-stagger-2">
+                        <span class="lb-avatar-initials" id="badgeInitials"
+                          >GA</span
+                        >
+                        <span
+                          class="lb-avatar-badge-dot"
+                          id="badgeStatusDot"
+                        ></span>
+                      </div>
+
+                      <div
+                        class="lb-name-line lb-stagger-item lb-stagger-3"
+                        id="badgeName"
+                      >
+                        Ghaith Amourah
+                      </div>
+                      <div
+                        class="lb-role-line lb-stagger-item lb-stagger-4"
+                        id="badgeRole"
+                      >
+                        Student Intern &bull; Yarmouk University
+                      </div>
+
+                      <div
+                        class="lb-front-details lb-stagger-item lb-stagger-5"
+                      >
+                        <div class="lb-front-chip"></div>
+                        <span
+                          class="font-monospace fw-bold"
+                          id="badgeIdSerial"
+                          data-style="s1"
+                          >#STU-2026-YU</span
+                        >
+                        <i class="bi bi-shield-check text-primary fs-6"></i>
+                      </div>
+
+                      <div
+                        class="lb-front-stripe lb-stagger-item lb-stagger-5"
+                        id="badgeBottomStripe"
+                      ></div>
+                    </div>
+
+                    <div class="lb-badge-face lb-badge-back">
+                      <div class="lb-badge-slot" data-style="s2"></div>
+
+                      <div class="lb-back-tag">
+                        <i class="bi bi-lock-fill"></i> Verified Gateway
+                      </div>
+
+                      <div class="lb-padlock-stage">
+                        <svg
+                          class="lb-padlock-svg"
+                          viewBox="0 0 70 70"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <defs>
+                            <linearGradient
+                              id="padlockBodyGrad"
+                              x1="0%"
+                              y1="0%"
+                              x2="100%"
+                              y2="100%"
+                            >
+                              <stop offset="0%" stop-color="#3b82f6" />
+                              <stop offset="100%" stop-color="#1e3a8a" />
+                            </linearGradient>
+                            <linearGradient
+                              id="shackleGrad"
+                              x1="0%"
+                              y1="0%"
+                              x2="100%"
+                              y2="100%"
+                            >
+                              <stop offset="0%" stop-color="#f8fafc" />
+                              <stop offset="50%" stop-color="#cbd5e1" />
+                              <stop offset="100%" stop-color="#94a3b8" />
+                            </linearGradient>
+                          </defs>
+
+                          <path
+                            id="padlockShackle"
+                            d="M 22 30 L 22 20 C 22 13, 48 13, 48 20 L 48 30"
+                            stroke="url(#shackleGrad)"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            fill="none"
+                          />
+
+                          <rect
+                            id="padlockBody"
+                            x="16"
+                            y="28"
+                            width="38"
+                            height="28"
+                            rx="6"
+                            fill="url(#padlockBodyGrad)"
+                            stroke="#60a5fa"
+                            stroke-width="1.2"
+                          />
+
+                          <circle cx="35" cy="39" r="3" fill="#0f172a" />
+                          <path
+                            d="M 33.5 39 L 36.5 39 L 37.5 46 L 32.5 46 Z"
+                            fill="#0f172a"
+                          />
+                        </svg>
+                      </div>
+
+                      <div>
+                        <div class="lb-back-title">ACADEMIC GOVERNANCE</div>
+                        <div class="lb-back-desc">
+                          Yarmouk University &bull; Faculty of IT & Computer
+                          Science Protocol
+                        </div>
+                      </div>
+
+                      <div class="lb-barcode-wrap">
+                        <div class="lb-barcode-lines">
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s5"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s6"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s5"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s6"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s5"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s6"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s5"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                          <div class="lb-bar-line" data-style="s3"></div>
+                          <div class="lb-bar-line" data-style="s4"></div>
+                        </div>
+                        <div class="lb-barcode-num" id="badgeBackSerial">
+                          BW-YU-2026
+                        </div>
+                      </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
 
-        </div>
+          <footer class="lb-panel-footer">
+            <span>Internship Management &bull; Ghaith Amourah</span>
+            <span>Yarmouk University &bull; Irbid, Jordan</span>
+          </footer>
+        </section>
 
-        <footer class="lb-panel-footer">
-          <span>Masterpiece Project &bull; Ghaith Amourah</span>
-          <span>Orange Coding Academy &bull; CPF Jordan</span>
-        </footer>
-
-      </section>
-
-      <section class="lb-form-panel" aria-label="Portal Form Panel">
-
-        <div class="lb-form-container">
-
-          <div class="lb-top-nav-bar">
-            <div class="lb-portal-pill">
-              <span class="lb-portal-pill-dot"></span>
-              <span>5 Governed Roles</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <button class="lb-theme-btn" id="loginThemeToggle" aria-label="Toggle dark mode" title="Toggle dark / light theme">
-                <i class="bi bi-moon-stars" id="loginThemeIcon"></i>
-              </button>
-              <a href="../home/index.html" class="lb-home-btn" title="Back to Homepage">
-                <i class="bi bi-arrow-left"></i>
-                <span>Back to Home</span>
-              </a>
-            </div>
-          </div>
-
-          <div class="lb-header-block">
-            <h1 class="lb-title">Welcome Back</h1>
-            <p class="lb-subtitle">Select your role to access your dedicated workspace.</p>
-          </div>
-
-          <div class="lb-roles-section" aria-label="Select Platform Role">
-            <div class="lb-roles-grid" role="radiogroup" aria-label="Platform Roles">
-
-              <button type="button" class="lb-role-card is-active role-card--student" data-role="student" role="radio" aria-checked="true" id="roleStudent">
-                <div class="lb-role-card__icon role-icon--student">
-                  <i class="bi bi-mortarboard-fill"></i>
-                </div>
-                <div class="lb-role-card__text">
-                  <span class="lb-role-card__title">Student</span>
-                  <span class="lb-role-card__desc">Intern / Trainee</span>
-                </div>
-                <div class="lb-role-card__dot"></div>
-              </button>
-
-              <button type="button" class="lb-role-card role-card--supervisor" data-role="supervisor" role="radio" aria-checked="false" id="roleSupervisor">
-                <div class="lb-role-card__icon role-icon--supervisor">
-                  <i class="bi bi-person-check-fill"></i>
-                </div>
-                <div class="lb-role-card__text">
-                  <span class="lb-role-card__title">Supervisor</span>
-                  <span class="lb-role-card__desc">Academic Mentor</span>
-                </div>
-                <div class="lb-role-card__dot"></div>
-              </button>
-
-              <button type="button" class="lb-role-card role-card--company" data-role="company" role="radio" aria-checked="false" id="roleCompany">
-                <div class="lb-role-card__icon role-icon--company">
-                  <i class="bi bi-building-fill"></i>
-                </div>
-                <div class="lb-role-card__text">
-                  <span class="lb-role-card__title">Company</span>
-                  <span class="lb-role-card__desc">Host Employer</span>
-                </div>
-                <div class="lb-role-card__dot"></div>
-              </button>
-
-              <button type="button" class="lb-role-card role-card--admin" data-role="admin" role="radio" aria-checked="false" id="roleAdmin">
-                <div class="lb-role-card__icon role-icon--admin">
-                  <i class="bi bi-shield-lock-fill"></i>
-                </div>
-                <div class="lb-role-card__text">
-                  <span class="lb-role-card__title">College Admin</span>
-                  <span class="lb-role-card__desc">College Management</span>
-                </div>
-                <div class="lb-role-card__dot"></div>
-              </button>
-
-              <button type="button" class="lb-role-card role-card--admin" data-role="platform_admin" role="radio" aria-checked="false" id="rolePlatformAdmin">
-                <div class="lb-role-card__icon role-icon--admin">
-                  <i class="bi bi-buildings-fill"></i>
-                </div>
-                <div class="lb-role-card__text">
-                  <span class="lb-role-card__title">Platform Admin</span>
-                  <span class="lb-role-card__desc">Companies & Colleges</span>
-                </div>
-                <div class="lb-role-card__dot"></div>
-              </button>
-
-            </div>
-          </div>
-
-          <div class="card lb-auth-card">
-            <form id="hrLoginForm" novalidate>
-
-              <div class="form-floating mb-2">
-                <input type="email" class="form-control rounded-3 lb-form-control" id="loginEmail"
-                  placeholder="student@bau.edu.jo" value="student@bau.edu.jo" required autocomplete="username">
-                <label for="loginEmail" id="loginEmailLabel">
-                  <i class="bi bi-envelope me-1"></i> Student Institutional Email
-                </label>
-                <div class="invalid-feedback" id="emailError" data-style="s7">Please enter a valid email address.</div>
+        <section class="lb-form-panel" aria-label="Portal Form Panel">
+          <div class="lb-form-container">
+            <div class="lb-top-nav-bar">
+              <div class="lb-portal-pill">
+                <span class="lb-portal-pill-dot"></span>
+                <span>4 Internship Roles</span>
               </div>
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  class="lb-theme-btn"
+                  id="loginThemeToggle"
+                  aria-label="Toggle dark mode"
+                  title="Toggle dark / light theme"
+                >
+                  <i class="bi bi-moon-stars" id="loginThemeIcon"></i>
+                </button>
+                <a
+                  href="../home/index.html"
+                  class="lb-home-btn"
+                  title="Back to Homepage"
+                >
+                  <i class="bi bi-arrow-left"></i>
+                  <span>Back to Home</span>
+                </a>
+              </div>
+            </div>
 
-              <div class="d-flex align-items-center justify-content-between px-1 mb-2.5">
-                <span class="lb-email-helper" id="loginEmailHint">
-                  <i class="bi bi-info-circle me-1"></i> Domain: <code>bau.edu.jo</code> or <code>oca.jo</code>
+            <div class="lb-header-block">
+              <h1 class="lb-title">Welcome Back</h1>
+              <p class="lb-subtitle">
+                Use the email assigned by your internship coordinator.
+              </p>
+            </div>
+
+            <div class="lb-roles-section" aria-label="Select Platform Role">
+              <div
+                class="lb-roles-grid"
+                role="radiogroup"
+                aria-label="Platform Roles"
+              >
+                <button
+                  type="button"
+                  class="lb-role-card is-active role-card--student"
+                  data-role="student"
+                  role="radio"
+                  aria-checked="true"
+                  id="roleStudent"
+                >
+                  <div class="lb-role-card__icon role-icon--student">
+                    <i class="bi bi-mortarboard-fill"></i>
+                  </div>
+                  <div class="lb-role-card__text">
+                    <span class="lb-role-card__title">Student</span>
+                    <span class="lb-role-card__desc">Intern / Trainee</span>
+                  </div>
+                  <div class="lb-role-card__dot"></div>
+                </button>
+
+                <button
+                  type="button"
+                  class="lb-role-card role-card--supervisor"
+                  data-role="supervisor"
+                  role="radio"
+                  aria-checked="false"
+                  id="roleSupervisor"
+                >
+                  <div class="lb-role-card__icon role-icon--supervisor">
+                    <i class="bi bi-person-check-fill"></i>
+                  </div>
+                  <div class="lb-role-card__text">
+                    <span class="lb-role-card__title">Supervisor</span>
+                    <span class="lb-role-card__desc">Academic Supervisor</span>
+                  </div>
+                  <div class="lb-role-card__dot"></div>
+                </button>
+
+                <button
+                  type="button"
+                  class="lb-role-card role-card--company"
+                  data-role="company"
+                  role="radio"
+                  aria-checked="false"
+                  id="roleCompany"
+                >
+                  <div class="lb-role-card__icon role-icon--company">
+                    <i class="bi bi-building-fill"></i>
+                  </div>
+                  <div class="lb-role-card__text">
+                    <span class="lb-role-card__title">Company Supervisor</span>
+                    <span class="lb-role-card__desc">Company Supervisor</span>
+                  </div>
+                  <div class="lb-role-card__dot"></div>
+                </button>
+
+                <button
+                  type="button"
+                  class="lb-role-card role-card--coordinator"
+                  data-role="coordinator"
+                  role="radio"
+                  aria-checked="false"
+                  id="roleCoordinator"
+                >
+                  <div class="lb-role-card__icon role-icon--coordinator">
+                    <i class="bi bi-shield-lock-fill"></i>
+                  </div>
+                  <div class="lb-role-card__text">
+                    <span class="lb-role-card__title">Coordinator</span>
+                    <span class="lb-role-card__desc"
+                      >Internship Coordination</span
+                    >
+                  </div>
+                  <div class="lb-role-card__dot"></div>
+                </button>
+              </div>
+            </div>
+
+            <div class="card lb-auth-card">
+              <p class="small text-muted">
+                Frontend access uses the selected role and a known account
+                email. Passwords are not verified or stored.
+              </p>
+              <form id="hrLoginForm" novalidate>
+                <div class="form-floating mb-2">
+                  <input
+                    type="email"
+                    class="form-control rounded-3 lb-form-control"
+                    id="loginEmail"
+                    placeholder="student1@students.yu.edu.jo"
+                    value="student1@students.yu.edu.jo"
+                    required
+                    autocomplete="username"
+                  />
+                  <label for="loginEmail" id="loginEmailLabel">
+                    <i class="bi bi-envelope me-1"></i> Student Institutional
+                    Email
+                  </label>
+                  <div class="invalid-feedback" id="emailError" data-style="s7">
+                    Please enter a valid email address.
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex align-items-center justify-content-between px-1 mb-2.5"
+                >
+                  <span class="lb-email-helper" id="loginEmailHint">
+                    <i class="bi bi-info-circle me-1"></i> Domain:
+                    <code>yu.edu.jo</code>
+                  </span>
+                </div>
+
+                <div class="form-floating mb-2.5 position-relative">
+                  <input
+                    type="password"
+                    class="form-control rounded-3 pe-5 lb-form-control"
+                    id="loginPassword"
+                    placeholder="Password"
+                    required
+                    autocomplete="current-password"
+                  />
+                  <label for="loginPassword">
+                    <i class="bi bi-lock me-1"></i> Account Password
+                  </label>
+
+                  <button
+                    class="btn border-0 position-absolute top-50 end-0 translate-middle-y me-2 p-2 lb-pwd-toggle"
+                    type="button"
+                    id="togglePasswordBtn"
+                    aria-label="Toggle password visibility"
+                  >
+                    <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                  </button>
+                  <div
+                    class="invalid-feedback"
+                    id="passwordError"
+                    data-style="s7"
+                  >
+                    Please enter your password.
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex align-items-center justify-content-between mb-3 px-1"
+                >
+                  <a
+                    href="#"
+                    id="forgotPasswordLink"
+                    class="text-decoration-none small lb-link-forgot"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+
+                <button
+                  class="btn btn-primary w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 lb-submit-btn"
+                  type="submit"
+                  id="loginSubmitBtn"
+                >
+                  <span id="loginSubmitBtnText">Sign In as Student</span>
+                  <i class="bi bi-arrow-right" id="loginSubmitBtnIcon"></i>
+                </button>
+              </form>
+
+              <div
+                class="mt-3 pt-2.5 border-top text-center lb-card-footer-note"
+              >
+                <span class="small d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-shield-check text-success"></i>
+                  <span
+                    >Local workspace access &bull; Accounts created by the
+                    coordinator</span
+                  >
                 </span>
               </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
-              <div class="form-floating mb-2.5 position-relative">
-                <input type="password" class="form-control rounded-3 pe-5 lb-form-control" id="loginPassword"
-                  placeholder="Password" value="password123" required autocomplete="current-password">
-                <label for="loginPassword">
-                  <i class="bi bi-lock me-1"></i> Account Password
-                </label>
+      <div class="toast-container-custom">
+        <div
+          class="custom-toast"
+          id="loginToast"
+          data-style="s7"
+          role="alert"
+          aria-live="assertive"
+        >
+          <i
+            class="bi bi-check-circle-fill text-success fs-5"
+            id="toastIcon"
+            aria-hidden="true"
+          ></i>
+          <span id="loginToastMsg">Welcome back!</span>
+        </div>
+      </div>
+    </div>
 
-                <button class="btn border-0 position-absolute top-50 end-0 translate-middle-y me-2 p-2 lb-pwd-toggle"
-                  type="button" id="togglePasswordBtn" aria-label="Toggle password visibility">
-                  <i class="bi bi-eye-slash" id="toggleIcon"></i>
-                </button>
-                <div class="invalid-feedback" id="passwordError" data-style="s7">Please enter your password.</div>
+    <div
+      class="modal fade"
+      id="forgotPasswordModal"
+      tabindex="-1"
+      aria-labelledby="forgotPasswordModalLabel"
+      aria-hidden="true"
+      data-style="s7"
+    >
+      <div class="modal-dialog modal-dialog-centered" data-style="s8">
+        <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+          <div class="modal-header border-0 pb-1 d-flex align-items-start">
+            <div class="d-flex align-items-center gap-2">
+              <div
+                class="rounded-3 d-flex align-items-center justify-content-center shadow-sm lb-modal-icon-wrap"
+              >
+                <i class="bi bi-shield-lock-fill fs-5"></i>
+              </div>
+              <div>
+                <h5
+                  class="modal-title fw-bold fs-6 mb-0"
+                  id="forgotPasswordModalLabel"
+                >
+                  Reset Account Password
+                </h5>
+                <p class="text-muted small mb-0" id="resetModalSubtitle">
+                  Enter your account email to request password recovery.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn-close ms-auto shadow-none"
+              id="closeForgotModalBtn"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body pt-3 pb-2">
+            <form id="forgotPasswordForm" novalidate>
+              <div class="form-floating mb-3" id="resetEmailGroup">
+                <input
+                  type="email"
+                  class="form-control rounded-3 lb-form-control"
+                  id="resetEmail"
+                  placeholder="user@yu.edu.jo"
+                  required
+                />
+                <label for="resetEmail" class="text-muted"
+                  ><i class="bi bi-envelope me-1"></i> Institutional or
+                  Corporate Email</label
+                >
+                <div
+                  class="invalid-feedback"
+                  id="resetEmailError"
+                  data-style="s7"
+                ></div>
               </div>
 
-              <div class="d-flex align-items-center justify-content-between mb-3 px-1">
-                <label class="form-check d-flex align-items-center gap-2 mb-0 lb-remember-check">
-                  <input class="form-check-input mt-0" type="checkbox" id="rememberMe" checked>
-                  <span class="small text-muted">Remember this device</span>
-                </label>
-                <a href="#" id="forgotPasswordLink" class="text-decoration-none small lb-link-forgot">
-                  Forgot password?
-                </a>
+              <div
+                id="resetStatusAlert"
+                class="d-none alert py-2 px-3 rounded-3 mb-3 small d-flex align-items-center"
+              ></div>
+
+              <div
+                id="resetSuccessAlert"
+                class="d-none alert alert-success py-2.5 px-3 rounded-3 mb-3"
+              >
+                <div
+                  class="d-flex align-items-center gap-2 mb-1 fw-bold text-success small"
+                >
+                  <i class="bi bi-check2-circle fs-5"></i>
+                  <span>Password recovery</span>
+                </div>
+                <p class="mb-0 text-secondary" data-style="s9">
+                  Password recovery requires Firebase Authentication. No email
+                  has been sent.
+                </p>
               </div>
 
               <button
                 class="btn btn-primary w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 lb-submit-btn"
-                type="submit" id="loginSubmitBtn">
-                <span id="loginSubmitBtnText">Sign In as Student</span>
-                <i class="bi bi-arrow-right" id="loginSubmitBtnIcon"></i>
+                type="submit"
+                id="resetSubmitBtn"
+              >
+                <span id="resetSubmitBtnText">Verify Identity</span>
+                <i class="bi bi-arrow-right small" id="resetSubmitBtnIcon"></i>
               </button>
-
             </form>
-
-            <div class="mt-3 pt-2.5 border-top text-center lb-card-footer-note">
-              <span class="small d-inline-flex align-items-center gap-1">
-                <i class="bi bi-shield-check text-success"></i>
-                <span>256-bit SSL Bridgeway Protocol &bull; Accounts provisioned by Admins</span>
-              </span>
-            </div>
-
           </div>
-
-        </div>
-      </section>
-
-    </div>
-
-    <div class="toast-container-custom">
-      <div class="custom-toast" id="loginToast" data-style="s7" role="alert" aria-live="assertive">
-        <i class="bi bi-check-circle-fill text-success fs-5" id="toastIcon" aria-hidden="true"></i>
-        <span id="loginToastMsg">Welcome back!</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
-    aria-hidden="true" data-style="s7">
-    <div class="modal-dialog modal-dialog-centered" data-style="s8">
-      <div class="modal-content rounded-4 border-0 shadow-lg p-3">
-        <div class="modal-header border-0 pb-1 d-flex align-items-start">
-          <div class="d-flex align-items-center gap-2">
-            <div class="rounded-3 d-flex align-items-center justify-content-center shadow-sm lb-modal-icon-wrap">
-              <i class="bi bi-shield-lock-fill fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold fs-6 mb-0" id="forgotPasswordModalLabel">Reset Account Password</h5>
-              <p class="text-muted small mb-0" id="resetModalSubtitle">Enter your official institutional email to verify your identity.</p>
-            </div>
-          </div>
-          <button type="button" class="btn-close ms-auto shadow-none" id="closeForgotModalBtn" aria-label="Close"></button>
-        </div>
-        <div class="modal-body pt-3 pb-2">
-          <form id="forgotPasswordForm" novalidate>
-
-            <div class="form-floating mb-3" id="resetEmailGroup">
-              <input type="email" class="form-control rounded-3 lb-form-control" id="resetEmail"
-                placeholder="user@bau.edu.jo" required>
-              <label for="resetEmail" class="text-muted"><i class="bi bi-envelope me-1"></i> Institutional or Corporate Email</label>
-              <div class="invalid-feedback" id="resetEmailError" data-style="s7"></div>
-            </div>
-
-            <div id="resetStatusAlert" class="d-none alert py-2 px-3 rounded-3 mb-3 small d-flex align-items-center"></div>
-
-            <div id="resetSuccessAlert" class="d-none alert alert-success py-2.5 px-3 rounded-3 mb-3">
-              <div class="d-flex align-items-center gap-2 mb-1 fw-bold text-success small">
-                <i class="bi bi-check2-circle fs-5"></i>
-                <span>Password Reset Verified!</span>
-              </div>
-              <p class="mb-0 text-secondary" data-style="s9">Your verification link has been dispatched to your institutional email.</p>
-            </div>
-
-            <button
-              class="btn btn-primary w-100 py-2.5 rounded-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 lb-submit-btn"
-              type="submit" id="resetSubmitBtn">
-              <span id="resetSubmitBtnText">Verify Identity</span>
-              <i class="bi bi-arrow-right small" id="resetSubmitBtnIcon"></i>
-            </button>
-          </form>
         </div>
       </div>
     </div>
-  </div>
-
-  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
-</body>
+  </body>
 </html>

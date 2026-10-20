@@ -1,162 +1,39 @@
-<!DOCTYPE html>
-<html lang="en" data-page="student-profile">
-<head>
-  <meta charset="UTF-8">
-  <script src="../../shared/js/portal-theme-init.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bridgeway — Student Academic Profile</title>
-  <meta name="description" content="View and manage student academic record, SIS details, and assigned faculty supervisor.">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-  <link rel="stylesheet" href="../../shared/css/base.css?v=night-2">
-  <link rel="stylesheet" href="../../shared/css/portal.css?v=night-2">
-
-  <link rel="stylesheet" href="../../shared/css/navigation.css">
-  <link rel="stylesheet" href="../../shared/css/portal-enhancements.css?v=layout-2">
-
-  <link rel="stylesheet" href="../../shared/css/interactions.css?v=portal-clean-2">
-  <link rel="stylesheet" href="student-profile.css?v=persistent-profile-7">
-<link rel="stylesheet" href="../../shared/css/portal-ux.css?v=unseen-activity-62">
-<link rel="stylesheet" href="../../shared/css/bridgeway-kinetic.css?v=ticket-curl-27"><script src="../../shared/js/bridgeway-kinetic.js?v=ticket-curl-63"></script><link rel="stylesheet" href="../../shared/css/workspace-cycle.css?v=ticket-curl-68">
-<link rel="stylesheet" href="../../shared/css/student-chrome.css?v=my-tickets-7">
-  <link rel="stylesheet" href="../../shared/css/typography.css?v=project-type-89">
-</head>
-<body class="company-workspace portal-unified" data-portal-role="student" id="page-student-profile">
-
-  <div class="bw-company-layout"><aside class="bw-masar-sidebar" aria-label="Student navigation"><div class="bw-masar-top"><div class="bw-masar-header">
-          <a href="../home/index.html" class="bw-masar-brand" title="Bridgeway Home">
-            <svg class="logo logo--nav" viewBox="0 0 400 232" role="img" aria-label="Bridgeway">
-              <defs>
-                <linearGradient id="ul-nav" x1="0" x2="1">
-                  <stop offset="0" stop-color="#2563EB"/>
-                  <stop offset="1" stop-color="#6366F1"/>
-                </linearGradient>
-              </defs>
-              <g stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round">
-                <line x1="41.2" y1="110.7" x2="41.2" y2="118"/><line x1="60.8" y1="101.3" x2="60.8" y2="118"/>
-                <line x1="78.8" y1="87.7" x2="78.8" y2="118"/><line x1="95.2" y1="69.9" x2="95.2" y2="118"/>
-                <line x1="125.0" y1="63.6" x2="125.0" y2="118"/><line x1="140.0" y1="76.3" x2="140.0" y2="118"/>
-                <line x1="155.0" y1="86.3" x2="155.0" y2="118"/><line x1="170.0" y1="93.3" x2="170.0" y2="118"/>
-                <line x1="185.0" y1="97.6" x2="185.0" y2="118"/><line x1="200.0" y1="99.0" x2="200.0" y2="118"/>
-                <line x1="215.0" y1="97.6" x2="215.0" y2="118"/><line x1="230.0" y1="93.3" x2="230.0" y2="118"/>
-                <line x1="245.0" y1="86.3" x2="245.0" y2="118"/><line x1="260.0" y1="76.3" x2="260.0" y2="118"/>
-                <line x1="275.0" y1="63.6" x2="275.0" y2="118"/><line x1="304.8" y1="69.9" x2="304.8" y2="118"/>
-                <line x1="321.2" y1="87.7" x2="321.2" y2="118"/><line x1="339.2" y1="101.3" x2="339.2" y2="118"/>
-                <line x1="358.8" y1="110.7" x2="358.8" y2="118"/>
-              </g>
-              <path d="M20,116 Q75,108 110,48 Q200,150 290,48 Q325,108 380,116" fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round"/>
-              <rect x="12" y="118" width="376" height="8" rx="3" fill="#2563EB"/>
-              <g fill="#2563EB">
-                <g><path d="M110 28 L116 46 L116 152 L104 152 L104 46 Z"/><rect x="99" y="68" width="22" height="6" rx="2"/><rect x="100" y="148" width="20" height="7" rx="2"/></g>
-                <g><path d="M290 28 L296 46 L296 152 L284 152 L284 46 Z"/><rect x="279" y="68" width="22" height="6" rx="2"/><rect x="280" y="148" width="20" height="7" rx="2"/></g>
-              </g>
-              <g class="logo__cap">
-                <path class="logo__cap-base" d="M172 62 L172 80 Q200 93 228 80 L228 62 Q200 72 172 62 Z" fill="#1D4ED8"/>
-                <polygon class="logo__cap-board" points="200,38 252,56 200,74 148,56" fill="#0F172A"/>
-                <g class="logo__cap-tassel">
-                  <path d="M200 56 L246 57.5 L246 78" stroke="#F59E0B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                  <circle cx="200" cy="56" r="3" fill="#F59E0B"/>
-                  <path d="M242.5 76 L249.5 76 L251 89 L241 89 Z" fill="#F59E0B"/>
-                </g>
-              </g>
-              <text class="logo__word" x="200" y="202" text-anchor="middle" font-family="Montserrat,'Segoe UI',Arial,sans-serif" font-weight="800" font-size="54" fill="#0F172A">Bridgeway</text>
-              <rect class="logo__ul" x="203.13" y="212" width="118.53" height="6" rx="3" fill="url(#ul-nav)"/>
-            </svg>
-          </a>
-          <button type="button" class="bw-masar-toggle" id="bwSidebarToggle" aria-label="Toggle Sidebar Menu">
-            <i class="bi bi-list"></i>
-          </button>
-        </div><div class="portal-role-label">Student</div><nav class="bw-masar-nav"><a class="bw-masar-item" href="../student-dashboard/student-dashboard.html" title="Dashboard"><i class="bi bi-grid" aria-hidden="true"></i><span>Dashboard</span></a></nav></div><div class="bw-masar-bottom-group"><div class="bw-masar-divider"></div><div class="bw-masar-bottom"><a class="bw-masar-link" href="#profile" data-profile-view="profile"><i class="bi bi-person-circle" aria-hidden="true"></i><span>Profile</span></a><button type="button" class="bw-masar-link bw-masar-btn-link" id="bwThemeToggle"><i class="bi bi-moon-stars" id="bwThemeIcon" aria-hidden="true"></i><span id="bwThemeText">Dark Mode</span></button><a class="bw-masar-link" href="../login/login.html"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></a></div></div></aside><main class="bw-company-content bw-main-content"><header class="company-topbar"><div class="company-breadcrumb">Workspace <span>/</span> <strong id="portalRoleLabel">Student</strong></div><div class="company-account-wrap"><button type="button" class="company-account" id="portalAccountToggle" aria-expanded="false" aria-controls="portalAccountDropdown" aria-label="Account options"><span class="company-monogram" id="portalInitials">GA</span><span id="portalAccountName">Ghaith Amourah</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><nav class="company-account-dropdown" id="portalAccountDropdown" aria-label="Account options" hidden><a href="../student-profile/student-profile.html" data-portal-profile>Account profile</a><a href="../login/login.html" class="company-account-logout">Logout</a></nav></div></header>
-    <section class="bw-page-header">
-      <span class="bw-eyebrow">STUDENT WORKSPACE</span>
-      <h1 class="bw-title">Student Profile</h1>
-      <p class="bw-subtitle">Your details, academic record, and CV.</p>
-    </section>
-
-    <div id="student-profile-details" class="student-profile-layout">
-      <section class="profile-identity" aria-label="Student identity">
-        <div class="profile-avatar" aria-hidden="true">GA</div>
-        <div class="profile-identity-copy">
-          <h2>Ghaith Amourah</h2>
-          <p>B.Sc. Software Engineering</p>
-          <div class="profile-identity-meta"><span>Student ID 20220148</span><span class="profile-verified"><i class="bi bi-patch-check" aria-hidden="true"></i> SIS verified</span></div>
-        </div>
-      </section>
-
-      <section class="profile-panel profile-personal" aria-labelledby="profilePersonalTitle">
-        <header class="profile-panel-heading"><h2 id="profilePersonalTitle">Personal details</h2><p>Your contact information and professional introduction.</p></header>
-        <form id="studentProfileForm">
-          <div class="profile-fields">
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="profileFullName">Full name <span aria-hidden="true">*</span></label>
-              <input type="text" id="profileFullName" class="bw-input" value="Ghaith Amourah" autocomplete="name" required>
-            </div>
-            <div class="bw-form-group">
-              <label class="bw-form-label" for="profilePhone">Mobile number <span aria-hidden="true">*</span></label>
-              <input type="tel" id="profilePhone" class="bw-input" value="+962 7 9000 1234" autocomplete="tel" required>
-            </div>
-            <div class="bw-form-group profile-field-wide">
-              <label class="bw-form-label" for="profileEmail">Institutional email <span class="profile-field-note">Read-only</span></label>
-              <input type="email" id="profileEmail" class="bw-input" value="student@bau.edu.jo" readonly autocomplete="email" aria-describedby="profileEmailHelp">
-              <small id="profileEmailHelp">Provided by Al-Balqa Applied University.</small>
-            </div>
-          </div>
-          <div class="profile-bio">
-            <label class="bw-form-label" for="profileBio">Professional summary</label>
-            <p id="profileBioHelp">A short introduction included on your company applications.</p>
-            <textarea id="profileBio" class="bw-textarea" aria-describedby="profileBioHelp">Software engineering student with expertise in modern full-stack development, C# .NET Core, TypeScript, and database engineering. Passionate about cloud architectures and scalable web platforms.</textarea>
-          </div>
-          <footer class="profile-form-footer">
-            <small>Check your details before continuing.</small>
-            <div><a href="../student-dashboard/student-dashboard.html" class="profile-cancel">Cancel</a><button type="submit" class="company-primary">Save profile changes</button></div>
-          </footer>
-        </form>
-      </section>
-
-      <div class="profile-records">
-        <section class="profile-panel student-cv" id="student-cv" aria-labelledby="studentCvTitle">
-          <header class="profile-panel-heading student-cv-heading"><div><h2 id="studentCvTitle">Your CV</h2><p>The starting point for internship matching.</p></div><span class="profile-preview-label">CV document</span></header>
-          <div class="cv-upload-area">
-            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
-            <label class="bw-form-label" for="studentCvFile">Upload your CV</label>
-            <span>PDF or DOCX · Up to 5 MB</span>
-            <input type="file" id="studentCvFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-describedby="studentCvHelp studentCvStatus">
-          </div>
-          <div class="student-cv-file"><p id="studentCvStatus" role="status">No CV selected.</p><button type="button" class="bw-tag-btn" id="removeStudentCv" hidden>Remove CV</button></div>
-          <p id="studentCvHelp" class="cv-preview-note">No file is uploaded or analyzed. Only its name and size are kept in this browser session. CV match measures role fit, not acceptance probability.</p>
-          <a class="profile-text-link" href="../student-dashboard/student-dashboard.html#tab-opportunities">Explore internships <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-        </section>
-
-        <section class="profile-panel" aria-labelledby="profileAcademicTitle">
-          <header class="profile-panel-heading"><h2 id="profileAcademicTitle">Academic record</h2><p>University-provided · Read-only</p></header>
-          <dl class="profile-academic">
-            <div><dt>University</dt><dd>Al-Balqa Applied University</dd></div>
-            <div><dt>College</dt><dd>Faculty of IT</dd></div>
-            <div><dt>Department</dt><dd id="profileDept">Software Engineering</dd></div>
-            <div><dt>Cumulative GPA</dt><dd id="profileGpa">3.75 <span>/ 4.00 · Honors</span></dd></div>
-            <div><dt>Academic supervisor</dt><dd>Dr. Ahmad S.<small>dr.ahmad@bau.edu.jo · SE Department Chair</small></dd></div>
-          </dl>
-        </section>
-      </div>
-
+<!doctype html>
+<html lang="en" data-role="student" data-view="profile">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../shared/css/base.css" />
+    <link rel="stylesheet" href="../../shared/css/uims.css" />
+    <script src="../../shared/js/portal-theme-init.js"></script>
+    <title>Bridgeway — My Profile</title>
+    <link
+      rel="icon"
+      href="../../assets/bridgeway-cap-on-dark.svg"
+      type="image/svg+xml"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div id="app" aria-busy="true">
+      <p class="loading">Opening your workspace…</p>
     </div>
-
-  </main></div>
-
-  <script src="../../shared/js/portal.js?v=sitewide-dialogs-60"></script>
-
-  <script src="../../shared/js/navigation.js"></script>
-  <script src="../../shared/js/student-chrome.js?v=my-tickets-6"></script>
-  <script src="student-profile.js?v=interface-9"></script>
-  <script src="../../shared/js/enhancements.js?v=desktop-audit-29"></script>
-
-  <script src="../../shared/js/interactions.js?v=portal-clean-2"></script>
-  <script src="../../shared/js/portal-ux.js?v=sitewide-dialogs-60"></script>
-<script src="../../shared/js/sidebar-activity.js?v=unseen-activity-62"></script>
-</body>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <dialog id="editor"><div id="editor-content"></div></dialog>
+    <script src="../../shared/js/uims-store.js"></script>
+    <script src="../../shared/js/uims-app.js"></script>
+  </body>
 </html>

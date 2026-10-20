@@ -1,6 +1,0 @@
-.application-interview { padding:22px 24px;margin:18px 0;border:1px solid var(--bw-border);border-left:3px solid var(--bw-primary);border-radius:12px;background:var(--bw-bg-alt);color:var(--bw-text);min-width:0; }
-.application-interview > header { display:flex;align-items:start;justify-content:space-between;gap:16px; }.application-interview h3 { font-size:18px;margin:6px 0 12px;line-height:1.4;letter-spacing:-.025em; }.application-interview small { color:var(--bw-text-secondary);font-size:13px; }
-.application-interview p { line-height:1.7;overflow-wrap:anywhere; }.application-interview .interview-date { font-weight:600;font-size:14px; }.application-interview .cycle-actions { flex-wrap:wrap;margin-top:16px; }.interview-preparation { font-size:14px; }
-.studio-application > .application-interview { grid-column:2/-1;margin:8px 0 0; }
-.interview-form { max-width:none; }.interview-form-pair { display:grid;grid-template-columns:1fr 1fr;gap:16px; }.interview-form-pair > * { min-width:0; }
-@media(max-width:760px){ .application-interview { padding:18px; }.application-interview > header { flex-wrap:wrap; }.interview-form-pair { grid-template-columns:1fr; } }
