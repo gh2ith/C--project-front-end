@@ -32,7 +32,7 @@ First-login password setup validates the form and records the setup step only fo
 - `shared/js/uims-app.js`: shared components and page rendering.
 - `shared/css/uims.css`: shared portal controls and surfaces.
 - `shared/css/restored-workspace.css`, `shared/js/workspace-chrome.js`: original student studio/header and collapsible white sidebar, with the Keep sidebar open preference.
-- `shared/css/student-deck.css`, `shared/js/student-deck.js`: restored original card-gallery styling and drag/flip behavior, connected to the current required opportunity data.
+- Opportunities use one searchable list on Explore; the dashboard focuses on applications, upcoming tasks and training progress.
 - `assets/yarmouk-college-logo.png`: the university collaboration logo supplied by the project owner; Bridgeway's own logo remains unchanged.
 - `assets/internship-process.mp4`: locally authored captioned process video. Editable source/notes: `docs/process-film/`.
 - `shared/vendor/`: local PDF generation dependency and license.

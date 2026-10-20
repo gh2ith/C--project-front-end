@@ -180,16 +180,16 @@
       .join("");
     const heading =
       view === "dashboard"
-        ? "Find work worth learning."
+        ? "My dashboard"
         : view === "progress"
           ? "My training"
           : title();
     const kicker =
-      view === "dashboard" || view === "opportunities"
-        ? `${U.user.name.split(" ")[0]}’s opportunity collection`
+      view === "opportunities"
+        ? "Find your next internship"
         : "Your internship workspace";
     const dark = document.documentElement.dataset.theme === "dark";
-    document.body.classList.add("student-studio", "student-gallery");
+    document.body.classList.add("student-studio");
     document.getElementById("app").innerHTML =
       `<div class="student-workspace"><main id="main" class="student-main"><header class="studio-top"><a class="studio-brand" href="../home/index.html" aria-label="Bridgeway home"><img src="../../assets/bridgeway-logo.svg" alt="Bridgeway" width="112" height="65"></a><nav class="studio-navigation" aria-label="Student workspace">${nav.student
         .filter(([key]) => key !== "profile")
@@ -333,14 +333,35 @@
         .sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
       const summary = `<section class="studio-overview" aria-label="Internship summary"><div><span>Applications</span><strong>${apps.length}</strong><a href="${url("student", "applications")}">Track company decisions ${icon("arrow-up-right")}</a></div><div><span>Assigned work</span><strong>${tasks.filter((t) => U.taskState(t.id) !== "Evaluated").length}<small>to complete</small></strong><a href="${url("student", "tasks")}">Open my tasks ${icon("arrow-up-right")}</a></div><div><span>Approved training hours</span><strong>${approved}<small>/ ${U.user.requiredHours} h</small></strong><div class="studio-hour-line"><span style="width:${Math.min(100, (approved / U.user.requiredHours) * 100)}%"></span></div></div><div><span>Next deadline</span><strong class="studio-next-date">${next ? date(next.deadline) : "All caught up"}</strong><p>${next ? E(next.title) : "Your upcoming work will appear here."}</p></div></section>`;
       shell(
-        (p?.status === "Completed" ? completionBlock(p) : summary) +
-          '<div id="student-discovery" class="student-discovery"></div>',
-        "A closer look at the teams, the work, and your next steps.",
+        summary +
+          (p
+            ? (p.status === "Completed"
+                ? completionBlock(p)
+                : trainingRecord(p)) +
+              (p.status !== "Completed"
+                ? `<div class="studio-section-title"><h2>Coming up</h2><p>Your next tasks and deadlines</p></div>${studentTaskCards(
+                    tasks
+                      .filter((t) => U.taskState(t.id) !== "Evaluated")
+                      .sort((a, b) => a.deadline.localeCompare(b.deadline))
+                      .slice(0, 3),
+                  )}`
+                : "")
+            : empty(
+                "Ready to start your internship?",
+                "Explore opportunities for your major, then track company decisions in Applications.",
+                link(
+                  "Explore opportunities",
+                  "student",
+                  "opportunities",
+                  "",
+                  true,
+                ),
+              )),
+        "Your applications, upcoming work and training progress in one place.",
         p
           ? link("Continue my training", "student", "progress")
           : link("Complete my profile", "student", "profile"),
       );
-      mountStudentDiscovery();
     } else if (view === "profile") {
       shell(
         profileForm(),
@@ -349,7 +370,7 @@
     } else if (view === "opportunities") {
       shell(
         '<div id="student-discovery" class="student-discovery"></div>',
-        "A closer look at the teams and opportunities for your college and major.",
+        "Browse open roles for your college and major. Open a role to read the requirements and apply.",
         p
           ? link("Continue my training", "student", "progress")
           : link("Complete my profile", "student", "profile"),
@@ -446,94 +467,41 @@
         o.deadline >= new Date().toISOString().slice(0, 10) &&
         o.majorIds.includes(U.user.majorId),
     );
-    if (!ops.length) {
-      host.innerHTML = empty(
-        "No matching opportunities",
-        "New roles for your college and major will appear here.",
+    host.innerHTML = `<section class="opportunity-browser" aria-label="Internship opportunities"><div class="opportunity-toolbar"><label class="opportunity-search"><span>Search internships</span><div>${icon("search")}<input type="search" id="opportunity-search" placeholder="Role, company or location" autocomplete="off"></div></label><p id="opportunity-count" role="status" aria-live="polite"></p></div><div id="opportunity-results" class="opportunity-results"></div></section>`;
+    const renderResults = () => {
+      const query = host.querySelector("input").value.trim().toLowerCase();
+      const matches = ops.filter((o) =>
+        [o.title, companyName(o.companyId), o.location, o.requirements]
+          .join(" ")
+          .toLowerCase()
+          .includes(query),
       );
-      return;
-    }
-    const node = (tag, copy, cls) => {
-      const n = document.createElement(tag);
-      if (copy) n.textContent = copy;
-      if (cls) n.className = cls;
-      return n;
+      host.querySelector("#opportunity-count").textContent =
+        `${matches.length} ${matches.length === 1 ? "opportunity" : "opportunities"}`;
+      host.querySelector("#opportunity-results").innerHTML = matches.length
+        ? matches
+            .map((o) => {
+              const application = U.all("applications").find(
+                (a) => a.studentId === U.userId && a.opportunityId === o.id,
+              );
+              return `<article class="opportunity-row"><div class="opportunity-company-mark" aria-hidden="true">${E(
+                companyName(o.companyId)
+                  .split(" ")
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join(""),
+              )}</div><div class="opportunity-role"><p>${E(companyName(o.companyId))}</p><h2><button type="button" data-action="opportunity" data-id="${E(o.id)}">${E(o.title)}</button></h2><span>${icon("geo-alt")} ${E(o.location)}</span></div><dl class="opportunity-facts"><div><dt>Training</dt><dd>${E(U.user.requiredHours)} hours</dd></div><div><dt>Apply by</dt><dd>${date(o.deadline)}</dd></div><div><dt>Available seats</dt><dd>${E(o.seats)}</dd></div></dl><div class="opportunity-row-action">${application ? status(application.status) : ""}${button("View details", "opportunity", o.id)}</div></article>`;
+            })
+            .join("")
+        : empty(
+            query ? "No internships found" : "No open opportunities yet",
+            query
+              ? "Try another role, company or location."
+              : "Open roles for your college and major will appear here.",
+          );
     };
-    const append = (parent, ...children) => {
-      parent.append(...children.filter(Boolean));
-      return parent;
-    };
-    const makeButton = (label, handler, primary = false) => {
-      const b = node(
-        "button",
-        label,
-        "ui-button cycle-button" + (primary ? " primary" : ""),
-      );
-      b.type = "button";
-      b.addEventListener("click", handler);
-      return b;
-    };
-    const C = {
-      E: node,
-      A: append,
-      B: makeButton,
-      org: companyName,
-      date,
-      dialog: (title, panel) => {
-        modal(title, "");
-        document.getElementById("editor-content").append(panel);
-        return document.getElementById("editor");
-      },
-    };
-    const roleFit = () => {
-      const panel = node("section", null, "gallery-academic-context");
-      panel.append(
-        node("p", "Your academic path", "muted"),
-        node("h3", majorName(U.user.majorId)),
-        node("p", "Opportunities are selected for your college and major."),
-      );
-      const a = node("a", "Manage CV & portfolio ↗");
-      a.href = url("student", "profile");
-      panel.append(a);
-      return panel;
-    };
-    const applyAction = (l) => {
-      const a = U.all("applications").find(
-        (a) => a.studentId === U.userId && a.opportunityId === l.id,
-      );
-      if (a) {
-        const b = makeButton("Application " + a.status.toLowerCase(), () => {});
-        b.disabled = true;
-        return b;
-      }
-      const link = node(
-        "a",
-        "Apply for this internship ↗",
-        "ui-button primary",
-      );
-      link.href = url("student", "apply", "?opportunity=" + l.id);
-      return link;
-    };
-    const deck = window.BridgewayStudentDeck(host, {
-      C,
-      roleFit,
-      applyAction,
-      placed: !!U.placement(U.userId),
-    });
-    deck.render(
-      ops.map((o, i) => ({
-        ...o,
-        company: o.companyId,
-        location: o.location,
-        capacity: o.seats,
-        skills: o.majorIds.map((v) => v.toUpperCase()).join(","),
-        majorNames: o.majorIds.map(majorName).join(", "),
-        category: o.majorIds.includes("cys") ? "cloud" : "software",
-        categoryLabel: U.db.companies[o.companyId]?.industry || "Technology",
-        accent: ["#2052c4", "#5442a6", "#086c72"][i % 3],
-        prerequisites: [o.requirements],
-      })),
-    );
+    host.querySelector("input").addEventListener("input", renderResults);
+    renderResults();
   }
 
   function completionBlock(p) {

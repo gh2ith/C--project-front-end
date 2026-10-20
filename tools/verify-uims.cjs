@@ -10,7 +10,7 @@ const BASE='http://127.0.0.1:8080/';
  const go=async(role,view)=>{await page.goto(`${BASE}pages/${role}-${view}/${role}-${view}.html`);await page.waitForSelector('main h1');};
  const sign=async uid=>{await page.evaluate(id=>UIMS.signIn(id),uid);};
  const fill=async(name,value)=>page.locator(`dialog[open] [name="${name}"]`).fill(String(value));
- const submit=async()=>{await page.locator('dialog[open] [type=submit]').click();};
+ const submit=async()=>{await page.locator('dialog[open] [type=submit]').click();await page.locator('dialog[open]').waitFor({state:'hidden'});};
  const click=async(action,id)=>page.locator(`[data-action="${action}"]${id?`[data-id="${id}"]`:''}`).first().click();
  await page.goto(BASE+'pages/login/login.html');await page.evaluate(()=>UIMS.ready);
  await page.locator('#loginEmail').fill('student1@students.yu.edu.jo');await page.locator('#loginPassword').fill('Temporary1!');await page.locator('#loginSubmitBtn').click();await page.waitForURL('**/first-login.html');ok('First login routes to password setup');
