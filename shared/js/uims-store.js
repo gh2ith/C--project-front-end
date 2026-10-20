@@ -22,7 +22,11 @@
   const id = (prefix) => prefix + "-" + crypto.randomUUID();
   const U = (window.UIMS = {
     db: null,
-    route: (role, view) => `../${role}-${view}/${role}-${view}.html`,
+    route: (role, view) => {
+      const destination =
+        role === "student" && view === "dashboard" ? "opportunities" : view;
+      return `../${role}-${destination}/${role}-${destination}.html`;
+    },
     all(name) {
       return Object.entries(this.db[name] || {}).map(([id, value]) => ({
         id,

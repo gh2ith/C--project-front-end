@@ -542,56 +542,7 @@ body.student-studio {
 .studio-collaboration img {
   width: 145px;
 }
-.studio-overview {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 26px;
-  padding: 18px 0;
-  border: 1px solid var(--line);
-  border-radius: 19px;
-  background: var(--bg);
-}
-.studio-overview > div {
-  padding: 0 24px;
-  min-width: 0;
-  border-right: 1px solid var(--line);
-}
-.studio-overview > div:last-child {
-  border: 0;
-}
-.studio-overview > div > span {
-  font-size: 11px;
-  color: var(--slate);
-}
-.studio-overview strong {
-  display: block;
-  color: var(--navy);
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1.6;
-}
-.studio-overview strong small {
-  font-size: 11px;
-  font-weight: 400;
-  margin-left: 7px;
-  color: var(--slate);
-}
-.studio-overview a {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 10px;
-  color: var(--slate);
-}
-.studio-overview .studio-next-date {
-  font-size: 17px;
-  line-height: 2.4;
-}
-.studio-overview p {
-  font-size: 10px;
-  overflow-wrap: anywhere;
-  margin: 0;
-}
+
 .studio-hour-line {
   height: 5px;
   background: var(--bg-3);
@@ -964,9 +915,7 @@ body.student-studio {
     gap: 10px;
     align-items: flex-end;
   }
-  .studio-overview > div {
-    padding: 0 17px;
-  }
+
   .studio-training-record {
     padding: 24px;
   }
@@ -1038,30 +987,7 @@ body.student-studio {
   .studio-welcome-actions > .ui-button {
     font-size: 11px;
   }
-  .studio-overview {
-    grid-template-columns: 1fr 1fr;
-    padding: 0;
-    margin-bottom: 22px;
-  }
-  .studio-overview > div {
-    padding: 17px 18px;
-    border-bottom: 1px solid var(--line);
-  }
-  .studio-overview > div:nth-child(2) {
-    border-right: 0;
-  }
-  .studio-overview > div:nth-child(n + 3) {
-    border-bottom: 0;
-  }
-  .studio-overview strong {
-    font-size: 25px;
-  }
-  .studio-overview a {
-    font-size: 9px;
-  }
-  .studio-overview .studio-next-date {
-    font-size: 15px;
-  }
+
   .studio-training-record {
     display: block;
     padding: 22px;
@@ -1501,5 +1427,82 @@ body.student-studio {
   }
   .opportunity-row-action > .ui-button {
     margin-left: auto;
+  }
+}
+/* Opportunity browsing motion follows selection and respects reduced motion. */
+@keyframes opportunity-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes opportunity-detail-open {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes opportunity-backdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.opportunity-row {
+  animation: opportunity-reveal 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+  transition: background-color 180ms ease;
+}
+.opportunity-company-mark {
+  transition:
+    transform 220ms ease,
+    background-color 220ms ease;
+}
+.opportunity-row .ui-button {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.opportunity-row:focus-within {
+  background: var(--bg-2);
+}
+@media (hover: hover) {
+  .opportunity-row:hover {
+    background: var(--bg-2);
+  }
+  .opportunity-row:hover .opportunity-company-mark {
+    transform: translateY(-3px);
+    background: var(--bw-primary-light);
+  }
+  .opportunity-row .ui-button:hover {
+    transform: translateY(-2px);
+  }
+}
+html[data-view="opportunities"] .student-studio dialog[open] {
+  animation: opportunity-detail-open 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+html[data-view="opportunities"] .student-studio dialog[open]::backdrop {
+  animation: opportunity-backdrop 220ms ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .opportunity-row,
+  .opportunity-company-mark,
+  .opportunity-row .ui-button,
+  html[data-view="opportunities"] .student-studio dialog[open],
+  html[data-view="opportunities"] .student-studio dialog[open]::backdrop {
+    animation: none;
+    transition: none;
+    transform: none;
   }
 }

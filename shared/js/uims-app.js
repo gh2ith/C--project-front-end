@@ -25,7 +25,6 @@
   };
   const nav = {
     student: [
-      ["dashboard", "Dashboard", "grid"],
       ["opportunities", "Explore Opportunities", "briefcase"],
       ["applications", "My Applications", "send-check"],
       ["tasks", "My Tasks", "list-task"],
@@ -167,7 +166,6 @@
   }
   function studentShell(content, description, action) {
     const shortNames = {
-      dashboard: "Dashboard",
       opportunities: "Explore",
       applications: "Applications",
       tasks: "My tasks",
@@ -178,12 +176,7 @@
       .map((p) => p[0])
       .slice(0, 2)
       .join("");
-    const heading =
-      view === "dashboard"
-        ? "My dashboard"
-        : view === "progress"
-          ? "My training"
-          : title();
+    const heading = view === "progress" ? "My training" : title();
     const kicker =
       view === "opportunities"
         ? "Find your next internship"
@@ -325,44 +318,8 @@
   function studentPage() {
     const p = U.placement(U.userId),
       apps = U.all("applications").filter((a) => a.studentId === U.userId),
-      tasks = U.all("tasks").filter((t) => t.placementId === p?.id),
-      approved = p ? U.approvedHours(p.id) : 0;
-    if (view === "dashboard") {
-      const next = tasks
-        .filter((t) => U.taskState(t.id) !== "Evaluated")
-        .sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
-      const summary = `<section class="studio-overview" aria-label="Internship summary"><div><span>Applications</span><strong>${apps.length}</strong><a href="${url("student", "applications")}">Track company decisions ${icon("arrow-up-right")}</a></div><div><span>Assigned work</span><strong>${tasks.filter((t) => U.taskState(t.id) !== "Evaluated").length}<small>to complete</small></strong><a href="${url("student", "tasks")}">Open my tasks ${icon("arrow-up-right")}</a></div><div><span>Approved training hours</span><strong>${approved}<small>/ ${U.user.requiredHours} h</small></strong><div class="studio-hour-line"><span style="width:${Math.min(100, (approved / U.user.requiredHours) * 100)}%"></span></div></div><div><span>Next deadline</span><strong class="studio-next-date">${next ? date(next.deadline) : "All caught up"}</strong><p>${next ? E(next.title) : "Your upcoming work will appear here."}</p></div></section>`;
-      shell(
-        summary +
-          (p
-            ? (p.status === "Completed"
-                ? completionBlock(p)
-                : trainingRecord(p)) +
-              (p.status !== "Completed"
-                ? `<div class="studio-section-title"><h2>Coming up</h2><p>Your next tasks and deadlines</p></div>${studentTaskCards(
-                    tasks
-                      .filter((t) => U.taskState(t.id) !== "Evaluated")
-                      .sort((a, b) => a.deadline.localeCompare(b.deadline))
-                      .slice(0, 3),
-                  )}`
-                : "")
-            : empty(
-                "Ready to start your internship?",
-                "Explore opportunities for your major, then track company decisions in Applications.",
-                link(
-                  "Explore opportunities",
-                  "student",
-                  "opportunities",
-                  "",
-                  true,
-                ),
-              )),
-        "Your applications, upcoming work and training progress in one place.",
-        p
-          ? link("Continue my training", "student", "progress")
-          : link("Complete my profile", "student", "profile"),
-      );
-    } else if (view === "profile") {
+      tasks = U.all("tasks").filter((t) => t.placementId === p?.id);
+    if (view === "profile") {
       shell(
         profileForm(),
         "Keep your contact details and CV or portfolio up to date. Academic information is maintained by the coordinator.",
@@ -480,11 +437,11 @@
         `${matches.length} ${matches.length === 1 ? "opportunity" : "opportunities"}`;
       host.querySelector("#opportunity-results").innerHTML = matches.length
         ? matches
-            .map((o) => {
+            .map((o, index) => {
               const application = U.all("applications").find(
                 (a) => a.studentId === U.userId && a.opportunityId === o.id,
               );
-              return `<article class="opportunity-row"><div class="opportunity-company-mark" aria-hidden="true">${E(
+              return `<article class="opportunity-row" style="--reveal-delay:${Math.min(index, 5) * 45}ms"><div class="opportunity-company-mark" aria-hidden="true">${E(
                 companyName(o.companyId)
                   .split(" ")
                   .map((n) => n[0])
