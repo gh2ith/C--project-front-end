@@ -1,6 +1,6 @@
 # Required frontend scope and university policy
 
-Authority: C# Project 3.docx, followed by the user's October 20, 2026 clarifications. Frontend only, preserve Bridgeway's existing design and logo, treat Yarmouk as collaborator, exclude optional features, provide Realtime Database JSON. Students see task-level feedback/progress and, upon completion, a message and certificate; final evaluation forms and results stay private.
+Authority: C# Project 3.docx, followed by the user's October 20, 2026 clarifications. Frontend only, owned entirely by Yarmouk University, exclude optional features, provide Realtime Database JSON. The latest owner-defined evaluation model supersedes earlier project marking assumptions. Students see task-level feedback/progress and, upon completion, a message and certificate; final evaluation forms and results stay private.
 
 ## Pages
 
@@ -29,14 +29,14 @@ Verified CIS requirements: at least 98 completed credits. Regular semester: 14 w
 ## Proposed assumptions that are not official rules
 
 1. The detailed source is CIS-specific. The same policy is used as a proposed baseline for the other five majors until department-specific requirements are confirmed. Coordinator can edit individual required hours. Do not describe this as a verified faculty-wide rule.
-2. Article 7 gives 50% for the report/presentation component, with ambiguous wording about the internal presentation share. The implementation uses 25 report + 25 presentation. This equal split is a documented assumption. Combined with 30 academic and 20 company it yields the automatically calculated final result.
+2. The published 30/20/50 breakdown above is retained as research history. The owner explicitly replaced the implemented workflow with company 50 + academic supervisor 50 = 100. This is an owner-defined project rule, not a claim about the published CIS policy. No separate report/presentation marks are calculated.
 3. The brief requires separate hours approval but does not define the digital process. Company records dated hours; assigned academic supervisor approves or returns them. Task completion never generates approved hours.
 4. Student offer confirmation begins the local training period using the regular/summer duration. No second hiring decision is introduced.
-5. The company component uses four proposed five-point criteria: technical performance, professional conduct, communication/teamwork, attendance/commitment. The official source establishes the 20% component but not these internal criterion labels/weights. The academic supervisor records academic/report/presentation component scores and qualitative comments without claiming an official form.
+5. Company submits a single grade from 0–50 with comments. Only then can the assigned academic supervisor review that assessment and submit their own grade from 0–50 with comments to the coordinator. The coordinator acts as the college approval authority within the existing four-role model; no fifth administrator role is introduced.
 
-Task criteria have their own maximums. Final component weights are independent of arbitrary task points. Final report company feedback supports academic review; the academic supervisor records the final report component assessment. Company sends its final evaluation first; academic sends their separate evaluation to the coordinator.
+Tasks have no points, numeric criteria, or numeric submission grades. Company reviews work as completed or requests revisions with feedback; prior submissions and files remain in history. Final reports are reviewed without points and remain a completion requirement. The final /100 result is solely company /50 plus academic /50. Academic submission places the combined assessment in coordinator review; it does not release a student success message.
 
-Completion approval requires both final evaluations, approved required hours, evaluated tasks, a final report, passing result and ended training period. Completed internships are read-only. One PDF certificate is released, with no separate completion-report service.
+Completion approval requires both final evaluations, approved required hours, completed/reviewed tasks, a final report, passing result and ended training period. Completed internships are read-only. One PDF certificate is released, with no separate completion-report service.
 
 ## Video and validation
 
@@ -53,3 +53,5 @@ The website belongs entirely to Yarmouk University. The user specified Royal Gre
 
 ## Continuous homepage — local review
 The owner rejected architectural doors and stacked homepage sections. Following the supplied exploded-view references, the homepage uses one full-screen 3D scene. The constructed wheat has 26 grains with separate metal shells and inner cores, ribs, awns, leaves and a segmented stem. Scrolling rotates, separates and reassembles it. Direct chapter navigation, keyboard controls, model-only inspection, desktop dragging and idle-motion pause control the same scene. Reduced-motion, image and no-JavaScript fallbacks remain available. The university chapter retains the intact official jubilee image, full faculty name and a dialog listing all six majors. All four roles are identified. Wheat is presentation artwork, not an additional brand or an official university logo. All changes remain local until explicit publication approval.
+
+Latest evaluation migration: previous final assessments are retained under legacyEvaluations and do not silently become marks under the new model. Pending placements require new /50 evaluations. Already approved completions remain historical, read-only records. Task numeric criteria/scores are removed while qualitative review and file history remain.

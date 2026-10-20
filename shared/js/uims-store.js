@@ -18,6 +18,7 @@
     "applications",
     "placements",
     "tasks",
+    "taskAttachments",
     "submissions",
     "hourEntries",
     "academicComments",
@@ -247,36 +248,59 @@
       this.save();
     },
     createTask(data) {
-      this.assertPlacement(data.placementId, "company");
+      return this.createTasks(data, [data.placementId])[0];
+    },
+    createTasks(data, placementIds) {
+      this.require("company");
+      const recipients = [...new Set(placementIds)];
+      if (!recipients.length) throw Error("Choose at least one active trainee.");
+      recipients.forEach((pid) => this.assertPlacement(pid, "company"));
       if (
         !data.title.trim() ||
         !data.description.trim() ||
-        !data.deadline ||
-        !data.criteria.length ||
-        data.criteria.some(
-          (c) =>
-            !c.label.trim() || !Number.isFinite(c.maximum) || c.maximum <= 0,
-        )
+        !data.deadline
       )
         throw Error(
-          "Enter a title, requirements, deadline and valid evaluation criteria.",
+          "Enter a title, requirements and deadline.",
         );
       if (
         data.kind === "Final report" &&
         this.all("tasks").some(
           (t) =>
-            t.placementId === data.placementId && t.kind === "Final report",
+            recipients.includes(t.placementId) && t.kind === "Final report",
         )
       )
-        throw Error("This internship already has a final report task.");
-      if (
-        data.kind === "Final report" &&
-        data.criteria.reduce((n, c) => n + c.maximum, 0) !==
-          this.db.policy.reportMaximum
-      )
-        throw Error("The final report criteria must total 25 points.");
-      this.db.tasks[id("task")] = { ...data, createdBy: this.userId };
-      this.save();
+        throw Error("A selected internship already has a final report task. Assign reports individually where needed.");
+      const { file, placementId, criteria, ...details } = data;
+      const attachmentId = file ? id("task-file") : null;
+      this.db.taskAttachments ||= {};
+      if (file) this.db.taskAttachments[attachmentId] = file;
+      const created = recipients.map((pid) => {
+        const taskId = id("task");
+        this.db.tasks[taskId] = { ...structuredClone(details), placementId: pid, ...(attachmentId ? { attachmentId } : {}), createdBy: this.userId };
+        return taskId;
+      });
+      try { this.save(); }
+      catch (error) {
+        created.forEach((taskId) => delete this.db.tasks[taskId]);
+        if (attachmentId) delete this.db.taskAttachments[attachmentId];
+        throw Error("The task could not be saved in this browser session. Try a smaller attachment.");
+      }
+      return created;
+    },
+    saveWeeklyReport(pid, week, data) {
+      const p = this.assertPlacement(pid, "company");
+      const count = Math.max(1, Math.ceil((Date.parse(p.endDate) - Date.parse(p.startDate) + 86400000) / (7 * 86400000)));
+      if (!Number.isInteger(week) || week < 1 || week > count || !data.title.trim() || !data.targets.length || data.targets.some((target) => !target.trim()))
+        throw Error("Select a training week and enter a title and at least one weekly target.");
+      const previousPlan = structuredClone(p.weeklyPlan || []), previousReports = structuredClone(p.weeklyReports || {});
+      p.weeklyPlan ||= [];
+      p.weeklyPlan[week - 1] = { title: data.title, targets: data.targets, plannedHours: Number(this.db.users[p.studentId].requiredHours) / count };
+      p.weeklyReports ||= {};
+      p.weeklyReports[week] ||= [];
+      p.weeklyReports[week].push({ text: data.text, plan: structuredClone(p.weeklyPlan[week - 1]), authorId: this.userId, createdAt: now() });
+      try { this.save(); }
+      catch (error) { p.weeklyPlan = previousPlan; p.weeklyReports = previousReports; throw error; }
     },
     submitTask(taskId, data) {
       this.require("student");
@@ -290,7 +314,8 @@
         throw Error("Resubmission is available only after a revision request.");
       if (!data.description.trim())
         throw Error("Describe your completed work.");
-      this.db.submissions[id("submission")] = {
+      const submissionId = id("submission");
+      this.db.submissions[submissionId] = {
         taskId,
         studentId: this.userId,
         ...data,
@@ -298,9 +323,10 @@
         createdAt: now(),
         review: null,
       };
-      this.save();
+      try { this.save(); }
+      catch (error) { delete this.db.submissions[submissionId]; throw Error("The submission could not be saved in this browser session. Try a smaller attachment."); }
     },
-    reviewSubmission(sid, scores, feedback, revisions) {
+    reviewSubmission(sid, feedback, revisions) {
       this.require("company");
       const s = this.db.submissions[sid],
         t = this.db.tasks[s?.taskId];
@@ -312,20 +338,8 @@
       )
         throw Error("This submission has already been reviewed.");
       if (!feedback.trim()) throw Error("Provide feedback for the student.");
-      if (
-        !revisions &&
-        (scores.length !== t.criteria.length ||
-          scores.some(
-            (score, i) =>
-              !Number.isFinite(score) ||
-              score < 0 ||
-              score > t.criteria[i].maximum,
-          ))
-      )
-        throw Error("Each score must be within its criterion maximum.");
       s.status = revisions ? "Revision requested" : "Evaluated";
       s.review = {
-        scores: revisions ? [] : scores,
         feedback,
         reviewedBy: this.userId,
         reviewedAt: now(),
@@ -406,78 +420,26 @@
       };
       this.save();
     },
-    companyEvaluation(pid, scores, comments) {
+    companyEvaluation(pid, score, comments) {
       this.assertPlacement(pid, "company");
-      if (this.db.companyEvaluations[pid])
-        throw Error("The final company evaluation has already been sent.");
-      if (
-        scores.length !== 4 ||
-        scores.some((s) => !Number.isFinite(s) || s < 0 || s > 5) ||
-        !comments.trim()
-      )
-        throw Error("Complete all four criteria (0–5) and comments.");
-      this.db.companyEvaluations[pid] = {
-        placementId: pid,
-        scores,
-        total: scores.reduce((a, b) => a + b, 0),
-        maximum: 20,
-        comments,
-        authorId: this.userId,
-        sentAt: now(),
-      };
-      this.save();
+      if (this.db.companyEvaluations[pid]) throw Error("The company evaluation has already been submitted.");
+      if (!Number.isFinite(score) || score < 0 || score > 50 || !comments.trim()) throw Error("Enter a company grade from 0 to 50 and evaluation comments.");
+      this.db.companyEvaluations[pid] = { placementId: pid, score, total: score, maximum: 50, model: "company-academic-50-v1", comments, authorId: this.userId, sentAt: now() };
+      try { this.save(); }
+      catch (error) { delete this.db.companyEvaluations[pid]; throw error; }
     },
-    academicEvaluation(
-      pid,
-      academicScore,
-      reportScore,
-      presentationScore,
-      comments,
-    ) {
+    academicEvaluation(pid, score, comments) {
       this.assertPlacement(pid, "supervisor");
-      if (!this.db.companyEvaluations[pid])
-        throw Error("Wait for the company final evaluation.");
-      if (this.db.academicEvaluations[pid])
-        throw Error("The academic evaluation has already been sent.");
-      const report = this.all("tasks").find(
-        (t) => t.placementId === pid && t.kind === "Final report",
-      );
-      if (!report || this.taskState(report.id) !== "Evaluated")
-        throw Error(
-          "A final report must be submitted and reviewed by the company first.",
-        );
-      if (
-        !Number.isFinite(academicScore) ||
-        academicScore < 0 ||
-        academicScore > 30 ||
-        !Number.isFinite(reportScore) ||
-        reportScore < 0 ||
-        reportScore > 25 ||
-        !Number.isFinite(presentationScore) ||
-        presentationScore < 0 ||
-        presentationScore > 25 ||
-        !comments.trim()
-      )
-        throw Error(
-          "Complete the academic, report and presentation scores within their limits, with comments.",
-        );
-      this.db.academicEvaluations[pid] = {
-        placementId: pid,
-        academicScore,
-        reportScore,
-        presentationScore,
-        comments,
-        authorId: this.userId,
-        sentAt: now(),
-      };
-      this.save();
+      if (this.db.companyEvaluations[pid]?.model !== "company-academic-50-v1") throw Error("Review the submitted company evaluation first.");
+      if (this.db.academicEvaluations[pid]) throw Error("The academic evaluation has already been submitted.");
+      if (!Number.isFinite(score) || score < 0 || score > 50 || !comments.trim()) throw Error("Enter an academic grade from 0 to 50 and evaluation comments.");
+      this.db.academicEvaluations[pid] = { placementId: pid, score, total: score, maximum: 50, model: "company-academic-50-v1", reviewedCompanySentAt: this.db.companyEvaluations[pid].sentAt, comments, authorId: this.userId, sentAt: now() };
+      try { this.save(); }
+      catch (error) { delete this.db.academicEvaluations[pid]; throw error; }
     },
     finalResult(pid) {
-      const c = this.db.companyEvaluations[pid],
-        a = this.db.academicEvaluations[pid];
-      return c && a
-        ? c.total + a.academicScore + a.reportScore + a.presentationScore
-        : null;
+      const c = this.db.companyEvaluations[pid], a = this.db.academicEvaluations[pid];
+      return c?.model === "company-academic-50-v1" && a?.model === "company-academic-50-v1" ? c.score + a.score : null;
     },
     completionChecks(pid) {
       const p = this.db.placements[pid],
@@ -485,8 +447,8 @@
         tasks = this.all("tasks").filter((t) => t.placementId === pid),
         result = this.finalResult(pid);
       return {
-        companyEvaluation: !!this.db.companyEvaluations[pid],
-        academicEvaluation: !!this.db.academicEvaluations[pid],
+        companyEvaluation: this.db.companyEvaluations[pid]?.model === "company-academic-50-v1",
+        academicEvaluation: this.db.academicEvaluations[pid]?.model === "company-academic-50-v1",
         requiredHours:
           !!student && this.approvedHours(pid) >= student.requiredHours,
         tasksCompleted:
@@ -506,6 +468,7 @@
       if (!Object.values(this.completionChecks(pid)).every(Boolean))
         throw Error("All completion requirements must be met before approval.");
       const p = this.db.placements[pid];
+      const previousStatus = p.status;
       p.status = "Completed";
       this.db.completions[pid] = {
         placementId: pid,
@@ -515,12 +478,15 @@
           new Date().getFullYear() +
           "-" +
           crypto.randomUUID().slice(0, 8).toUpperCase(),
+        result: this.finalResult(pid),
+        evaluationModel: "company-academic-50-v1",
         approvedBy: this.userId,
         approvedAt: now(),
         message:
           "Congratulations! You have successfully completed your internship.",
       };
-      this.save();
+      try { this.save(); }
+      catch (error) { p.status = previousStatus; delete this.db.completions[pid]; throw error; }
     },
     saveAccount(data, uid) {
       this.require("coordinator");
@@ -659,13 +625,91 @@
     try {
       cached = JSON.parse(sessionStorage.getItem(KEY));
     } catch {}
-    if (cached?.schemaVersion === 1) U.db = cached;
-    else {
-      const response = await fetch("../../shared/data/firebase-seed.json");
+    let seed;
+    try {
+      const response = await fetch("../../shared/data/firebase-seed.json", { cache: "no-cache" });
       if (!response.ok) throw Error("Workspace data unavailable.");
-      U.db = await response.json();
+      seed = await response.json();
+    } catch (error) {
+      if (cached?.schemaVersion !== 1) throw error;
+    }
+    if (cached?.schemaVersion !== 1) U.db = seed;
+    else {
+      U.db = cached;
+      if (seed?.seedRevision && cached.seedRevision !== seed.seedRevision) {
+        // Replace untouched starter records; retain the user's edits and connected workflow history.
+        const baselineResponse = await fetch("../../shared/data/starter-seed-v1.json", { cache: "no-cache" }).catch(() => null);
+        const baseline = baselineResponse?.ok ? await baselineResponse.json() : {};
+        const stable = (value) => JSON.stringify(value, (_, entry) => entry && typeof entry === "object" && !Array.isArray(entry) ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a.localeCompare(b))) : entry);
+        const changed = (collection, key, record) => !baseline[collection]?.[key] || stable(record) !== stable(baseline[collection][key]);
+        const protectedStudents = new Set(), protectedPlacements = new Set();
+        for (const [key, record] of Object.entries(cached.placements || {})) {
+          if (changed("placements", key, record)) { protectedStudents.add(record.studentId); protectedPlacements.add(key); }
+        }
+        for (const [key, record] of Object.entries(cached.applications || {})) {
+          if (changed("applications", key, record)) protectedStudents.add(record.studentId);
+        }
+        for (const collection of ["tasks", "submissions", "hourEntries", "academicComments", "companyEvaluations", "academicEvaluations", "completions"]) {
+          for (const [key, record] of Object.entries(cached[collection] || {})) {
+            if (!changed(collection, key, record)) continue;
+            const pid = record.placementId || cached.tasks?.[record.taskId]?.placementId;
+            if (pid) { protectedPlacements.add(pid); const student = cached.placements?.[pid]?.studentId; if (student) protectedStudents.add(student); }
+          }
+        }
+        const dependentPlacement = (collection, record, key) => collection === "placements" ? key : record.placementId || seed.tasks?.[record.taskId]?.placementId;
+        for (const collection of collections) {
+          cached[collection] ||= {};
+          for (const [key, record] of Object.entries(cached[collection])) {
+            if (seed[collection]?.[key] || changed(collection, key, record)) continue;
+            const pid = dependentPlacement(collection, record, key);
+            const student = record.studentId || seed.placements?.[pid]?.studentId;
+            if (protectedStudents.has(student) || protectedPlacements.has(pid)) continue;
+            delete cached[collection][key];
+          }
+          for (const [key, record] of Object.entries(seed[collection] || {})) {
+            const student = record.studentId || (collection === "placements" ? record.studentId : null);
+            const pid = dependentPlacement(collection, record, key);
+            const placementStudent = seed.placements?.[pid]?.studentId;
+            if ((["applications", "placements"].includes(collection) && protectedStudents.has(student)) || (pid && (protectedPlacements.has(pid) || protectedStudents.has(placementStudent)))) continue;
+            const existing = cached[collection][key];
+            if (!existing || !changed(collection, key, existing)) cached[collection][key] = record;
+            else if (existing.name && existing.name === baseline[collection]?.[key]?.name && record.name) existing.name = record.name;
+          }
+        }
+        for (const [key, placement] of Object.entries(seed.placements || {})) {
+          const existing = cached.placements?.[key];
+          if (existing && !existing.weeklyPlan && existing.studentId === placement.studentId && existing.startDate === placement.startDate && existing.endDate === placement.endDate && placement.weeklyPlan) {
+            existing.weeklyPlan = placement.weeklyPlan;
+          }
+          if (existing && !existing.weeklyReports && existing.studentId === placement.studentId && existing.startDate === placement.startDate && existing.endDate === placement.endDate && placement.weeklyReports) {
+            existing.weeklyReports = placement.weeklyReports;
+          }
+        }
+        if (cached.users?.["student-1"]?.name === "غيث العموري") {
+          cached.users["student-1"].name = seed.users["student-1"].name;
+        }
+        cached.seedRevision = seed.seedRevision;
+      }
     }
     for (const name of collections) U.db[name] ||= {};
+    U.db.policy.companyMaximum = 50;
+    U.db.policy.academicMaximum = 50;
+    delete U.db.policy.reportMaximum;
+    delete U.db.policy.presentationMaximum;
+    U.db.policy.interpretation = "Owner-defined project workflow: company 50 + academic supervisor 50; coordinator approval releases successful completion after all requirements are met.";
+    U.db.evaluationModel = "company-academic-50-v1";
+    for (const task of Object.values(U.db.tasks)) delete task.criteria;
+    for (const submission of Object.values(U.db.submissions)) if (submission.review) delete submission.review.scores;
+    for (const collection of ["companyEvaluations", "academicEvaluations"]) {
+      for (const [pid, evaluation] of Object.entries(U.db[collection])) {
+        if (evaluation.model === "company-academic-50-v1") continue;
+        U.db.legacyEvaluations ||= {};
+        U.db.legacyEvaluations[pid] ||= {};
+        U.db.legacyEvaluations[pid][collection] = evaluation;
+        delete U.db[collection][pid];
+      }
+    }
+
     U.save();
     return U;
   })();

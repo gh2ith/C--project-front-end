@@ -699,6 +699,40 @@ body.student-studio {
 .studio-task-stop > .status {
   margin-top: auto;
 }
+.weekly-journey-title { display:flex; justify-content:space-between; align-items:baseline; gap:16px; }
+.student-training-weeks { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:10px; margin:0 0 24px; }
+.student-training-week { display:flex; flex-direction:column; gap:14px; text-align:left; min-width:0; min-height:136px; padding:15px 13px; border:1px solid transparent; border-radius:8px; background:var(--bg-3); color:var(--navy); cursor:pointer; }
+.student-training-week > span { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:12px; }
+.student-training-week strong { font-size:14px; line-height:1.5; font-weight:500; }
+.student-training-week small { margin-top:auto; font-size:12px; }
+.student-training-week[aria-pressed="true"] { border-color:#006837; background:var(--bg); color:var(--blue); box-shadow:0 0 0 2px #00683715; }
+.student-training-week:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+.student-week-columns { display:grid; grid-template-columns:minmax(0,1fr) 310px; align-items:start; gap:24px; }
+.student-week-panel { min-width:0; padding:26px; background:var(--bg); border:1px solid var(--line); border-radius:8px; }
+.student-week-heading { display:flex; align-items:start; justify-content:space-between; gap:16px; }
+.student-week-panel h2 { font-size:20px; margin:4px 0 12px; line-height:1.4; }
+.student-week-panel h3 { font-size:16px; margin:22px 0 12px; }
+.student-week-panel p { line-height:1.7; font-size:14px; }
+.student-week-heading p { margin:0; }
+.student-week-meta { padding-bottom:20px; border-bottom:1px solid var(--line); color:var(--slate); }
+.student-week-targets { list-style:none; margin:0 0 20px; padding:0; }
+.student-week-targets li { display:flex; align-items:baseline; gap:14px; padding:17px 0; border-bottom:1px solid var(--line); font-size:15px; line-height:1.6; }
+.student-week-targets .bi { color:var(--blue); flex:none; }
+.student-week-hours { margin-top:22px; border-top:1px solid var(--line); padding-top:16px; }
+.student-week-hours summary { display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer; min-height:44px; font-size:14px; }
+.student-week-hours summary span { color:var(--slate); font-size:12px; }
+.student-week-hours summary::after { content:"+"; font-size:20px; color:var(--blue); }
+.student-week-hours[open] summary::after { content:"−"; }
+.student-week-hours .table-wrap { margin-top:12px; }
+.student-week-feedback h2 { padding-bottom:18px; border-bottom:1px solid var(--line); }
+.student-week-feedback h2 .bi { margin-right:8px; }
+.student-week-company { margin:22px 0; }
+.student-week-company strong { font-size:15px; }
+.student-week-company p { margin:6px 0; font-size:12px; }
+.student-week-review { border-top:1px solid var(--line); margin-top:24px; padding-top:20px; }
+.student-week-review > p > strong { font-size:26px; margin-right:5px; }
+@media (max-width:1100px) { .student-training-weeks { grid-template-columns:repeat(4,minmax(0,1fr)); } .student-week-columns { grid-template-columns:minmax(0,1fr) 280px; gap:18px; } }
+@media (max-width:760px) { .student-week-columns { grid-template-columns:1fr; } .student-training-weeks { display:flex; overflow-x:auto; padding:4px 2px 12px; scroll-snap-type:x proximity; } .student-training-week { flex:0 0 156px; scroll-snap-align:start; } .student-week-panel { padding:20px; } .weekly-journey-title { display:block; } }
 .studio-training-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 350px;

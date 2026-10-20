@@ -55,7 +55,7 @@ Submitting an application creates a **Pending** record. The owning company super
 
 ### 3. Tasks, submissions and feedback
 
-The company supervisor assigns tasks with deadlines and a maximum score appropriate to each task. A task does not have to be worth 100 points.
+The company supervisor assigns tasks with deadlines and clear requirements. Task reviews record completion, feedback or requested revisions without points.
 
 Students submit work, and the company supervisor reviews it, gives feedback, grades it or requests a revision. Submission and review history remain available so the training record shows how work developed.
 
@@ -80,7 +80,7 @@ Completion requires all of the following:
 
 The coordinator then approves completion. Students receive a successful-completion message and a downloadable or printable certificate. Completed internships become read-only.
 
-Students can see task-level grades, feedback, revision requests, hours and progress. Company and academic final evaluation forms, final component grades and the calculated final result remain private from students.
+Students can see task completion, feedback, revision requests, hours and progress. Company and academic final evaluation forms, final component grades and the calculated final result remain private from students.
 
 ## Academic coverage and policy assumptions
 

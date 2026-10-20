@@ -19,6 +19,7 @@
   const params = new URLSearchParams(location.search);
   let monitorStudentQuery = "";
   let evaluationStudentQuery = "";
+  let companyStudentQuery = "";
   const names = {
     student: "Student",
     company: "Company Supervisor",
@@ -38,8 +39,9 @@
       ["opportunities", "Manage Opportunities", "briefcase"],
       ["applications", "Applications Review", "send-check"],
       ["trainees", "My Trainees", "people"],
-      ["tasks", "Manage & Review Tasks", "list-task"],
-      ["evaluations", "Reports & Final Evaluation", "clipboard-check"],
+      ["tasks", "Tasks", "list-task"],
+      ["reports", "Weekly Reports", "journal-text"],
+      ["evaluations", "Evaluations", "clipboard-check"],
       ["account", "Supervisor Account", "person-circle"],
     ],
     supervisor: [
@@ -86,7 +88,7 @@
   const button = (label, action, id = "", primary = false) =>
     `<button type="button" class="ui-button${primary ? " primary" : ""}" data-action="${action}" data-id="${E(id)}">${E(label)}</button>`;
   const status = (value) =>
-    `<span class="status ${["Confirmed", "Accepted", "Active", "Approved", "Evaluated", "Completed", "Sent"].includes(value) ? "good" : ["Pending", "Submitted", "Revision requested", "New"].includes(value) ? "wait" : ["Rejected", "Returned", "Inactive"].includes(value) ? "bad" : ""}">${E(value)}</span>`;
+    `<span class="status ${["Confirmed", "Accepted", "Active", "Approved", "Evaluated", "Completed", "Sent"].includes(value) ? "good" : ["Pending", "Submitted", "Revision requested", "New"].includes(value) ? "wait" : ["Rejected", "Returned", "Inactive"].includes(value) ? "bad" : ""}">${E(value === "Evaluated" ? "Completed" : value)}</span>`;
   const empty = (heading, body, action = "") =>
     `<div class="empty">${icon("inbox")}<h2>${E(heading)}</h2><p>${E(body)}</p>${action}</div>`;
   const table = (heads, rows) =>
@@ -110,7 +112,7 @@
     extra = "",
     required = true,
   ) =>
-    `<label class="field"><span>${E(label)}</span><input class="ui-input" name="${name}" type="${type}" value="${E(value)}" ${required ? "required" : ""} ${extra}></label>`;
+    `<label class="field"><span>${E(label)}</span><input class="ui-input" name="${name}" type="${type}" value="${E(value)}" ${name === "name" ? 'dir="auto"' : ""} ${required ? "required" : ""} ${extra}></label>`;
   const textarea = (label, name, value = "", required = true) =>
     `<label class="field full"><span>${E(label)}</span><textarea class="ui-textarea" name="${name}" ${required ? "required" : ""}>${E(value)}</textarea></label>`;
   const select = (label, name, options, value = "", extra = "") =>
@@ -285,7 +287,7 @@
       tasks.map((t) => {
         const p = U.db.placements[t.placementId];
         return [
-          `<strong>${E(t.title)}</strong><small>${E(t.kind)} · ${t.criteria.reduce((a, c) => a + c.maximum, 0)} points</small>`,
+          `<strong>${E(t.title)}</strong><small>${E(t.kind)}</small>`,
           E(userName(p.studentId)),
           taskDeadline(t),
           status(U.taskState(t.id)),
@@ -363,8 +365,7 @@
     } else if (view === "tasks") {
       shell(
         p
-          ? trainingRecord(p) +
-              `<div class="studio-section-title"><h2>Your assigned work</h2><p>Open a task to submit work, see feedback or respond to a revision request.</p></div>` +
+          ? `<div class="studio-section-title"><h2>Your assigned work</h2><p>Open a task to submit work, see feedback or respond to a revision request.</p></div>` +
               studentTaskCards(tasks)
           : empty(
               "Confirm an internship to begin",
@@ -374,43 +375,67 @@
         "The work, deadlines and feedback that move your internship forward.",
       );
     } else if (view === "progress") {
-      const latest = tasks
-        .map((t) => ({ task: t, submission: U.latestSubmission(t.id) }))
-        .filter((x) => x.submission?.review)
-        .sort((a, b) =>
-          b.submission.review.reviewedAt.localeCompare(
-            a.submission.review.reviewedAt,
-          ),
-        )[0];
       shell(
         p
-          ? (p.status === "Completed"
-              ? completionBlock(p)
-              : trainingRecord(p)) +
-              `<div class="studio-section-title"><h2>Your internship journey</h2><p>Assigned tasks and their current status</p></div>` +
-              studentTaskCards(tasks) +
-              `<div class="studio-training-columns"><section class="studio-training-panel"><h2>Training hours</h2><p class="muted">Recorded by your company supervisor and verified by your academic supervisor.</p><div class="section-space">${hoursTable(p)}</div></section><aside class="studio-feedback-panel"><h2>${icon("chat-left-text")} Company feedback</h2>${latest ? `<p class="muted">${E(latest.task.title)}</p><p class="pre-wrap">${E(latest.submission.review.feedback)}</p>${status(latest.submission.status)}<div class="actions">${button("View work & feedback", "task", latest.task.id)}</div>` : "<p>Company feedback will appear after your submitted work has been reviewed.</p>"}<div class="studio-academic-feedback"><h3>Academic feedback</h3>${comments(p.id)}</div></aside></div>`
+          ? (p.status === "Completed" ? completionBlock(p) : "") + studentWeeklyTraining(p)
           : empty(
               "Your internship journey starts with an offer",
               "Confirm one accepted offer to begin tracking your work and progress.",
             ),
-        "Your work, your progress, and the feedback that moves you forward.",
+        "Your weekly plan, training targets and supervisor feedback.",
       );
+      const weekStrip = document.querySelector(".student-training-weeks");
+      const activeWeek = weekStrip?.querySelector('[aria-pressed="true"]');
+      if (activeWeek && weekStrip.scrollWidth > weekStrip.clientWidth) {
+        weekStrip.scrollLeft = activeWeek.offsetLeft - weekStrip.offsetLeft;
+      }
     }
   }
-  function trainingRecord(p) {
+  function studentWeeklyTraining(p) {
+    const student = U.db.users[p.studentId];
+    const day = 86400000, start = Date.parse(p.startDate + "T00:00:00Z"), end = Date.parse(p.endDate + "T00:00:00Z");
+    const iso = (time) => new Date(time).toISOString().slice(0, 10);
+    const count = Math.max(1, Math.ceil(((end - start) / day + 1) / 7));
+    const entries = U.all("hourEntries").filter((h) => h.placementId === p.id);
+    const current = entries.filter((h) => !entries.some((next) => next.replacesId === h.id));
+    const weeks = Array.from({ length: count }, (_, index) => {
+      const from = iso(start + index * 7 * day), to = iso(Math.min(end, start + (index * 7 + 6) * day));
+      const hours = current.filter((h) => h.date >= from && h.date <= to);
+      const plan = p.weeklyPlan?.[index] || {};
+      const planned = Number(plan.plannedHours) || Number(student.requiredHours) / count;
+      const approved = hours.filter((h) => h.status === "Approved").reduce((sum, h) => sum + Number(h.hours), 0);
+      const label = hours.some((h) => h.status === "Returned") ? "Returned" : hours.some((h) => h.status === "Pending") ? "In review" : approved >= planned ? "Verified" : approved > 0 ? "In progress" : "Planned";
+      return { number: index + 1, from, to, hours, plan, planned, approved, label };
+    });
+    const today = iso(Date.now());
+    const initial = Math.min(count, Math.max(1, Math.floor((Date.parse(today) - start) / (7 * day)) + 1));
+    const chosen = Math.min(count, Math.max(1, Math.trunc(Number(params.get("week")) || initial)));
+    const week = weeks[chosen - 1];
+    const title = week.plan.title || "Weekly training targets";
+    const targets = week.plan.targets || [];
+    const records = week.hours.slice().sort((a, b) => a.date.localeCompare(b.date));
+    const companyReport = p.weeklyReports?.[chosen]?.at(-1);
+    const feedback = companyReport?.text ? [companyReport.text] : [...new Set(records.map((h) => h.description).filter(Boolean))];
+    const reviews = [...new Set(records.map((h) => h.reviewNote).filter(Boolean))];
+    return trainingRecord(p, `${weeks.filter((w) => w.label === "Verified").length} of ${count} weeks verified`) +
+      `<div class="studio-section-title weekly-journey-title"><h2>Your ${count}-week journey</h2><p>Choose a week to explore</p></div>
+      <nav class="student-training-weeks" aria-label="Training weeks">${weeks.map((w) => `<button type="button" class="student-training-week" data-action="student-week" data-id="${w.number}" aria-pressed="${chosen === w.number}" aria-controls="student-week-detail"><span>Week ${String(w.number).padStart(2, "0")} ${icon(w.label === "Verified" ? "check2" : w.label === "In review" ? "clock" : "circle")}</span><strong>${E(w.plan.title || "Weekly training targets")}</strong><small>${E(w.label)}</small></button>`).join("")}</nav>
+      <div class="student-week-columns"><section class="student-week-panel" id="student-week-detail" aria-labelledby="student-week-title"><header class="student-week-heading"><div><p class="muted">Week ${String(chosen).padStart(2, "0")}</p><h2 id="student-week-title">${E(title)}</h2><p class="muted">${date(week.from)} – ${date(week.to)}</p></div>${status(week.label)}</header><p class="student-week-meta">${E(Number(week.planned.toFixed(1)))} planned hours · ${targets.length} targets · ${week.approved} approved hours</p><h3>What you're working toward</h3>${targets.length ? `<ul class="student-week-targets">${targets.map((target) => `<li>${icon("bullseye")}<span>${E(target)}</span></li>`).join("")}</ul>` : '<p class="muted">Your company has not added targets for this week yet.</p>'}<p class="help-text">Weekly targets describe your training plan. Assigned tasks, submissions and feedback are available on Tasks.</p><details class="student-week-hours"><summary>Dated training hours <span>${records.length} entries</span></summary>${records.length ? table(["Date", "Hours", "Academic review"], records.map((h) => [date(h.date), E(h.hours), `${status(h.status)}${h.reviewNote ? `<p class="help-text">${E(h.reviewNote)}</p>` : ""}`])) : '<p class="muted">No hours recorded for this week yet.</p>'}</details></section>
+      <aside class="student-week-panel student-week-feedback"><h2>${icon("chat-left-text")} Company feedback</h2><div class="student-week-company"><strong>${E(companyName(p.companyId))}</strong><p class="muted">Week ${chosen} · Company training record</p></div>${feedback.length ? feedback.map((text) => `<p class="pre-wrap">${E(text)}</p>`).join("") : '<p class="muted">Company work notes will appear when hours are recorded for this week.</p>'}<div class="student-week-review">${status(week.label)}<p><strong>${records.filter((h) => h.status !== "Returned").reduce((sum, h) => sum + Number(h.hours), 0)}</strong> hours recorded</p><p class="help-text">Your academic supervisor verifies recorded hours independently of task review.</p>${reviews.length ? `<h3>Academic hours feedback</h3>${reviews.map((text) => `<p>${E(text)}</p>`).join("")}` : ""}</div></aside></div>`;
+  }
+  function trainingRecord(p, summary) {
     const student = U.db.users[p.studentId],
       group = U.db.groups[student.groupId],
       hours = U.approvedHours(p.id),
       tasks = U.all("tasks").filter((t) => t.placementId === p.id);
-    return `<section class="studio-training-record"><div class="studio-training-company"><span class="studio-company-icon">${icon("building")}</span><div><h2>${E(U.db.opportunities[p.opportunityId]?.title)}</h2><p>${E(companyName(p.companyId))}</p><small>Academic supervisor · ${E(userName(group?.supervisorId))}</small></div></div><div class="studio-verified-hours"><div><strong>${hours}</strong><span>/ ${student.requiredHours} h</span><small>Academic-verified</small></div><div class="studio-hour-line"><span style="width:${Math.min(100, (hours / student.requiredHours) * 100)}%"></span></div><p>${tasks.filter((t) => U.taskState(t.id) === "Evaluated").length} of ${tasks.length} tasks evaluated</p></div></section>`;
+    return `<section class="studio-training-record"><div class="studio-training-company"><span class="studio-company-icon">${icon("building")}</span><div><h2>${E(U.db.opportunities[p.opportunityId]?.title)}</h2><p>${E(companyName(p.companyId))}</p><small>Academic supervisor · ${E(userName(group?.supervisorId))}</small></div></div><div class="studio-verified-hours"><div><strong>${hours}</strong><span>/ ${student.requiredHours} h</span><small>Academic-verified</small></div><div class="studio-hour-line"><span style="width:${Math.min(100, (hours / student.requiredHours) * 100)}%"></span></div><p>${summary ? E(summary) : `${tasks.filter((t) => U.taskState(t.id) === "Evaluated").length} of ${tasks.length} tasks completed`}</p></div></section>`;
   }
   function studentTaskCards(tasks) {
     return tasks.length
       ? `<section class="studio-task-journey" aria-label="Assigned tasks">${tasks.map((t, i) => `<button class="studio-task-stop" type="button" data-action="task" data-id="${E(t.id)}"><span class="studio-task-kind">${E(t.kind)} ${String(i + 1).padStart(2, "0")}</span><strong>${E(t.title)}</strong><span>${taskDeadline(t)}</span>${status(U.taskState(t.id))}</button>`).join("")}</section>`
       : empty(
           "Your tasks will appear here",
-          "Your company supervisor creates tasks with deadlines and evaluation criteria.",
+          "Your company supervisor creates tasks with deadlines and clear requirements.",
         );
   }
   function mountStudentDiscovery() {
@@ -503,28 +528,16 @@
       );
     } else if (view === "tasks") {
       shell(
-        tasks.length
-          ? tasksTable(tasks)
-          : empty(
-              "Assign practical work",
-              "Create tasks for confirmed trainees and specify their deadlines and criteria.",
-            ),
-        "Review submissions, evaluate work or request a revised submission.",
+        companyStudentWorkspace(ps),
+        "Select a student to assign work, review submissions and give feedback.",
         ps.some((p) => p.status !== "Completed")
-          ? button("Create task", "new-task", "", true)
+          ? button("Assign task to all active students", "new-task-all", "", true)
           : "",
       );
-    } else if (view === "evaluations") {
-      const p = selection();
+    } else if (view === "evaluations" || view === "reports") {
       shell(
-        p
-          ? placementPicker(ps) +
-              `<div class="two-columns">${card("Required reports", tasksTable(tasks.filter((t) => t.placementId === p.id && t.kind !== "Task")))}${card("Final company evaluation", companyEvaluationView(p))}</div>`
-          : empty(
-              "No confirmed trainees",
-              "Final evaluations become available after a student confirms an offer.",
-            ),
-        "Review required reports and send the company’s final evaluation to the assigned academic supervisor.",
+        companyStudentWorkspace(ps),
+        view === "reports" ? "Select a student to prepare weekly targets, write reports and record training hours." : "Select a student to prepare their final company evaluation for the academic supervisor.",
       );
     } else if (view === "account") {
       shell(
@@ -535,6 +548,41 @@
   }
   function placementPicker(ps) {
     return `<form data-form="placement-select" class="toolbar"><select class="ui-select" name="placement" aria-label="Select internship">${ps.map((p) => `<option value="${E(p.id)}" ${p.id === selection()?.id ? "selected" : ""}>${E(userName(p.studentId))} · ${E(companyName(p.companyId))}</option>`).join("")}</select><button class="ui-button" type="submit">Open internship</button></form>`;
+  }
+  function companyStudentWorkspace(placements) {
+    const requested = params.get("placement");
+    const selected = placements.find((p) => p.id === requested);
+    const query = companyStudentQuery.trim().toLowerCase();
+    const purpose = view === "tasks" ? "tasks and submissions" : view === "reports" ? "weekly reports" : "final company evaluation";
+    const roster = placements.map((p) => {
+      const s = U.db.users[p.studentId];
+      const search = `${s.name} ${s.studentNumber} ${majorName(s.majorId)}`.toLowerCase();
+      return `<button class="report-student-button" type="button" data-action="company-student" data-id="${E(p.id)}" data-company-search="${E(search)}" aria-pressed="${selected?.id === p.id}" aria-controls="companyStudentDetail" ${query && !search.includes(query) ? "hidden" : ""}><strong dir="auto">${E(s.name)}</strong><span>ID ${E(s.studentNumber)} · ${E(majorName(s.majorId))}</span><small>${E(p.status)} · ${U.approvedHours(p.id)} / ${s.requiredHours} approved hours</small></button>`;
+    }).join("");
+    let detail = `<section class="report-selection-prompt">${icon(view === "tasks" ? "list-task" : view === "reports" ? "journal-text" : "clipboard-check")}<h2>Select a student</h2><p>Choose a student from the list to open their ${purpose}.</p></section>`;
+    if (selected) {
+      const student = U.db.users[selected.studentId];
+      const ownTasks = U.all("tasks").filter((t) => t.placementId === selected.id);
+      detail = `<div class="company-student-heading"><div><p class="muted">${E(student.studentNumber)} · ${E(majorName(student.majorId))}</p><h2 dir="auto">${E(student.name)}</h2></div>${view === "tasks" && selected.status !== "Completed" ? button("Add task to this student", "new-task", selected.id, true) : status(selected.status)}</div>${selected.status === "Completed" ? '<p class="help-text">This internship is completed. Its records are read-only.</p>' : ""}`;
+      if (view === "evaluations") detail = evaluationTrail(selected) + detail;
+      detail += view === "tasks" ? (ownTasks.length ? companyTaskRows(ownTasks) : empty("No tasks assigned yet", "Add a task for this student, including its deadline and requirements.")) : view === "evaluations" ? `<section class="company-evaluation-content"><h3>Final company evaluation</h3>${companyEvaluationView(selected)}</section>` : companyWeeklyReports(selected);
+    }
+    return `<div class="company-student-workspace"><section class="report-student-directory"><h2>Students</h2><p>Select a student to open their ${purpose}.</p><label for="companyStudentSearch">Find a student</label><input id="companyStudentSearch" class="ui-input" type="search" placeholder="Search name, ID or major" value="${E(companyStudentQuery)}"><p id="companyStudentCount" class="report-student-count" role="status"></p><div class="report-student-list">${roster || '<p class="muted">Students appear after confirming an internship offer.</p>'}</div><p id="companyStudentEmpty" class="muted" ${placements.some((p) => { const s = U.db.users[p.studentId]; return `${s.name} ${s.studentNumber} ${majorName(s.majorId)}`.toLowerCase().includes(query); }) || !placements.length ? "hidden" : ""}>No matching students.</p></section><section id="companyStudentDetail" class="company-student-detail">${detail}</section></div>`;
+  }
+  function companyTaskRows(tasks) {
+    return `<div class="company-task-list" aria-label="Selected student's tasks">${tasks.map((task) => `<article class="company-task-row"><div><p class="muted">${E(task.kind)}${task.attachmentId || task.file ? " · PDF attached" : ""}</p><h3>${E(task.title)}</h3><p class="muted">Due ${taskDeadline(task)}</p></div><div class="company-task-row-actions">${status(U.taskState(task.id))}${button("Open task & submissions", "task", task.id)}</div></article>`).join("")}</div>`;
+  }
+  function companyWeeklyReports(p) {
+    const count = Math.max(1, Math.ceil((Date.parse(p.endDate) - Date.parse(p.startDate) + 86400000) / (7 * 86400000)));
+    const initial = Math.min(count, Math.max(1, Math.floor((Date.now() - Date.parse(p.startDate)) / (7 * 86400000)) + 1));
+    const week = Math.min(count, Math.max(1, Math.trunc(Number(params.get("week")) || initial)));
+    const from = new Date(Date.parse(p.startDate) + (week - 1) * 7 * 86400000).toISOString().slice(0, 10);
+    const to = new Date(Math.min(Date.parse(p.endDate), Date.parse(from) + 6 * 86400000)).toISOString().slice(0, 10);
+    const plan = p.weeklyPlan?.[week - 1] || {};
+    const history = p.weeklyReports?.[week] || [];
+    const latest = history.at(-1);
+    const hours = U.all("hourEntries").filter((h) => h.placementId === p.id && h.date >= from && h.date <= to);
+    return `<nav class="company-report-weeks" aria-label="Training weeks">${Array.from({length: count}, (_, index) => `<button type="button" class="ui-button" data-action="company-week" data-id="${index + 1}" aria-pressed="${week === index + 1}">Week ${String(index + 1).padStart(2, "0")}${p.weeklyReports?.[index + 1]?.length ? icon("check2") : ""}</button>`).join("")}</nav><section class="company-weekly-content"><h3>Week ${String(week).padStart(2, "0")}</h3><p class="muted">${date(from)} – ${date(to)} · ${Number((U.db.users[p.studentId].requiredHours / count).toFixed(1))} planned hours</p>${p.status !== "Completed" ? form("company-weekly", `<input type="hidden" name="week" value="${week}">${field("Weekly focus", "title", plan.title || "")}${textarea("Weekly targets (one per line)", "targets", (plan.targets || []).join("\n"))}${textarea("Company weekly report & feedback", "text", latest?.text || "", false)}`, "Save weekly report", p.id, "The student and assigned academic supervisor can read this report. Dated hours are recorded separately and require academic approval.") : `<h4>${E(plan.title || "Weekly targets")}</h4><ul>${(plan.targets || []).map((target) => `<li>${E(target)}</li>`).join("")}</ul><p class="pre-wrap">${E(latest?.text || "No company report recorded for this week.")}</p>`}<div class="company-section-heading"><h3>Dated training hours</h3>${p.status !== "Completed" ? button("Record training hours", "record-hours", p.id) : ""}</div>${hours.length ? table(["Date", "Work", "Hours", "Academic review"], hours.map((h) => [date(h.date), E(h.description), E(h.hours), `${status(h.status)}${h.status === "Returned" && p.status !== "Completed" && !U.all("hourEntries").some((next) => next.replacesId === h.id) ? button("Correct hours", "correct-hours", h.id) : ""}`])) : '<p class="muted">No dated hours recorded for this week.</p>'}${history.length ? `<details class="company-report-history"><summary>Report history (${history.length})</summary>${history.slice().reverse().map((entry) => `<article class="review-block"><strong>${E(userName(entry.authorId))}</strong><small>${stamp(entry.createdAt)}</small><p class="pre-wrap">${E(entry.text || "Weekly targets updated.")}</p>${entry.plan ? `<p>${E(entry.plan.title)}</p><ul>${entry.plan.targets.map((target) => `<li>${E(target)}</li>`).join("")}</ul>` : ""}</article>`).join("")}</details>` : ""}</section>`;
   }
   function placementList(ps, full = false) {
     return table(
@@ -641,6 +689,12 @@
     document.getElementById("supervisorReportCount").textContent = `${count} of ${buttons.length} assigned students`;
     document.getElementById("supervisorReportEmpty").hidden = count > 0;
   }
+  function companyReportSummary(p, week) {
+    const history = p.weeklyReports?.[week] || [];
+    if (!history.length) return "";
+    const latest = history.at(-1);
+    return `<section class="monitor-company-report"><h3>Company weekly report</h3><p class="muted">${E(userName(latest.authorId))} · ${stamp(latest.createdAt)}</p><p class="pre-wrap">${E(latest.text || "Weekly targets updated.")}</p>${latest.plan ? `<h4>Weekly targets</h4><ul>${latest.plan.targets.map((target) => `<li>${E(target)}</li>`).join("")}</ul>` : ""}${history.length > 1 ? `<details><summary>Earlier reports (${history.length - 1})</summary>${history.slice(0,-1).reverse().map((entry) => `<article class="review-block"><small>${stamp(entry.createdAt)}</small><p>${E(entry.text || "Weekly targets updated.")}</p></article>`).join("")}</details>` : ""}</section>`;
+  }
   function weeklyMonitor(p) {
     const student = U.db.users[p.studentId], group = U.db.groups[student.groupId];
     const day = 86400000, start = Date.parse(p.startDate + "T00:00:00Z"), end = Date.parse(p.endDate + "T00:00:00Z");
@@ -667,7 +721,7 @@
     const weeklySubmissions = submissions.filter((entry) => entry.createdAt?.slice(0, 10) >= week.from && entry.createdAt.slice(0, 10) <= week.to);
     const weeklyTasks = tasks.filter((t) => (t.deadline >= week.from && t.deadline <= week.to) || weeklySubmissions.some((entry) => entry.taskId === t.id));
     const approvedHours = U.approvedHours(p.id);
-    return `<section class="weekly-monitor" aria-label="Weekly student report monitor"><header class="monitor-student"><div><p class="monitor-eyebrow">${E(companyName(p.companyId))}</p><h2>${E(student.name)}</h2><p>${E(majorName(student.majorId))} · ${E(group?.name)}</p></div><div class="monitor-hours"><strong>${approvedHours}<span> / ${E(student.requiredHours)} h</span></strong><progress value="${approvedHours}" max="${E(student.requiredHours)}" aria-label="Approved training hours"></progress><small>Academic-approved hours · ${E(p.status)}</small></div></header><nav class="monitor-weeks" aria-label="Training weeks">${weeks.map((w) => `<button type="button" class="monitor-week ${w.label === "Approved" ? "is-approved" : ""}" data-action="monitor-week" data-id="${w.number}" aria-pressed="${w.number === chosen}" aria-controls="selected-week-report"><span>Week ${w.number}</span><small>${E(w.label)}</small></button>`).join("")}</nav><section id="selected-week-report" class="monitor-week-report" aria-labelledby="selected-week-heading"><header class="monitor-week-heading"><div><p class="monitor-eyebrow">Weekly report</p><h2 id="selected-week-heading">Week ${chosen} <span>· ${date(week.from)} – ${date(week.to)}</span></h2><p>${week.total} recorded hours · ${week.approved} approved · ${weeklySubmissions.length} work submission${weeklySubmissions.length === 1 ? "" : "s"}</p></div>${status(week.label)}</header>${p.status === "Completed" ? '<p class="monitor-readonly">This internship is completed. Its training record is read-only.</p>' : ""}<div class="monitor-report-columns"><div><section class="monitor-report-section"><h3>Company report & training hours</h3><p class="muted">Company-recorded work for this week. Academic verification applies to each dated hours entry.</p>${week.hours.length ? week.hours.slice().sort((a, b) => a.date.localeCompare(b.date)).map((entry) => `<article class="monitor-hour-entry"><header><strong>${date(entry.date)}</strong><div><span>${E(entry.hours)} hours</span>${status(entry.status)}</div></header><p class="pre-wrap">${E(entry.description)}</p>${entry.replacesId ? '<small>Corrected entry · the original record is retained in history.</small>' : ""}${entry.reviewNote ? `<p class="monitor-hour-note"><strong>Academic review</strong><br>${E(entry.reviewNote)}</p>` : ""}${entry.reviewedAt ? `<small>Reviewed ${stamp(entry.reviewedAt)}</small>` : ""}${entry.status === "Pending" && p.status !== "Completed" ? `<div class="actions">${button("Verify hours", "review-hours", entry.id)}</div>` : ""}</article>`).join("") : '<div class="monitor-empty"><span class="monitor-empty-icon">' + icon("journal-text") + '</span><h4>No training hours recorded for this week</h4><p>The company supervisor’s dated work descriptions and hours will appear here.</p></div>'}</section><section class="monitor-report-section"><h3>Assigned work & submissions</h3><p class="muted">Tasks due or work submitted during this week. Task grades and revisions are managed by the company supervisor.</p>${weeklyTasks.length ? weeklyTasks.map((task) => {
+    return `<section class="weekly-monitor" aria-label="Weekly student report monitor"><header class="monitor-student"><div><p class="monitor-eyebrow">${E(companyName(p.companyId))}</p><h2>${E(student.name)}</h2><p>${E(majorName(student.majorId))} · ${E(group?.name)}</p></div><div class="monitor-hours"><strong>${approvedHours}<span> / ${E(student.requiredHours)} h</span></strong><progress value="${approvedHours}" max="${E(student.requiredHours)}" aria-label="Approved training hours"></progress><small>Academic-approved hours · ${E(p.status)}</small></div></header><nav class="monitor-weeks" aria-label="Training weeks">${weeks.map((w) => `<button type="button" class="monitor-week ${w.label === "Approved" ? "is-approved" : ""}" data-action="monitor-week" data-id="${w.number}" aria-pressed="${w.number === chosen}" aria-controls="selected-week-report"><span>Week ${w.number}</span><small>${E(w.label)}</small></button>`).join("")}</nav><section id="selected-week-report" class="monitor-week-report" aria-labelledby="selected-week-heading"><header class="monitor-week-heading"><div><p class="monitor-eyebrow">Weekly report</p><h2 id="selected-week-heading">Week ${chosen} <span>· ${date(week.from)} – ${date(week.to)}</span></h2><p>${week.total} recorded hours · ${week.approved} approved · ${weeklySubmissions.length} work submission${weeklySubmissions.length === 1 ? "" : "s"}</p></div>${status(week.label)}</header>${p.status === "Completed" ? '<p class="monitor-readonly">This internship is completed. Its training record is read-only.</p>' : ""}<div class="monitor-report-columns"><div><section class="monitor-report-section">${companyReportSummary(p, chosen)}<h3>Company report & training hours</h3><p class="muted">Company-recorded work for this week. Academic verification applies to each dated hours entry.</p>${week.hours.length ? week.hours.slice().sort((a, b) => a.date.localeCompare(b.date)).map((entry) => `<article class="monitor-hour-entry"><header><strong>${date(entry.date)}</strong><div><span>${E(entry.hours)} hours</span>${status(entry.status)}</div></header><p class="pre-wrap">${E(entry.description)}</p>${entry.replacesId ? '<small>Corrected entry · the original record is retained in history.</small>' : ""}${entry.reviewNote ? `<p class="monitor-hour-note"><strong>Academic review</strong><br>${E(entry.reviewNote)}</p>` : ""}${entry.reviewedAt ? `<small>Reviewed ${stamp(entry.reviewedAt)}</small>` : ""}${entry.status === "Pending" && p.status !== "Completed" ? `<div class="actions">${button("Verify hours", "review-hours", entry.id)}</div>` : ""}</article>`).join("") : '<div class="monitor-empty"><span class="monitor-empty-icon">' + icon("journal-text") + '</span><h4>No training hours recorded for this week</h4><p>The company supervisor’s dated work descriptions and hours will appear here.</p></div>'}</section><section class="monitor-report-section"><h3>Assigned work & submissions</h3><p class="muted">Tasks due or work submitted during this week. Task reviews and revisions are managed by the company supervisor.</p>${weeklyTasks.length ? weeklyTasks.map((task) => {
       const entries = weeklySubmissions.filter((entry) => entry.taskId === task.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       return `<article class="monitor-work"><div class="monitor-work-heading"><div><h4>${E(task.title)}</h4><small>${E(task.kind)} · Due ${date(task.deadline)}</small></div>${button("View work & history", "task", task.id)}</div><p>${E(task.description)}</p>${entries.map((entry) => `<div class="monitor-submission"><strong>Submitted ${stamp(entry.createdAt)}</strong>${status(entry.status)}<p class="pre-wrap">${E(entry.description)}</p>${external(entry.link, "Open submitted work")}${attachment(entry.file)}${entry.review ? `<p><strong>Company feedback</strong></p><p>${E(entry.review.feedback)}</p>` : ""}</div>`).join("")}${!entries.length ? '<p class="muted">No work submitted during this week.</p>' : ""}</article>`;
     }).join("") : '<p class="monitor-empty-text">No tasks due or work submitted during this week.</p>'}</section></div><aside class="monitor-feedback"><h3>Academic feedback</h3><p class="muted">Comments for this internship are kept here across all weeks.</p>${comments(p.id)}${p.status !== "Completed" ? `<div class="actions">${button("Add academic comment", "academic-comment", p.id, true)}</div>` : ""}<details class="monitor-details"><summary>Training details</summary><dl class="detail-list"><div><dt>Company supervisor</dt><dd>${E(userName(p.companySupervisorId))}</dd></div><div><dt>Academic supervisor</dt><dd>${E(userName(group?.supervisorId))}</dd></div><div><dt>Training period</dt><dd>${date(p.startDate)} – ${date(p.endDate)}</dd></div><div><dt>Training weeks</dt><dd>${weekCount}</dd></div></dl></details></aside></div></section><details class="monitor-all-work"><summary>All assigned work & submission history</summary><div class="section-space">${tasksTable(tasks)}</div></details></section>`;
@@ -750,15 +804,13 @@
     }).join("");
     return `<div class="supervisor-report-workspace evaluation-workspace"><section class="report-student-directory" aria-labelledby="evaluationDirectoryTitle"><h2 id="evaluationDirectoryTitle">Assigned students</h2><p>Final internship evaluations</p><label for="supervisorEvaluationSearch">Find a student</label><input class="ui-input" type="search" id="supervisorEvaluationSearch" placeholder="Name, student ID, or company" value="${E(evaluationStudentQuery)}"><p id="supervisorEvaluationCount" class="report-student-count" role="status">${matches} of ${students.length} assigned students</p><div class="report-student-list">${roster}</div><p id="supervisorEvaluationEmpty" ${matches ? "hidden" : ""}>${students.length ? "No matching students. Try another name, ID, or company." : "No students are assigned to your academic groups yet."}</p></section><div id="evaluationDetail" class="report-student-detail">${selected ? `<button class="ui-button report-change-student" type="button" data-action="evaluation-clear">${icon("arrow-left")}Change student</button>${placement ? evaluationDetail(placement) : empty("No confirmed internship", `${selected.name} must confirm an internship before final evaluation.`)}` : `<section class="report-selection-prompt">${icon("clipboard-check")}<h2>Select a student</h2><p>Choose an assigned student to review the company assessment and prepare a separate final academic evaluation for the coordinator.</p></section>`}</div></div>`;
   }
-  function evaluationDetail(p) {
-    const s = U.db.users[p.studentId], company = U.db.companyEvaluations[p.id], academic = U.db.academicEvaluations[p.id];
-    const state = p.status === "Completed" ? "Completed" : academic ? "Sent to coordinator" : company ? "Academic evaluation required" : "Awaiting company evaluation";
-    return `<section class="card-surface evaluation-detail"><header class="evaluation-detail-heading"><div><p class="muted">Final internship evaluation</p><h2>${E(s.name)}</h2><p class="muted">${E(s.studentNumber)} · ${E(majorName(s.majorId))}</p></div>${status(state)}</header><dl class="evaluation-metadata"><div><dt>Host company</dt><dd>${E(companyName(p.companyId))}</dd></div><div><dt>Company supervisor</dt><dd>${E(userName(p.companySupervisorId))}</dd></div><div><dt>Training period</dt><dd>${date(p.startDate)} – ${date(p.endDate)}</dd></div><div><dt>Approved hours</dt><dd>${U.approvedHours(p.id)} / ${E(s.requiredHours)}</dd></div></dl><p class="help-text">Staff-only assessment. Students see task feedback and training progress; coordinator approval releases their completion message and certificate.</p><h3>Company final evaluation</h3><p class="muted">Read-only assessment from the company supervisor · 20% of the final result</p>${company ? `<p class="evaluation-submitted">${status("Sent")} ${stamp(company.sentAt)} · ${E(userName(company.authorId))}</p><div class="evaluation-radar-workspace">${evaluationRadar(company.scores)}<div><h4>Assessment scores</h4><p class="muted">Each criterion is scored from 0 to 5.</p>${table(["Criterion", "Score"], ["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"].map((label, i) => [E(label), `${company.scores[i]} / 5`]))}<p class="evaluation-total">Company component <strong>${company.total} / 20</strong></p></div></div><h4>Company comments</h4><p class="pre-wrap">${E(company.comments)}</p>` : `<div class="evaluation-pending">${icon("hourglass-split")}<h4>Evaluation not submitted</h4><p>The company supervisor has not sent the final evaluation yet. Scores and comments will appear here after submission.</p></div>`}</section><section class="card-surface evaluation-academic"><h2>Final academic evaluation</h2><p class="muted">Your separate assessment is sent to the university internship coordinator.</p>${academicEvaluationView(p)}</section>`;
+  function evaluationTrail(p) {
+    const company = U.db.companyEvaluations[p.id], academic = U.db.academicEvaluations[p.id], completion = U.db.completions[p.id];
+    return `<ol class="evaluation-cycle"><li class="${company ? 'is-done' : 'is-current'}"><strong>1. Company · 50</strong><span>${company ? 'Submitted to academic supervisor' : 'Awaiting company evaluation'}</span></li><li class="${academic ? 'is-done' : company ? 'is-current' : ''}"><strong>2. Academic supervisor · 50</strong><span>${academic ? 'Submitted to coordinator' : company ? 'Review company assessment and add evaluation' : 'Waiting for company submission'}</span></li><li class="${completion ? 'is-done' : academic ? 'is-current' : ''}"><strong>3. Coordinator approval</strong><span>${completion ? 'Approved · completion released' : academic ? 'Review result and training requirements' : 'Waiting for academic submission'}</span></li></ol>`;
   }
-  function evaluationRadar(scores) {
-    const point = (i, radius) => [180 + Math.sin(i * Math.PI / 2) * radius, 160 - Math.cos(i * Math.PI / 2) * radius];
-    const polygon = (radius) => scores.map((_, i) => point(i, radius).join(",")).join(" ");
-    return `<figure class="evaluation-radar"><figcaption>Evaluation at a glance</figcaption><svg viewBox="0 0 360 320" role="img" aria-label="Company evaluation radar chart. Exact scores are listed in the adjacent assessment table.">${[1, 2, 3, 4, 5].map((level) => `<polygon class="radar-grid" points="${polygon(level * 20)}"/>`).join("")}${scores.map((_, i) => { const [x, y] = point(i, 100); return `<line class="radar-grid" x1="180" y1="160" x2="${x}" y2="${y}"/>`; }).join("")}<polygon class="radar-shape" points="${scores.map((score, i) => point(i, score * 20).join(",")).join(" ")}"/>${scores.map((score, i) => { const [x, y] = point(i, score * 20); return `<circle class="radar-dot" cx="${x}" cy="${y}" r="4"><title>${E(["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"][i])}: ${score} / 5</title></circle>`; }).join("")}<text x="180" y="38" text-anchor="middle">Technical</text><text x="292" y="164">Conduct</text><text x="180" y="292" text-anchor="middle">Teamwork</text><text x="68" y="164" text-anchor="end">Attendance</text></svg><p class="muted">Company-submitted scores · Each axis is out of 5.</p></figure>`;
+  function evaluationDetail(p) {
+    const student = U.db.users[p.studentId];
+    return `${evaluationTrail(p)}<section class="card-surface evaluation-detail"><h2 dir="auto">${E(student.name)}</h2><p class="muted">${E(student.studentNumber)} · ${E(companyName(p.companyId))}</p><h3>Company evaluation · 50 marks</h3>${companyEvaluationView(p)}</section><section class="card-surface evaluation-academic"><h2>Academic evaluation · 50 marks</h2>${academicEvaluationView(p)}</section>`;
   }
   function filterEvaluationStudents(input) {
     evaluationStudentQuery = input.value;
@@ -769,61 +821,25 @@
     document.getElementById("supervisorEvaluationCount").textContent = `${count} of ${buttons.length} assigned students`;
     document.getElementById("supervisorEvaluationEmpty").hidden = count > 0;
   }
+  function legacyEvaluationNote(p) {
+    const history = U.db.legacyEvaluations?.[p.id];
+    if (!history) return "";
+    return `<details class="help-text"><summary>Previous evaluation history</summary><p>The earlier assessment used a different marking system. Its comments are retained here; it does not supply marks for the new 50 + 50 evaluation.</p>${Object.values(history).map((entry) => `<p>${E(entry.comments)}</p><small>${stamp(entry.sentAt)}</small>`).join("")}</details>`;
+  }
   function companyEvaluationView(p) {
     const ev = U.db.companyEvaluations[p.id];
-    if (ev)
-      return `<p>${status("Sent")} ${stamp(ev.sentAt)}</p><dl class="detail-list section-space">${["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"].map((label, i) => `<div><dt>${label}</dt><dd>${ev.scores[i]} / 5</dd></div>`).join("")}<div><dt>Total company component</dt><dd>${ev.total} / 20</dd></div></dl><p class="pre-wrap section-space">${E(ev.comments)}</p>`;
-    if (role !== "company")
-      return '<p class="muted">The company supervisor has not sent the final evaluation yet.</p>';
-    return form(
-      "company-evaluation",
-      `${["Technical performance", "Professional conduct", "Communication & teamwork", "Attendance & commitment"].map((label, i) => field(label + " (0–5)", "score" + i, "", "number", 'min="0" max="5" step="0.5"')).join("")}${textarea("Final company comments", "comments")}`,
-      "Send to academic supervisor",
-      p.id,
-      "This evaluation is private. Students do not see this form or its final score.",
-    );
+    if (ev) return `<p>${status("Sent")} · ${stamp(ev.sentAt)}</p><p class="evaluation-total">Company grade <strong>${ev.score} / 50</strong></p><p class="pre-wrap">${E(ev.comments)}</p><p class="help-text">${U.db.academicEvaluations[p.id] ? 'Academic evaluation submitted to coordinator.' : 'Awaiting the academic supervisor’s review and separate grade out of 50.'}</p>`;
+    if (p.status === "Completed") return legacyEvaluationNote(p) + '<p class="help-text">This previously approved internship is read-only.</p>';
+    if (role !== "company") return legacyEvaluationNote(p) + '<p class="muted">Waiting for the company to submit its evaluation out of 50.</p>';
+    return legacyEvaluationNote(p) + form("company-evaluation",field("Company grade (0–50)","score","","number",'min="0" max="50" step="0.5"') + textarea("Company evaluation & comments","comments"),"Submit to academic supervisor",p.id,"Your evaluation becomes read-only after submission. The academic supervisor reviews it and adds their own grade out of 50. Final marks remain private to staff.");
   }
   function academicEvaluationView(p) {
     const ev = U.db.academicEvaluations[p.id];
-    if (ev)
-      return `<p>${status("Sent")} ${stamp(ev.sentAt)}</p><dl class="detail-list section-space"><div><dt>Academic supervision</dt><dd>${ev.academicScore} / 30</dd></div><div><dt>Final report</dt><dd>${ev.reportScore} / 25</dd></div><div><dt>Presentation</dt><dd>${ev.presentationScore} / 25</dd></div></dl><p class="pre-wrap section-space">${E(ev.comments)}</p>`;
-    if (role !== "supervisor")
-      return '<p class="muted">The academic supervisor has not sent the final academic evaluation yet.</p>';
-    if (!U.db.companyEvaluations[p.id])
-      return '<p class="muted">Wait for the company’s final evaluation before preparing your academic evaluation.</p>';
-    if (p.status === "Completed")
-      return '<p class="muted">This completed internship is read-only.</p>';
-    const finalReport = U.all("tasks").find((t) => t.placementId === p.id && t.kind === "Final report");
-    if (!finalReport || U.taskState(finalReport.id) !== "Evaluated")
-      return `<p class="help-text">The student’s final report must be submitted and reviewed by the company before you can send your academic evaluation.</p><div class="actions">${link("Review training record", "supervisor", "progress", "?placement=" + p.id)}</div>`;
-    return form(
-      "academic-evaluation",
-      field(
-        "Academic supervision (0–30)",
-        "academicScore",
-        "",
-        "number",
-        'min="0" max="30" step="0.5"',
-      ) +
-        field(
-          "Final report (0–25)",
-          "reportScore",
-          "",
-          "number",
-          'min="0" max="25" step="0.5"',
-        ) +
-        field(
-          "Presentation (0–25)",
-          "presentationScore",
-          "",
-          "number",
-          'min="0" max="25" step="0.5"',
-        ) +
-        textarea("Final academic comments", "comments"),
-      "Send to coordinator",
-      p.id,
-      "The 50% report and presentation component is split equally as a documented project assumption. Final evaluations and scores remain private to staff.",
-    );
+    if (ev) return `<p>${status("Sent")} · ${stamp(ev.sentAt)}</p><p class="evaluation-total">Academic grade <strong>${ev.score} / 50</strong></p><p class="pre-wrap">${E(ev.comments)}</p><p class="evaluation-total">Combined result <strong>${U.finalResult(p.id)} / 100</strong></p><p class="help-text">${U.db.completions[p.id] ? 'Approved by the coordinator. Successful completion is available to the student.' : 'Awaiting coordinator approval. The student’s completion message is not released yet.'}</p>`;
+    if (p.status === "Completed") return '<p class="help-text">This previously approved internship is read-only.</p>';
+    if (role !== "supervisor") return '<p class="muted">Waiting for the academic supervisor’s evaluation out of 50.</p>';
+    if (!U.db.companyEvaluations[p.id]) return '<p class="help-text">The company must submit its evaluation before you can add yours.</p>';
+    return form("academic-evaluation",field("Academic grade (0–50)","score","","number",'min="0" max="50" step="0.5"')+textarea("Academic evaluation & review of company assessment","comments"),"Submit combined evaluation to coordinator",p.id,"Review the company’s submitted assessment above. Your 50 marks are added to the company’s 50. The coordinator decides approval after checking the result and training requirements.");
   }
   function coordinatorPage() {
     const ps = visiblePlacements(),
@@ -941,14 +957,14 @@
         companyEvaluation: "Company final evaluation received",
         academicEvaluation: "Academic final evaluation received",
         requiredHours: "Required training hours approved",
-        tasksCompleted: "All assigned tasks evaluated",
+        tasksCompleted: "All assigned tasks completed and reviewed",
         finalReport: "Final report submitted and reviewed",
         passingResult: "Calculated result meets the pass threshold",
         trainingPeriodEnded: "Training period has ended",
       };
       shell(
         p
-          ? placementPicker(ps) +
+          ? placementPicker(ps) + evaluationTrail(p) +
               (U.db.completions[p.id]
                 ? completionBlock(p)
                 : `<div class="two-columns">${card(
@@ -962,7 +978,7 @@
                       )
                       .join(
                         "",
-                      )}</ul><p class="section-space">Calculated result: <strong class="score-total">${U.finalResult(p.id) ?? "—"} / 100</strong></p><p class="help-text">30 academic + 20 company + 25 report + 25 presentation. Pass threshold: 50.</p>${Object.values(checks).every(Boolean) ? `<div class="actions">${button("Review & approve completion", "approve-completion", p.id, true)}</div>` : '<p class="help-text">Approval becomes available once every requirement is met.</p>'}`,
+                      )}</ul><p class="section-space">Calculated result: <strong class="score-total">${U.finalResult(p.id) ?? "—"} / 100</strong></p><p class="help-text">Company 50 + academic supervisor 50 = 100. Pass threshold: 50. Only coordinator approval releases successful completion.</p>${Object.values(checks).every(Boolean) ? `<div class="actions">${button("Review & approve completion", "approve-completion", p.id, true)}</div>` : '<p class="help-text">Approval becomes available once every requirement is met.</p>'}`,
                   )}${card("Training summary", `<p>Approved hours: ${U.approvedHours(p.id)} / ${U.db.users[p.studentId].requiredHours}</p><p>Training: ${date(p.startDate)} – ${date(p.endDate)}</p><p class="section-space">Approval releases the student’s completion message and downloadable certificate. Final evaluation forms and scores remain private.</p>`)}</div>`) +
               `<div class="two-columns section-space">${card("Company final evaluation", companyEvaluationView(p))}${card("Academic final evaluation", academicEvaluationView(p))}</div>`
           : empty(
@@ -1018,7 +1034,7 @@
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     modal(
       t.title,
-      `<div class="meta"><span>${E(t.kind)}</span><span>Due ${date(t.deadline)}</span>${status(U.taskState(tid))}</div><p class="pre-wrap">${E(t.description)}</p><h3 class="section-space">Evaluation criteria</h3><ul class="activity-list">${t.criteria.map((c) => `<li>${E(c.label)} <strong>${c.maximum} points</strong></li>`).join("")}</ul>${role === "student" && p.status !== "Completed" && (!last || last.status === "Revision requested") ? `<div class="section-space">${form("submission", textarea("Describe your completed work", "description") + field("Work link", "link", "", "url", "", false) + field("Attach work (up to 1 MB)", "file", "", "file", 'accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"', false), last ? "Resubmit work" : "Submit work", tid, "Your submission and selected file are retained in this browser session.")}</div>` : ""}<h3 class="section-space">Submission history</h3>${history.length ? history.map((s, i) => `<section class="review-block"><strong>Submission ${history.length - i} · ${stamp(s.createdAt)}</strong><p>${status(s.status)}</p><p>${E(s.description)}</p>${external(s.link, "Open submitted work")}${attachment(s.file)}${s.review ? `<p class="section-space"><strong>Company feedback</strong></p><p>${E(s.review.feedback)}</p>${s.status === "Evaluated" ? `<p>Grade: ${s.review.scores.reduce((n, v) => n + v, 0)} / ${t.criteria.reduce((n, c) => n + c.maximum, 0)}</p><ul>${t.criteria.map((c, k) => `<li>${E(c.label)}: ${s.review.scores[k]} / ${c.maximum}</li>`).join("")}</ul>` : ""}` : ""}${role === "company" && s.status === "Submitted" && p.status !== "Completed" ? `<div class="actions">${button("Evaluate / request revisions", "review-submission", s.id, true)}</div>` : ""}</section>`).join("") : '<p class="muted section-space">No submissions yet.</p>'}`,
+      `<div class="meta"><span>${E(t.kind)}</span><span>Due ${date(t.deadline)}</span>${status(U.taskState(tid))}</div><p class="pre-wrap">${E(t.description)}</p>${attachment(t.file || U.db.taskAttachments?.[t.attachmentId])}${role === "student" && p.status !== "Completed" && (!last || last.status === "Revision requested") ? `<div class="section-space">${form("submission", textarea("Describe your completed work", "description") + field("Work link", "link", "", "url", "", false) + field("Attach work (up to 1 MB)", "file", "", "file", 'accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.doc,.docx"', false), last ? "Resubmit work" : "Submit work", tid, "Your submission and selected file are retained in this browser session.")}</div>` : ""}<h3 class="section-space">Submission history</h3>${history.length ? history.map((s, i) => `<section class="review-block"><strong>Submission ${history.length - i} · ${stamp(s.createdAt)}</strong><p>${status(s.status)}</p><p>${E(s.description)}</p>${external(s.link, "Open submitted work")}${attachment(s.file)}${s.review ? `<p class="section-space"><strong>Company feedback</strong></p><p>${E(s.review.feedback)}</p>` : ""}${role === "company" && s.status === "Submitted" && p.status !== "Completed" ? `<div class="actions">${button("Review / request revisions", "review-submission", s.id, true)}</div>` : ""}</section>`).join("") : '<p class="muted section-space">No submissions yet.</p>'}`,
     );
   }
   function opportunityEditor(oid) {
@@ -1170,9 +1186,11 @@
       ),
     );
   }
-  async function readFile(input) {
+  async function readFile(input, pdfOnly = false) {
     const file = input?.files?.[0];
     if (!file) return null;
+    if (pdfOnly && !/\.pdf$/i.test(file.name)) throw Error("Choose a PDF assignment file.");
+    if (/\.pdf$/i.test(file.name) && !(await file.slice(0, 5).text()).startsWith("%PDF-")) throw Error("Choose a valid PDF document.");
     if (file.size > 1024 * 1024)
       throw Error("Select a file no larger than 1 MB for this local session.");
     if (!/\.(pdf|png|jpe?g|webp|txt|docx?)$/i.test(file.name))
@@ -1293,21 +1311,23 @@
           U.decideApplication(fid, "Rejected", get("reason"));
           break;
         case "task": {
-          const labels = f.getAll("criterionLabel"),
-            maxima = f.getAll("criterionMaximum");
-          U.createTask({
-            placementId: get("placementId"),
+          const data = {
             title: get("title"),
             description: get("description"),
             deadline: get("deadline"),
             kind: get("kind"),
-            criteria: labels.map((label, i) => ({
-              label,
-              maximum: Number(maxima[i]),
-            })),
-          });
+            file: await readFile(el.elements.file, true),
+          };
+          if (get("audience") === "all") {
+            U.createTasks(data, visiblePlacements().filter((p) => p.status !== "Completed").map((p) => p.id));
+          } else {
+            U.createTask({ ...data, placementId: get("placementId") });
+          }
           break;
         }
+        case "company-weekly":
+          U.saveWeeklyReport(fid, Number(get("week")), { title: get("title"), targets: get("targets").split(/\r?\n/).map((line) => line.trim()).filter(Boolean), text: get("text") });
+          break;
         case "submission":
           U.submitTask(fid, {
             description: get("description"),
@@ -1318,10 +1338,7 @@
         case "review": {
           const revision = get("decision") === "revision";
           const t = U.db.tasks[U.db.submissions[fid].taskId];
-          const scores = t.criteria.map((c, i) =>
-            get("score" + i) === "" ? NaN : Number(get("score" + i)),
-          );
-          U.reviewSubmission(fid, scores, get("feedback"), revision);
+          U.reviewSubmission(fid, get("feedback"), revision);
           break;
         }
         case "hours":
@@ -1340,22 +1357,10 @@
           U.academicComment(fid, get("comment"));
           break;
         case "company-evaluation":
-          U.companyEvaluation(
-            fid,
-            [0, 1, 2, 3].map((i) =>
-              get("score" + i) === "" ? NaN : Number(get("score" + i)),
-            ),
-            get("comments"),
-          );
+          U.companyEvaluation(fid, get("score") === "" ? NaN : Number(get("score")), get("comments"));
           break;
         case "academic-evaluation":
-          U.academicEvaluation(
-            fid,
-            Number(get("academicScore")),
-            Number(get("reportScore")),
-            Number(get("presentationScore")),
-            get("comments"),
-          );
+          U.academicEvaluation(fid, get("score") === "" ? NaN : Number(get("score")), get("comments"));
           break;
         case "account": {
           const data = Object.fromEntries(f.entries());
@@ -1463,6 +1468,14 @@
           document.getElementById(view === "evaluations" ? "supervisorEvaluationSearch" : "supervisorReportSearch")?.focus();
           break;
         }
+        case "student-week": {
+          U.require("student");
+          params.set("week", String(id));
+          history.replaceState(null, "", "?" + params.toString());
+          render();
+          document.querySelector(`.student-training-week[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+          break;
+        }
         case "monitor-week": {
           U.require("supervisor");
           params.set("week", String(id));
@@ -1549,22 +1562,45 @@
             "Internship confirmed. Your company supervisor can now assign tasks.",
           );
           break;
+        case "company-student": {
+          U.require("company");
+          if (!visiblePlacements().some((p) => p.id === id)) throw Error("This student is not assigned to you.");
+          params.set("placement", id);
+          params.delete("week");
+          history.replaceState(null, "", "?" + params.toString());
+          render();
+          document.querySelector(`[data-action="company-student"][data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+          break;
+        }
+        case "company-week": {
+          U.require("company");
+          params.set("week", String(id));
+          history.replaceState(null, "", "?" + params.toString());
+          render();
+          document.querySelector(`[data-action="company-week"][data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+          break;
+        }
+        case "new-task-all":
         case "new-task": {
           U.require("company");
           const ps = visiblePlacements().filter(
             (p) => p.status !== "Completed",
           );
+          const all = el.dataset.action === "new-task-all";
+          const selected = ps.find((p) => p.id === id);
+          if (!ps.length) throw Error("There are no active trainees to assign work to.");
+          if (!all && id && !selected) throw Error("Choose an active student assigned to you.");
           modal(
-            "Create task",
+            all ? "Assign task to all active students" : "Add task to student",
             form(
               "task",
-              select(
+              `<input type="hidden" name="audience" value="${all ? "all" : "student"}">` + (all ? `<p class="full help-text">This creates a separate task for each of your ${ps.length} active trainees. Submissions and grades remain individual.</p>` : selected ? `<input type="hidden" name="placementId" value="${E(selected.id)}"><p class="full company-task-recipient">Assigning to <strong dir="auto">${E(userName(selected.studentId))}</strong> only</p>` : select(
                 "Trainee",
                 "placementId",
                 ps.map((p) => [p.id, userName(p.studentId)]),
                 "",
                 "required",
-              ) +
+              )) +
                 select("Work type", "kind", [
                   ["Task", "Task"],
                   ["Final report", "Final internship report"],
@@ -1572,22 +1608,14 @@
                 field("Task title", "title") +
                 field("Deadline", "deadline", "", "date") +
                 textarea("Requirements & description", "description") +
-                `<fieldset class="full"><legend class="muted">Evaluation criteria and maximum points</legend><div id="criteria"><div class="criterion-row"><input class="ui-input" aria-label="Criterion name" name="criterionLabel" placeholder="Criterion name" required><input class="ui-input" aria-label="Maximum points" name="criterionMaximum" type="number" min="0.5" step="0.5" value="10" required></div></div>${button("Add criterion", "add-criterion")}</fieldset>`,
-              "Create task",
+                field("Attach assignment PDF (up to 1 MB)", "file", "", "file", 'accept=".pdf,application/pdf"', false),
+              all ? `Assign to ${ps.length} active students` : "Add task",
               "",
-              "Tasks use their own criterion maximums. Final report criteria must total 25 points.",
+              "Tasks are reviewed through completion and feedback, without points. Files are retained in this browser session; no server upload occurs.",
             ),
           );
           break;
         }
-        case "add-criterion":
-          document
-            .getElementById("criteria")
-            .insertAdjacentHTML(
-              "beforeend",
-              '<div class="criterion-row"><input class="ui-input" aria-label="Criterion name" name="criterionLabel" required><input class="ui-input" aria-label="Maximum points" name="criterionMaximum" type="number" min="0.5" step="0.5" value="5" required></div>',
-            );
-          break;
         case "task":
           taskDetail(id);
           break;
@@ -1601,25 +1629,13 @@
             form(
               "review",
               select("Review decision", "decision", [
-                ["evaluate", "Evaluate completed work"],
+                ["evaluate", "Mark work completed"],
                 ["revision", "Request modifications / resubmission"],
               ]) +
-                t.criteria
-                  .map((c, i) =>
-                    field(
-                      `${c.label} (0–${c.maximum})`,
-                      "score" + i,
-                      "",
-                      "number",
-                      `min="0" max="${c.maximum}" step="0.5"`,
-                      false,
-                    ),
-                  )
-                  .join("") +
                 textarea("Feedback / requested modifications", "feedback"),
               "Save review",
               id,
-              "Scores are required for evaluation. A revision request requires feedback and leaves the submission ungraded.",
+              "Give completion feedback or explain the changes needed for resubmission. Tasks do not carry points.",
             ),
           );
           break;
@@ -1968,6 +1984,14 @@
     }
     if (event.target.id === "supervisorReportSearch") filterReportStudents(event.target);
     if (event.target.id === "supervisorEvaluationSearch") filterEvaluationStudents(event.target);
+    if (event.target.id === "companyStudentSearch") {
+      companyStudentQuery = event.target.value;
+      const query = companyStudentQuery.trim().toLowerCase();
+      let matches = 0;
+      document.querySelectorAll("[data-company-search]").forEach((button) => { button.hidden = !button.dataset.companySearch.includes(query); if (!button.hidden) matches++; });
+      document.getElementById("companyStudentCount").textContent = `${matches} students`;
+      document.getElementById("companyStudentEmpty").hidden = matches > 0;
+    }
   });
   document.addEventListener("change", (event) => {
     if (event.target.matches("[data-hours-term]"))

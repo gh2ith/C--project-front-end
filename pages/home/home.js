@@ -1005,7 +1005,7 @@
     const listEl = $("#featured-opportunities-list");
     if (!listEl) return;
 
-    fetch("../../shared/data/firebase-seed.json")
+    fetch("../../shared/data/firebase-seed.json?v=arabic-records-1")
       .then((res) => {
         if (!res.ok) throw new Error("Seed fetch error");
         return res.json();
