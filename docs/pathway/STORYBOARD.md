@@ -20,3 +20,5 @@ Image analysis: the owner's reference uses grass rather than a separate paved/di
 | Our faculty | .98–1 | Gate upper right, diagonal partial river, faculty card left. | Camera decelerates into a stable hold; reverse scroll retraces the state. |
 
 All beats share white ground, soft daylight, grass/limestone materials and the same camera lens. No soundtrack is added to this scroll-controlled website. The hardest visual is the continuous shoreline/terrace join; the hard motion requirement is deterministic forward/backward state. This is a website scene correction, not a promotional film.
+
+Latest finale refinement: restore the full .12/.32/.52/.72 chapter route. Continue visibly into a wider returning S-bend, larger right-side gate and an unboxed closing message. Emerald atmosphere/light/contact shadows blend over .895–.98; camera never resets. Main water about7 units, gate scale1.65, final camera(16,30,59). See current acceptance report for height-adaptive target and scroll mapping.

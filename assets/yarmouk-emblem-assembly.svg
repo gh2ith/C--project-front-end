@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 640" fill="none" role="img" aria-labelledby="title description">
+  <title id="title">Yarmouk University emblem illustration</title>
+  <desc id="description">A pointed frame based on the supplied university emblem, surrounding its black motif, red orbital lines and green wheat sprig. A web illustration, not a depiction of a historic gateway.</desc>
+  <defs>
+    <linearGradient id="rim" x1="80" y1="60" x2="425" y2="500" gradientUnits="userSpaceOnUse"><stop stop-color="#faf7ed"/><stop offset=".55" stop-color="#e9e2d1"/><stop offset="1" stop-color="#b9ad92"/></linearGradient>
+    <linearGradient id="paper" x1="140" y1="80" x2="365" y2="475" gradientUnits="userSpaceOnUse"><stop stop-color="#fffefa"/><stop offset="1" stop-color="#f0ecdf"/></linearGradient>
+    <path id="outline" d="M250 26C231 70 176 76 122 111C77 140 57 191 57 247V425C57 463 48 485 28 501H472C452 485 443 463 443 425V247C443 191 423 140 378 111C324 76 269 70 250 26Z"/>
+    <style>
+      .rim-fill{animation:surface .6s .42s both}
+      .rim-line{stroke-dasharray:1;animation:trace 1.05s cubic-bezier(.22,.68,.24,1) both}
+      .motif{animation:arrive .55s .7s both}
+      .orbits{animation:arrive .55s .96s both}
+      .wheat{animation:arrive .5s 1.18s both}
+      .nameplate{animation:surface .45s 1.75s both}
+      @keyframes trace{from{stroke-dashoffset:1;opacity:.3}to{stroke-dashoffset:0;opacity:1}}
+      @keyframes surface{from{opacity:0}to{opacity:1}}
+      @keyframes arrive{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+      @media(prefers-reduced-motion:reduce){.rim-fill,.rim-line,.motif,.orbits,.wheat,.nameplate{animation:none}}
+    </style>
+  </defs>
+  <g class="rim-fill">
+    <use href="#outline" transform="translate(0 6)" fill="#001c0e" opacity=".45"/>
+    <use href="#outline" fill="url(#rim)"/>
+    <path d="M250 46C226 81 181 88 128 122C87 149 71 195 71 248V425C71 455 64 480 53 490H447C436 480 429 455 429 425V248C429 195 413 149 372 122C319 88 274 81 250 46Z" fill="url(#paper)" stroke="#c5a059" stroke-width="1.5"/>
+  </g>
+  <path class="rim-line" pathLength="1" d="M250 26C231 70 176 76 122 111C77 140 57 191 57 247V425C57 463 48 485 28 501H472C452 485 443 463 443 425V247C443 191 423 140 378 111C324 76 269 70 250 26Z" stroke="url(#rim)" stroke-width="7" stroke-linejoin="round"/>
+  <g class="motif">
+    <path d="M185 106L228 230H235L240 198H261L267 230H274L315 106L266 365L250 478L234 365Z" fill="#101914"/>
+    <path d="M214 254L250 448L286 254Z" fill="url(#paper)"/>
+    <path d="M214 254L250 448L286 254" stroke="#101914" stroke-width="1.4"/>
+  </g>
+  <g class="wheat" fill="#4a9b45">
+    <path d="M250 430V303" stroke="#4a9b45" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M250 313C240 300 247 285 250 279C256 289 258 302 250 313Z"/>
+    <path d="M249 336C235 332 232 319 234 310C244 313 250 325 249 336ZM251 336C265 332 268 319 266 310C256 313 250 325 251 336Z"/>
+    <path d="M249 368C232 365 230 350 232 340C244 345 251 357 249 368ZM251 368C268 365 270 350 268 340C256 345 249 357 251 368Z"/>
+    <path d="M249 399C232 397 231 383 233 374C245 378 250 388 249 399ZM251 399C268 397 269 383 267 374C255 378 250 388 251 399Z"/>
+  </g>
+  <g class="orbits" stroke="#df393e" stroke-width="4.5">
+    <ellipse cx="250" cy="337" rx="58" ry="109" transform="rotate(-43 250 337)"/>
+    <ellipse cx="250" cy="337" rx="58" ry="109" transform="rotate(43 250 337)"/>
+  </g>
+  <g class="nameplate">
+    <path d="M28 501H472L432 612H68Z" fill="#08744c" stroke="#e9e2d1" stroke-width="3" stroke-linejoin="round"/>
+    <text x="250" y="548" fill="#fffefa" text-anchor="middle" direction="rtl" lang="ar" font-family="Tahoma,Arial,sans-serif" font-size="37" font-weight="700">جامعة اليرموك</text>
+    <text x="250" y="587" fill="#fffefa" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="600" letter-spacing=".4">Yarmouk University</text>
+  </g>
+</svg>

@@ -1,14 +1,14 @@
 /**
  * ============================================================================
  * YARMOUK UNIVERSITY INTERNSHIP MANAGEMENT SYSTEM
- * Official Stone Arch Gateway Controller (login.js)
+ * University Emblem Illustration Controller (login.js)
  * Faculty of Information Technology and Computer Science
  * ============================================================================
  * Responsibilities:
- * 1. Reactive visual state management for "The Gate" (Stone arch & doors).
- * 2. Form event binding: Email focus, password focus, typing dots, visibility toggle.
+ * 1. Restrained illustration feedback for the supplied university emblem.
+ * 2. Existing email/password fields, role selection and local navigation.
  * 3. 4-Role switching (Student, Academic Supervisor, Company Supervisor, Coordinator).
- * 4. Credential validation & role routing using local UIMS session authority.
+ * 4. Existing frontend-only account lookup and role routing.
  * ============================================================================
  */
 
@@ -42,7 +42,6 @@
 
   // Accessibility media queries
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
   // 4 Authorized Platform Roles & Metadata
   const ROLES = {
@@ -86,39 +85,6 @@
   // ==========================================================================
   // 2. THE GATE VISUAL STATE MANAGEMENT
   // ==========================================================================
-
-  // State 1: Parallax & Subtle Cursor Light (Desktop only)
-  function initGateParallax() {
-    if (!gatePanel || prefersReducedMotion.matches || !finePointer.matches) return;
-
-    gatePanel.addEventListener("mouseenter", () => {
-      gatePanel.classList.add("has-pointer");
-    });
-
-    gatePanel.addEventListener("mouseleave", () => {
-      gatePanel.classList.remove("has-pointer");
-      gatePanel.style.setProperty("--tilt-x", "0deg");
-      gatePanel.style.setProperty("--tilt-y", "0deg");
-    });
-
-    gatePanel.addEventListener("mousemove", (e) => {
-      const rect = gatePanel.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      gatePanel.style.setProperty("--mouse-x", `${x}px`);
-      gatePanel.style.setProperty("--mouse-y", `${y}px`);
-
-      // Gentle, dignified tilt (-3.5deg to +3.5deg max)
-      const normX = (x / rect.width) * 2 - 1;
-      const normY = (y / rect.height) * 2 - 1;
-      const tiltY = (normX * 3.5).toFixed(2);
-      const tiltX = (-normY * 2.8).toFixed(2);
-
-      gatePanel.style.setProperty("--tilt-y", `${tiltY}deg`);
-      gatePanel.style.setProperty("--tilt-x", `${tiltX}deg`);
-    });
-  }
 
   // State 2: Email Focus (Golden Thread brightens smoothly)
   function initEmailReactions() {
@@ -199,7 +165,7 @@
     }, 450);
   }
 
-  // State 7: Successful Login (Doors swing open, light floods arch, then redirect)
+  // Successful local account selection: acknowledge the emblem, then navigate.
   function triggerGateSuccess(redirectCallback) {
     if (!gatePanel) {
       redirectCallback();
@@ -215,10 +181,10 @@
       return;
     }
 
-    // Allow 1.2s for the doors to swing open and light to flood the gateway
+    // Allow the emblem acknowledgement to settle before local role navigation
     setTimeout(() => {
       redirectCallback();
-    }, 1200);
+    }, 550);
   }
 
   // ==========================================================================
@@ -346,10 +312,10 @@
             return;
           }
 
-          // Authenticate session locally
+          // Select the local frontend session; no backend authentication occurs.
           UIMS.signIn(account[0]);
 
-          // Trigger "The Gate" opening transition before navigation
+          // Brief emblem acknowledgement before local navigation
           triggerGateSuccess(() => {
             location.href = account[1].firstLogin
               ? "../first-login/first-login.html"
@@ -466,7 +432,7 @@
   // 7. INITIALIZATION
   // ==========================================================================
   function init() {
-    initGateParallax();
+    // Keep the identity illustration stable; no pointer-driven tilt.
     initEmailReactions();
     initPasswordReactions();
     initShowPasswordToggle();

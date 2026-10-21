@@ -193,24 +193,14 @@ button:active, .primary-btn:active { filter: brightness(.88); }
   .scene-viewport { opacity: .2; }
   .static-fallback { opacity: 1; }
 }
-/* The existing assembly keeps its original 520vh scroll distance; the thread continues afterwards. */
+/* The homepage ends with the completed gate after 520vh of assembly scroll. */
 :root { --journey-copy-width:360px; --journey-heading:42px; --static-paper:#f4f2e9; }
-.experience-runway { height:1100vh; }
+.experience-runway { height:620vh; }
 .static-introduction, .record-illustration, .final-logo { display:none; }
 .replay-btn { color:var(--ink-soft); gap:6px; text-decoration:none; }
 .stage-controls { padding:4px 10px; border-radius:var(--radius); background:var(--scene-ground); }
 /* Clip inactive copy visually, while keeping its text in the accessibility tree. */
 .chapter-card:not(.is-active) { display:block; clip-path:inset(50%); height:1px; overflow:hidden; }
-.after-assembly #chapter-discover.is-active, .after-assembly #chapter-apply.is-active, .after-assembly #chapter-train.is-active, .after-assembly #chapter-complete.is-active, .after-assembly #chapter-faculty.is-active {
-  left:auto; right:var(--gutter); top:50%; bottom:auto; transform:translateY(-50%); width:var(--journey-copy-width); text-align:left;
-}
-.after-assembly #chapter-apply.is-active, .after-assembly #chapter-complete.is-active { left:var(--gutter); right:auto; }
-.after-assembly .chapter-title, .after-assembly #chapter-discover .chapter-title, .after-assembly #chapter-complete .chapter-title { font-size:var(--journey-heading); margin-bottom:var(--space-3); }
-.after-assembly .chapter-desc, .after-assembly #chapter-complete .chapter-desc { font-size:16px; margin-left:0; }
-.after-assembly .chapter-actions, .after-assembly #chapter-discover .chapter-actions, .after-assembly #chapter-complete .chapter-actions { flex-direction:row; justify-content:flex-start; gap:var(--space-2); }
-.after-assembly .final-logo { display:block; width:190px; height:auto; margin-bottom:var(--space-4); background:var(--scene-ground); }
-.after-assembly #chapter-faculty { width:390px; }
-.after-assembly .scene-caption, .after-assembly .stage-controls { background:var(--scene-ground); padding:6px 12px; border-radius:var(--radius); }
 .record-illustration { width:140px; height:140px; fill:none; stroke:var(--gold-light); stroke-width:2; margin-bottom:var(--space-3); }
 /* A readable document replaces camera motion on phones and for motion/WebGL fallbacks. */
 .static-journey .scene-viewport { display:none; }
@@ -234,8 +224,8 @@ button:active, .primary-btn:active { filter: brightness(.88); }
 .static-journey .chapter-title, .static-journey #chapter-discover .chapter-title, .static-journey #chapter-complete .chapter-title { font-size:36px; }
 .static-journey .chapter-desc { margin-left:0; }
 .static-journey .chapter-actions, .static-journey #chapter-discover .chapter-actions, .static-journey #chapter-complete .chapter-actions { justify-content:flex-start; flex-direction:row; }
-@media(min-width:761px) and (max-width:1100px) { :root { --journey-copy-width:300px; --journey-heading:36px; } .after-assembly #chapter-faculty { width:320px; } }
-@media(max-height:720px) and (min-width:761px) { :root { --journey-heading:36px; } .after-assembly .final-logo { width:150px; margin-bottom:16px; } }
+@media(min-width:761px) and (max-width:1100px) { :root { --journey-copy-width:300px; --journey-heading:36px; } }
+@media(max-height:720px) and (min-width:761px) { :root { --journey-heading:36px; } }
 @media(max-width:760px) {
   .stage-controls { gap:6px; font-size:11px; }
   .static-journey .journey-intro { display:none; }
@@ -257,37 +247,17 @@ button:active, .primary-btn:active { filter: brightness(.88); }
 @media(scripting:none) { .record-transcript { position:static; width:auto; height:auto; clip-path:none; white-space:normal; color:var(--ink-soft); font-size:14px; line-height:1.65; } }
 @media(max-width:760px) { .site-nav .home-link { display:inline-flex; } .brand img { width:90px; } .site-nav { gap:10px; } }
 
-/* The river and alternating bank panels follow the supplied scroll-path reference. */
-:root { --river-panel-width:560px; --river-panel-padding:32px; --paper:#ffffff; --river-border:#e0e8e3; --button-ink:#ffffff; --logo-backing:#002e18; }
+
+:root {   --paper:#ffffff;  --button-ink:#ffffff; --logo-backing:#002e18; }
 .brand { padding:8px 12px; border-radius:var(--radius); background:var(--logo-backing); }
 .brand img { width:142px; }
 .primary-btn,.site-nav .login-action-btn { color:var(--button-ink); }
 .chapter-title { color:var(--action); }
-.after-assembly .chapter-card.is-river-visible { background:var(--paper); border:1px solid var(--river-border); border-radius:12px; padding:var(--river-panel-padding); box-shadow:0 8px 32px rgb(27 63 44 / .06); } /* taste-skill-ignore: owner explicitly requested the large floating panels from the supplied video reference. */
-.after-assembly .chapter-card::before { display:none; }
-.after-assembly #chapter-discover.is-river-visible,.after-assembly #chapter-train.is-river-visible,.after-assembly #chapter-faculty.is-river-visible { left:var(--gutter); right:auto; width:var(--river-panel-width); }
-.after-assembly #chapter-apply.is-river-visible,.after-assembly #chapter-complete.is-river-visible { right:var(--gutter); left:auto; width:var(--river-panel-width); }
-.after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:42px; max-width:10ch; }
-.after-assembly .chapter-desc { max-width:36ch; }
-.after-assembly .record-illustration { display:block; float:right; width:104px; height:124px; margin:0 0 16px 20px; stroke:var(--action); background:var(--scene-surface); border-radius:8px; padding:14px; }
-.after-assembly .final-logo,.static-journey .final-logo { padding:10px; background:var(--logo-backing); border-radius:var(--radius); }
-.after-assembly .scene-detail,.after-assembly .chapter-actions { clear:both; }
-.static-journey .chapter-card.is-river-visible { box-shadow:none; border:0; border-radius:0; background:transparent; }
 .static-journey .chapter-card::after { width:4px; border-radius:4px; background:#629eaa; }
-@media(min-width:901px) and (max-width:1200px) { :root { --river-panel-width:440px; --river-panel-padding:26px; } .after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:36px; } .after-assembly .record-illustration { width:80px; height:104px; margin-left:12px; } }
-@media(max-height:720px) and (min-width:901px) { :root { --river-panel-padding:24px; } .after-assembly .chapter-title,.after-assembly #chapter-discover .chapter-title,.after-assembly #chapter-complete .chapter-title { font-size:36px; } .after-assembly .chapter-desc { font-size:15px; } .after-assembly .final-logo { width:150px; } }
+@media(min-width:901px) and (max-width:1200px) { :root {   } }
+@media(max-height:720px) and (min-width:901px) { :root {  } }
 @media(max-width:760px) { .brand { padding:6px 8px; } .brand img { width:90px; } }
-
-.after-assembly .chapter-card.is-river-visible { display:block; height:auto; clip-path:none; overflow:visible; top:50%; bottom:auto; text-align:left; }
-.after-assembly .chapter-card:not(.is-river-visible) { clip-path:inset(50%); height:1px; overflow:hidden; }
-.static-journey.after-assembly .chapter-card { clip-path:none; height:auto; overflow:visible; padding:var(--space-5) var(--gutter); }
 @media(scripting:none) { .final-logo { background:var(--logo-backing); padding:10px; border-radius:var(--radius); } }
-
-.static-introduction .static-river { width:180px; height:90px; stroke:#629eaa; stroke-width:12; }
-
-/* Faculty copy stays left; the gate and a partial stretch of river share the right. */
-.after-assembly #chapter-faculty.is-river-visible { left:var(--gutter); right:auto; width:440px; }
-@media(min-width:901px) and (max-width:1200px) { .after-assembly #chapter-faculty.is-river-visible { width:380px; top:55%; } }
 
 /* Keep the light theme's focus target and fallback explanations readable. */
 .skip-link { background:var(--action); color:var(--button-ink); }
@@ -295,8 +265,8 @@ button:active, .primary-btn:active { filter: brightness(.88); }
 .static-journey .site-header { background:var(--paper); }
 .static-journey .site-header::before { display:none; }
 .static-journey .stage-controls { position:sticky; top:var(--header-height); z-index:25; margin:0; padding:0 var(--gutter); min-height:46px; background:var(--paper); }
-.static-journey .stage-footer { top:calc(var(--header-height) + 46px); }
-.static-journey .chapter-card { scroll-margin-top:calc(var(--header-height) + 146px); }
+.static-journey .stage-footer { top:var(--header-height); }
+.static-journey .chapter-card { scroll-margin-top:calc(var(--header-height) + 100px); }
 @media(scripting:none) { .record-transcript { font-size:16px; } }
 @media(max-width:760px) { .scene-caption,.scene-detail,.stage-controls { font-size:13px; } }
 @media(max-width:760px) {
@@ -306,14 +276,32 @@ button:active, .primary-btn:active { filter: brightness(.88); }
   .site-nav .login-action-btn { padding-inline:10px; }
 }
 
-/* Restore the original opening independently of the later river theme. */
-body:not(.after-assembly):not(.static-journey) {
+
+:root {
+
+
+
+
+
+
+} /* taste-skill-ignore: owner approved a diffuse emerald backdrop with no rectangular boundary. */
+#experience-canvas { position:relative; z-index:1; }
+#chapter-faculty .record-illustration,#chapter-faculty .final-logo { display:none; }
+@media(min-width:901px) and (max-width:1200px) {
+  :root {    }
+}
+@media(max-height:720px) and (min-width:901px) {
+  :root {  }
+}
+
+/* Preserve the opening gate presentation through the completed final pose. */
+body:not(.static-journey) {
   color-scheme:dark;
   --scene-ground:#002e18; --scene-deep:#002313; --scene-surface:#003a1e;
   --ink:#fbfaf5; --ink-soft:#d1dfd5; --ink-muted:#afc7b7;
   --gold-light:#e5c788; --line:#346047; --scrim:rgb(0 35 19 / .83); --focus:#e5c788;
 }
-body:not(.after-assembly):not(.static-journey) .chapter-title { color:var(--ink); }
-body:not(.after-assembly):not(.static-journey) .brand { padding:0; background:transparent; border-radius:0; }
-body:not(.after-assembly):not(.static-journey) .brand img { width:160px; }
-body:not(.after-assembly):not(.static-journey) .skip-link { background:var(--ink); color:var(--scene-deep); }
+body:not(.static-journey) .chapter-title { color:var(--ink); }
+body:not(.static-journey) .brand { padding:0; background:transparent; border-radius:0; }
+body:not(.static-journey) .brand img { width:160px; }
+body:not(.static-journey) .skip-link { background:var(--ink); color:var(--scene-deep); }

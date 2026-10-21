@@ -20,6 +20,7 @@
   let monitorStudentQuery = "";
   let evaluationStudentQuery = "";
   let companyStudentQuery = "";
+  let directoryQuery = "";
   const names = {
     student: "Student",
     company: "Company Supervisor",
@@ -164,6 +165,63 @@
   }
   function close() {
     document.getElementById("editor").close();
+  }
+  function coordinatorDirectory() {
+    const kind = { students: "student", supervisors: "supervisor", companies: "company" }[view];
+    const users = U.all("users");
+    const groups = U.all("groups").filter(g => U.db.users[g.supervisorId]?.status === "Active");
+    const headings = {
+      students: ["Student", "Department", "College", "Assigned supervisor", "Status", "Actions"],
+      supervisors: ["Supervisor", "Department", "Faculty", "Assigned students", "Status", "Actions"],
+      companies: ["Company", "Account contact", "Location", "Internship posts", "Access", "Actions"],
+    };
+    const records = view === "companies" ? U.all("companies") : users.filter(u => u.role === kind);
+    const rows = records.map(record => {
+      let cells;
+      if (view === "students") {
+        const group = U.db.groups[record.groupId];
+        const options = groups.map(g => `<option value="${E(g.id)}" ${g.id === record.groupId ? "selected" : ""}>${E(userName(g.supervisorId))} · ${E(g.name)}</option>`).join("");
+        const current = groups.some(g => g.id === record.groupId) ? "" : `<option value="" selected disabled>Choose an active supervised group</option>`;
+        cells = [
+          `<strong>${E(record.name)}</strong><small>${E(record.studentNumber)} · ${E(record.email)}</small>`,
+          E(majorName(record.majorId)), E(U.db.university.college),
+          `<form class="directory-assignment" data-form="student-group" data-id="${E(record.id)}"><label class="visually-hidden" for="assign-${E(record.id)}">Assign student ${E(record.name)} to an academic supervisor and group</label><div class="directory-assignment-controls"><select id="assign-${E(record.id)}" class="ui-select" name="groupId" required>${current}${options}</select><button class="ui-button" type="submit">Save</button></div><small>${E(group ? userName(group.supervisorId) : "Select a group")}</small><p class="form-error" role="alert"></p></form>`,
+          status(record.status), button("Edit account", "edit-account", record.id),
+        ];
+      } else if (view === "supervisors") {
+        const groupIds = U.all("groups").filter(g => g.supervisorId === record.id).map(g => g.id);
+        const count = users.filter(u => u.role === "student" && groupIds.includes(u.groupId)).length;
+        cells = [`<strong>${E(record.name)}</strong><small>${E(record.email)}</small>`, E(record.department), E(U.db.university.college), `${count} students`, status(record.status), button("Edit account", "edit-account", record.id)];
+      } else {
+        const contacts = users.filter(u => u.role === "company" && u.companyId === record.id);
+        const posts = U.all("opportunities").filter(op => op.companyId === record.id).length;
+        cells = [
+          `<strong>${E(record.name)}</strong><small>${E(record.industry || "")}</small>`,
+          contacts.map(u => `<strong>${E(u.name)}</strong><small>${E(u.email)}</small>`).join("") || "No supervisor account",
+          E(record.city || "—"), `${posts} ${posts === 1 ? "post" : "posts"}`,
+          contacts.map(u => status(u.status)).join(" ") || "—",
+          contacts.map(u => button(contacts.length > 1 ? "Edit " + u.name : "Edit company", "edit-account", u.id)).join(" "),
+        ];
+      }
+      const group = U.db.groups[record.groupId];
+      const search = [record.name, record.email, record.studentNumber, record.department, majorName(record.majorId), group?.name, group ? userName(group.supervisorId) : "", record.city, record.industry, ...users.filter(u => u.companyId === record.id).flatMap(u => [u.name, u.email])].join(" ").toLowerCase();
+      return `<tr data-directory-search="${E(search)}">${cells.map((cell, i) => `<td data-label="${E(headings[view][i])}">${cell}</td>`).join("")}</tr>`;
+    }).join("");
+    const heading = { students: "Student directory", supervisors: "Faculty directory", companies: "Company directory" }[view];
+    const description = { students: "Student academic records and supervisor assignments.", supervisors: "Academic supervisors and their assigned students.", companies: "Company details, supervisor contacts and account access." }[view];
+    const action = button({ students: "Add student", supervisors: "Add supervisor", companies: "Add company" }[view], "new-account", kind, true);
+    shell(`<section class="card-surface coordinator-directory"><header class="directory-heading"><div><h2>${heading}</h2><p>${description}</p></div>${action}</header><div class="directory-toolbar"><label class="directory-search">${icon("search")}<input class="ui-input" type="search" id="directorySearch" aria-label="Search ${E(view)}" placeholder="Search ${E(view)}" value="${E(directoryQuery)}"></label><span id="directoryCount" class="help-text" role="status"></span></div><div class="table-wrap"><table><thead><tr>${headings[view].map(h => `<th scope="col">${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table><p class="directory-empty" id="directoryEmpty" hidden>No matching records.</p></div></section>`, description);
+    filterDirectory();
+  }
+  function filterDirectory() {
+    const query = directoryQuery.trim().toLowerCase();
+    let count = 0;
+    document.querySelectorAll("[data-directory-search]").forEach(row => {
+      row.hidden = !row.dataset.directorySearch.includes(query);
+      if (!row.hidden) count++;
+    });
+    document.getElementById("directoryCount").textContent = `${count} ${view}`;
+    document.getElementById("directoryEmpty").hidden = count > 0;
   }
   function collegeMark(className = "") {
     return `<span class="college-mark ${className}"><img src="../../assets/yarmouk-college-logo.png" alt="Yarmouk University" width="257" height="70"></span>`;
@@ -885,44 +943,7 @@
         "Manage the faculty’s internship accounts, academic assignments and completion reviews.",
       );
     } else if (["students", "companies", "supervisors"].includes(view)) {
-      const r = {
-          students: "student",
-          companies: "company",
-          supervisors: "supervisor",
-        }[view],
-        list = U.all("users").filter((u) => u.role === r);
-      shell(
-        table(
-          r === "student"
-            ? ["Student", "Major", "Academic group", "Status", "Action"]
-            : [
-                "Name",
-                "Email",
-                r === "company" ? "Company" : "Department",
-                "Status",
-                "Action",
-              ],
-          list.map((u) =>
-            r === "student"
-              ? [
-                  `<strong>${E(u.name)}</strong><small>${E(u.studentNumber)} · ${E(u.email)}</small>`,
-                  E(majorName(u.majorId)),
-                  `${E(U.db.groups[u.groupId]?.name)}<br><small>${E(userName(U.db.groups[u.groupId]?.supervisorId))}</small>`,
-                  status(u.status),
-                  button("Edit account", "edit-account", u.id),
-                ]
-              : [
-                  E(u.name),
-                  E(u.email),
-                  E(r === "company" ? companyName(u.companyId) : u.department),
-                  status(u.status),
-                  button("Edit account", "edit-account", u.id),
-                ],
-          ),
-        ),
-        "Create and maintain accounts. Temporary credentials will be issued through Firebase Authentication after integration.",
-        button("Create " + names[r] + " account", "new-account", r, true),
-      );
+      coordinatorDirectory();
     } else if (view === "assignments") {
       shell(
         table(
@@ -1391,6 +1412,7 @@
           break;
         case "student-group": {
           U.require("coordinator");
+          if (U.db.users[fid]?.role !== "student") throw Error("Choose a student account.");
           const group = U.db.groups[get("groupId")];
           if (!group || U.db.users[group.supervisorId]?.status !== "Active")
             throw Error("Select a group with an active academic supervisor.");
@@ -1989,6 +2011,10 @@
     form.querySelectorAll(".form-error, .password-field-error, .password-form-status").forEach((node) => node.textContent = "");
   }, true);
   document.addEventListener("input", (event) => {
+    if (event.target.id === "directorySearch") {
+      directoryQuery = event.target.value;
+      filterDirectory();
+    }
     if (event.target.closest('[data-form="change-password"]')) {
       event.target.removeAttribute("aria-invalid");
       event.target.removeAttribute("aria-errormessage");

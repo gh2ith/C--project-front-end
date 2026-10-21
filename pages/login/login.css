@@ -1,6 +1,6 @@
 /* ==========================================================================
    Yarmouk University Internship Management System
-   "The Gate" Official Stone Arch Gateway — Second Polish Pass
+   University Emblem Illustration — Owner Reference
    Faculty of Information Technology & Computer Science — Irbid, Jordan
    ========================================================================== */
 
@@ -202,26 +202,35 @@ body#page-login {
   color: var(--muted);
 }
 
-/* Interactive Stone Arch Stage */
-.gate-stage-area {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  padding: 1rem 0;
+/* The supplied emblem defines the silhouette; this illustration has no doors or lintel. */
+.emblem-stage {
+  flex:1; min-height:0; position:relative; z-index:5; display:flex;
+  flex-direction:column; align-items:center; justify-content:center;
+  margin:0; padding:20px 0; gap:8px;
 }
-
-.gate-arch-svg {
-  width: 100%;
-  max-width: 440px;
-  height: auto;
-  max-height: 520px;
-  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.6));
-  transform: rotateY(var(--tilt-y, 0deg)) rotateX(var(--tilt-x, 0deg));
-  transform-style: preserve-3d;
-  transition: transform 0.22s var(--lb-ease);
+.gate-emblem { display:block; width:auto; height:min(59vh,490px); max-width:100%; object-fit:contain; flex-shrink:1; min-height:0; }
+.emblem-signature { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--paper); text-align:center; animation:emblemNameArrival .45s 1.75s both; }
+.emblem-name-ar { font-family:Tahoma,"Segoe UI",sans-serif; font-size:32px; font-weight:600; line-height:1.6; }
+.emblem-name-en { font-family:var(--lb-font-body); font-size:17px; font-weight:500; letter-spacing:.035em; line-height:1.5; }
+@keyframes emblemNameArrival { from { opacity:0; } to { opacity:1; } }
+.gate-panel.is-email-focus .gate-emblem { filter:brightness(1.04); }
+.gate-panel.is-success .emblem-signature { color:var(--gold-glow); }
+.gate-footer { flex-shrink:0; position:relative; z-index:5; text-align:center; }
+.gate-caption-text { color:var(--muted); font-size:12px; line-height:1.5; margin:0; }
+@media(min-width:901px) and (max-height:740px) {
+  .gate-panel { padding:24px 28px; }
+  .gate-emblem { height:min(56vh,410px); }
+  .emblem-stage { padding:10px 0; gap:0; }
+  .emblem-name-ar { font-size:28px; }
+  .emblem-name-en { font-size:15px; }
+}
+@media(max-width:900px) {
+  .gate-emblem { height:320px; }
+  .emblem-name-ar { font-size:27px; }
+  .emblem-name-en { font-size:15px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .emblem-signature { animation:none; }
 }
 
 /* ==========================================================================

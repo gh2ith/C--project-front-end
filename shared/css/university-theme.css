@@ -1925,3 +1925,46 @@ body:has(.public-main) {
   html[data-view="dashboard"] .portal-content .card-icon { position:absolute; right:16px; top:16px; width:26px; height:26px; margin:0; font-size:15px; }
   html[data-view="dashboard"] .portal-content .card-surface:has(> .card-icon) > h2 { padding-right:30px; }
 }
+/* Restored coordinator directories: original roster structure, current identity. */
+.coordinator-directory { min-width:0; }
+.directory-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:20px; }
+.directory-heading h2 { margin:0 0 6px; }
+.directory-heading p { margin:0; color:var(--slate); }
+.directory-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+.directory-search { display:flex; align-items:center; gap:10px; width:min(100%,360px); color:var(--slate); }
+.directory-search input { min-width:0; }
+.directory-toolbar .help-text { margin:0; }
+.coordinator-directory table { width:100%; min-width:0; table-layout:fixed; }
+.coordinator-directory td, .coordinator-directory th { overflow-wrap:anywhere; font-size:13px; }
+.coordinator-directory th:nth-child(-n+3) { width:16%; }
+.coordinator-directory th:nth-child(4) { width:26%; }
+.coordinator-directory th:nth-child(5) { width:10%; }
+.coordinator-directory th:last-child { width:16%; }
+.coordinator-directory td { vertical-align:middle; }
+.coordinator-directory tbody tr { height:98px; }
+.coordinator-directory td .ui-button { padding:8px 10px; min-height:44px; font-size:12px; white-space:normal; }
+.directory-assignment-controls { display:flex; align-items:center; gap:6px; }
+.directory-assignment { position:relative; }
+.directory-assignment-controls > button { flex:none; min-width:56px; white-space:nowrap; }
+.directory-assignment .ui-select { min-width:0; width:100%; font-size:13px; padding-right:26px; }
+.directory-assignment .form-error { margin:0; font-size:12px; }
+.directory-assignment .form-error:empty { display:none; }
+.directory-empty { padding:24px; text-align:center; color:var(--slate); }
+@media screen and (min-width:1000px) and (min-height:600px) and (max-height:900px) {
+  .portal-content > .coordinator-directory { display:flex; flex-direction:column; height:100%; max-height:100%; min-height:0; overflow:hidden; }
+  .coordinator-directory > :not(.table-wrap) { flex:none; }
+  .coordinator-directory > .table-wrap { flex:1; min-height:0; overflow:auto; scrollbar-gutter:stable; }
+  .coordinator-directory thead { position:sticky; top:0; z-index:1; background:var(--bg-2); }
+}
+@media (max-width:700px) {
+  .coordinator-directory thead { display:none; }
+  .coordinator-directory table, .coordinator-directory tbody, .coordinator-directory tr, .coordinator-directory td { display:block; width:100%; }
+  .coordinator-directory tr[hidden] { display:none; }
+  .coordinator-directory tr { padding:12px 0; border-bottom:1px solid var(--line); }
+  .coordinator-directory tbody tr { height:auto; }
+  .coordinator-directory td { border:0; padding:8px 0; }
+  .coordinator-directory td::before { content:attr(data-label); display:block; color:var(--slate); font-size:12px; margin-bottom:4px; }
+  .coordinator-directory td:first-child { width:100%; }
+  .coordinator-directory td:first-child::before { display:none; }
+  .directory-assignment .ui-select { font-size:16px; }
+}
